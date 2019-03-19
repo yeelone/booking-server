@@ -1,0 +1,31 @@
+# .gqlgen.yml example
+#
+# Refer to https://gqlgen.com/config/
+# for detailed .gqlgen.yml documentation.
+
+schema:
+- schema.graphql
+exec:
+  filename: generated.go
+model:
+  filename: models_gen.go
+resolver:
+  filename: resolvers/resolver.go
+  type: Resolver
+models:
+  User:
+    model: booking/models.User
+  Group:
+    model: booking/models.Group
+  Dictionary:
+    model: booking/models.Dictionary
+  Role:
+    model: booking/models.Role
+  Book:
+    model: booking/models.Book
+  Author:
+    model: booking/models.Author
+  Chapter:
+    model: booking/models.Chapter
+  Phrase:
+    model: booking/models.Phrase

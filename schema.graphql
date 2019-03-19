@@ -1,0 +1,485 @@
+directive @hasRole(resolver: String!) on FIELD_DEFINITION
+directive @needLogin on FIELD_DEFINITION
+
+
+type QueryUserResponse{
+    totalCount:Int,
+    skip:Int,
+    take:Int,
+    rows: [User!]!
+}
+
+
+type User {
+    id: ID!
+    email: String!
+    username: String!
+    nickname: String!
+    id_card: String!
+    password: String!
+    is_super: Boolean!
+    picture: String!
+    state: Int!
+    created_at: String!
+    updated_at: String!
+    deleted_at: String!
+    groups(pagination: Pagination):QueryGroupResponse!
+    roles(pagination: Pagination):QueryRoleResponse!
+}
+
+type QueryGroupResponse{
+    totalCount:Int,
+    skip:Int,
+    take:Int,
+    rows: [Group!]!
+}
+
+type Group {
+    id: ID!
+    name: String!
+    parent: Int!
+    levels: String!
+    created_at: String!
+    updated_at: String!
+    deleted_at: String!
+
+    users(filter:UserFilterInput, pagination: Pagination):QueryUserResponse!
+}
+
+type Role {
+    id: ID!
+    name: String!
+    created_at: String!
+    updated_at: String!
+    deleted_at: String!
+    users(filter:UserFilterInput, pagination: Pagination):QueryUserResponse!
+}
+type QueryRoleResponse{
+    totalCount:Int,
+    skip:Int,
+    take:Int,
+    rows: [Role!]!
+}
+
+type Permission {
+    module:String!
+    name:String!
+    resource:String!
+    object:String!
+    checked:Boolean!
+}
+
+type QueryPermissionResponse{
+    totalCount:Int,
+    skip:Int,
+    take:Int,
+    rows: [Permission!]!
+}
+
+type Dictionary {
+    id:Int!
+	word: String!
+	phonetic: String!
+	definition: String!
+	translation: String!
+	pos: String!
+	collins: String!
+	oxford: String!
+	tag: String!
+	bnc: String!
+	frq: String!
+	exchange: String!
+	detail: String!
+	audio: String!
+}
+
+type QueryDictionaryResponse{
+    totalCount:Int,
+    skip:Int,
+    take:Int,
+    rows: [Dictionary!]!
+}
+
+type Book {
+    id: Int!
+    name: String!
+    authors: QueryAuthorResponse!
+    picture: String!
+    alias: String!
+    users: QueryUserResponse!
+    chapters(filter:ChapterFilterInput, pagination: Pagination):QueryChapterResponse!
+}
+
+type QueryBookResponse{
+    totalCount:Int,
+    skip:Int,
+    take:Int,
+    rows: [Book!]!
+}
+
+type Chapter {
+    id: Int!
+    index: Int!
+    name: String!
+    content: String!
+    phrases:QueryDictionaryResponse!
+    cet4Words:QueryDictionaryResponse!
+    cet6Words:QueryDictionaryResponse!
+    kyWords:QueryDictionaryResponse!
+    toefiWords:QueryDictionaryResponse!
+    ieltsWords:QueryDictionaryResponse!
+    greWords:QueryDictionaryResponse!
+}
+
+type QueryChapterResponse{
+    totalCount:Int,
+    skip:Int,
+    take:Int,
+    rows: [Chapter!]!
+}
+
+type Author{
+    id: Int!
+    name: String!
+    books(filter:BookFilterInput, pagination: Pagination):QueryBookResponse!
+}
+
+type QueryAuthorResponse{
+    totalCount:Int,
+    skip:Int,
+    take:Int,
+    rows: [Author!]!
+}
+
+type Phrase{
+    id: Int!
+    content: String!
+    translation:String!
+}
+type QueryPhraseResponse{
+    totalCount:Int,
+    skip:Int,
+    take:Int,
+    rows: [Phrase!]!
+}
+
+input Pagination {
+    skip: Int!
+    take: Int!
+}
+
+# filter
+input UserFilterInput {
+    id: Int
+    username:String
+    email:String
+    phone:String
+    state:Int
+}
+
+input DictionaryFilterInput {
+    id: Int
+    word:String
+    translation:String
+    tag:String
+}
+
+
+input GroupFilterInput {
+    id: Int
+    name:String
+}
+
+input RoleFilterInput {
+    id: Int
+    name:String
+}
+
+input BookFilterInput {
+    id: Int
+    name:String
+    author:String
+}
+
+input ChapterFilterInput {
+    ids: [Int!]
+    index: Int
+}
+input AuthorFilterInput {
+    name:String
+}
+
+input PhraseFilterInput {
+    content:String
+}
+
+input ChapterAnalysisInput{
+    chapterId:Int!
+}
+
+# order by
+enum GroupOrderByInput {
+    name_ASC
+    name_DESC
+    created_at_ASC
+    created_at_DESC
+}
+
+type Query {
+    dictionaries(filter:DictionaryFilterInput, pagination: Pagination): QueryDictionaryResponse!  @hasRole(resolver: "dictionaries") @needLogin
+    groups(filter:GroupFilterInput, pagination: Pagination,orderBy:GroupOrderByInput): QueryGroupResponse!  @hasRole(resolver: "groups") @needLogin
+    users(filter:UserFilterInput, pagination: Pagination):QueryUserResponse!  @hasRole(resolver: "users") @needLogin
+    roles(filter:RoleFilterInput, pagination: Pagination):QueryRoleResponse!  @hasRole(resolver: "roles") @needLogin
+    permissions(filter:RoleFilterInput!):QueryPermissionResponse!  @hasRole(resolver: "permissions") @needLogin
+    books(filter:BookFilterInput, pagination: Pagination):QueryBookResponse! @hasRole(resolver: "books") @needLogin
+    chapters(filter:ChapterFilterInput):[Chapter!]! @hasRole(resolver: "chapters") @needLogin
+    authors(filter:AuthorFilterInput, pagination: Pagination):QueryAuthorResponse! @hasRole(resolver: "authors") @needLogin
+    phrases(filter:PhraseFilterInput, pagination: Pagination): QueryPhraseResponse! @hasRole(resolver: "phrases") @needLogin
+    analysis(input:ChapterAnalysisInput!): QueryDictionaryResponse! @hasRole(resolver: "analysis") @needLogin
+    messages:String!
+}
+
+input NewTodo {
+    text: String!
+    userId: String!
+}
+
+input NewUser {
+    id: Int
+    email: String!
+    password: String!
+    username: String!
+    nickname: String
+    id_card: String
+    is_super: Boolean
+    picture: String
+    state: Int
+}
+
+input UpdateUserInput {
+    id: Int!
+    email: String
+    password: String
+    username: String
+    nickname: String
+    id_card: String
+    is_super: Boolean
+    picture: String
+    state: Int
+}
+
+input NewGroup {
+    id: Int
+    name: String!
+    parent: Int!
+    levels: String!
+    userId: [Int!]
+}
+
+input UpdateGroupInput {
+    id: Int!
+    name: String
+    parent: Int
+    levels: String
+    userId: [Int!]
+}
+
+input NewRole {
+    id: Int
+    name: String!
+    userId: [Int!]
+}
+
+input UpdateRoleInput {
+    id: Int!
+    name: String
+    userId: [Int!]
+}
+
+input NewBook {
+    name: String!
+    authorId: Int!
+    picture: String!
+    alias: String!
+    userId:  Int!
+}
+
+input NewAuthor {
+    name: String!
+}
+
+input UpdateAuthorInput {
+    id: Int!
+    name: String
+}
+
+input UpdateBookInput {
+    id: Int!
+    name: String
+    authorId: Int
+    picture: String
+    alias: String
+    userId:  Int
+}
+
+input DeleteIDInput{
+    ids:[Int!]!
+}
+
+input NewChapter {
+    id: Int
+    index: Int
+    name: String!
+    content: String!
+    phraseIds:[Int!]
+    bookId:Int!
+}
+
+input UpdateChapterInput {
+    id: Int!
+    index: Int
+    name: String
+    content: String
+    phraseIds:[Int!]
+}
+
+input NewPhrase {
+    id: Int
+    content: String!
+}
+
+input UpdatePhraseInput {
+    id: Int!
+    content: String
+}
+
+input NewDictionary {
+    word: String!
+    translation: String!
+    phonetic: String
+    definition: String
+    pos: String
+    collins: String
+    oxford: String
+    tag: String
+    bnc: String
+    frq: String
+    exchange: String
+    detail: String
+    audio: String
+}
+
+input UpdateDictionaryInput {
+    id:Int!
+    word: String
+    phonetic: String
+    definition: String
+    translation: String
+    pos: String
+    collins: String
+    oxford: String
+    tag: String
+    bnc: String
+    frq: String
+    exchange: String
+    detail: String
+    audio: String
+}
+
+enum DictionaryLevel  {
+    cet4
+    cet6
+    ky
+    toefi
+    ielts
+    gre
+    phrase
+}
+
+input ChapterAndDictionaryRelationshipInput {
+    chapterId: Int!
+    dictId:[Int!]!
+    level: DictionaryLevel!
+}
+
+input UserAndGroupRelationshipInput{
+    userIds: [Int!]!
+    groupId: Int!
+}
+
+input AuthorAndBookRelationshipInput{
+    bookIds: [Int!]!
+    authorId: Int!
+}
+
+input UserAndRoleRelationshipInput{
+    userIds: [Int!]!
+    roleId: Int!
+}
+
+input BookAndChapterRelationshipInput{
+    chapterIds: [Int!]!
+    bookId: Int!
+}
+
+input RoleAndPermissionRelationshipInput {
+    role: String!
+    permissions: [String!]!
+}
+
+input LoginInput {
+    username:String!
+    password:String!
+}
+
+type Mutation {
+    login(input:LoginInput!):String!
+    createUser(input: NewUser!): User! @hasRole(resolver: "createUser") @needLogin
+    updateUser(input: UpdateUserInput!): User! @hasRole(resolver: "updateUser") @needLogin
+    deleteUser(input: DeleteIDInput!)  : Boolean! @hasRole(resolver: "deleteUser") @needLogin
+
+    createGroup(input: NewGroup!): Group! @hasRole(resolver: "createGroup") @needLogin
+    updateGroup(input: UpdateGroupInput!): Group! @hasRole(resolver: "updateGroup") @needLogin
+    deleteGroup(input: DeleteIDInput!)  : Boolean! @hasRole(resolver: "deleteGroup") @needLogin
+
+    createUserAndGroupRelationship(input: UserAndGroupRelationshipInput!): Boolean! @hasRole(resolver: "createUserAndGroupRelationship") @needLogin
+    removeUserAndGroupRelationship(input: UserAndGroupRelationshipInput!): Boolean! @hasRole(resolver: "removeUserAndGroupRelationship") @needLogin
+
+    createRole(input: NewRole!): Role! @hasRole(resolver: "createRole") @needLogin
+    updateRole(input: UpdateRoleInput!): Role! @hasRole(resolver: "updateRole") @needLogin
+    createUserAndRoleRelationship(input: UserAndRoleRelationshipInput!): Boolean! @hasRole(resolver: "createUserAndRoleRelationship") @needLogin
+    removeUserAndRoleRelationship(input: UserAndRoleRelationshipInput!): Boolean! @hasRole(resolver: "removeUserAndRoleRelationship") @needLogin
+    createRoleAndPermissionRelationship(input: RoleAndPermissionRelationshipInput!) : Boolean! @hasRole(resolver: "createRoleAndPermissionRelationship") @needLogin
+
+    createBook(input: NewBook!): Book! @hasRole(resolver: "createBook") @needLogin
+    updateBook(input: UpdateBookInput!): Book! @hasRole(resolver: "updateBook") @needLogin
+    deleteBook(input: DeleteIDInput!)  : Boolean! @hasRole(resolver: "deleteBook") @needLogin
+    addBookChapters(input: BookAndChapterRelationshipInput!) : Boolean! @hasRole(resolver: "addBookChapters") @needLogin
+    removeBookChapters(input:BookAndChapterRelationshipInput!) : Boolean! @hasRole(resolver: "removeBookChapters") @needLogin
+
+    createAuthor(input: NewAuthor!): Author! @hasRole(resolver: "createAuthor") @needLogin
+    updateAuthor(input: UpdateAuthorInput!): Author! @hasRole(resolver: "updateAuthor") @needLogin
+    deleteAuthor(input: DeleteIDInput!)  : Boolean! @hasRole(resolver: "deleteAuthor") @needLogin
+    createAuthorAndBookRelationship(input: AuthorAndBookRelationshipInput!): Boolean! @hasRole(resolver: "createAuthorAndBookRelationship") @needLogin
+    removeAuthorAndBookRelationship(input: AuthorAndBookRelationshipInput!): Boolean! @hasRole(resolver: "removeAuthorAndBookRelationship") @needLogin
+
+    createChapter(input: NewChapter!): Chapter! @hasRole(resolver: "createChapter") @needLogin
+    updateChapter(input: UpdateChapterInput!): Chapter! @hasRole(resolver: "updateChapter") @needLogin
+    deleteChapter(input: DeleteIDInput!)  : Boolean! @hasRole(resolver: "deleteChapter") @needLogin
+    createChapterAndDictionaryRelationship(input: ChapterAndDictionaryRelationshipInput!): Boolean! @hasRole(resolver:"createChapterAndDictionaryRelationship") @needLogin
+    removeChapterAndDictionaryRelationship(input: ChapterAndDictionaryRelationshipInput!): Boolean! @hasRole(resolver: "removeChapterAndDictionaryRelationship") @needLogin
+
+    createDictionary(input: NewDictionary!): Dictionary! @hasRole(resolver: "createDictionary") @needLogin
+    updateDictionary(input: UpdateDictionaryInput!): Dictionary! @hasRole(resolver: "updateDictionary") @needLogin
+    deleteDictionary(input: DeleteIDInput!): Boolean! @hasRole(resolver: "deleteDictionary") @needLogin
+
+    createPhrase(input: NewPhrase!): Phrase! @hasRole(resolver: "createPhrase") @needLogin
+    updatePhrase(input: UpdatePhraseInput!): Phrase! @hasRole(resolver: "updatePhrase") @needLogin
+    deletePhrase(input: DeleteIDInput!): Boolean! @hasRole(resolver: "deletePhrase") @needLogin
+
+
+}
+
+type Subscription {
+    messageAdded(roomName: String!): String!
+}
