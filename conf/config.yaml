@@ -14,7 +14,7 @@ tls:
 log:
   writers: stdout,file
   logger_level: DEBUG
-  logger_file: log/brap.log
+  logger_file: log/booking.log
   log_format_text: true
   rollingPolicy: size
   log_rotate_date: 1
@@ -30,3 +30,8 @@ admin:
   email: 'admin@admin.com'
   username: 'admin'
   password: '123456'
+role:
+  system: '系统管理员'
+  organization: '机构管理员'
+  canteen: '食堂管理员'
+  normal: '普通用户'

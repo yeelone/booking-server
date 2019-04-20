@@ -4,6 +4,7 @@ import (
 	"booking"
 	"booking/models"
 	"booking/pkg/constvar"
+	"booking/util"
 	"context"
 	"fmt"
 )
@@ -17,6 +18,19 @@ func (r *groupResolver) ID(ctx context.Context, obj *models.Group) (string, erro
 func (r *groupResolver) Parent(ctx context.Context, obj *models.Group) (int, error){
 	return int(obj.Parent), nil
 }
+func (r *groupResolver) AdminID(ctx context.Context, obj *models.Group) (int, error){
+	fmt.Println(util.PrettyJson(obj))
+	return int(obj.AdminID), nil
+}
+func (r *groupResolver) AdminInfo(ctx context.Context, obj *models.Group) (user models.User, err error){
+	user, err = models.GetUserByID(obj.AdminID)
+	fmt.Println(obj.AdminID)
+	if err != nil {
+		return models.User{}, nil
+	}
+	return user, nil
+}
+
 func (r *groupResolver) CreatedAt(ctx context.Context, obj *models.Group) (string, error){
 	return fmt.Sprintf(obj.CreatedAt.Format("2006-01-02 15:04:05")), nil
 }
@@ -39,14 +53,40 @@ func (r *groupResolver)  Users(ctx context.Context, group *models.Group,filter *
 			Take: constvar.DefaultLimit,
 		}
 	}
-	users, total, err := models.GetGroupRelatedUsers(group.ID, pagination.Skip, pagination.Take)
+
+	where := ""
+	whereValue := ""
+	if filter != nil {
+		if filter.Username != nil  && *filter.Username != ""{
+			where = "username"
+			whereValue = *filter.Username
+		}
+
+		if filter.Email != nil  && *filter.Email != "" {
+			where = "email"
+			whereValue = *filter.Email
+		}
+	}
+
+
+	users, total, err := models.GetGroupRelatedUsers(group.ID, where,whereValue, pagination.Skip, pagination.Take)
+	fmt.Println("error", err)
 	resp := booking.QueryUserResponse{Rows:users,TotalCount:&total}
 	return resp, err
+}
+
+func (r *groupResolver) Canteens(ctx context.Context, obj *models.Group, filter *booking.CanteenFilterInput, pagination *booking.Pagination) (booking.QueryCanteenResponse, error){
+	canteens, err := models.GetGroupRelatedCanteens(obj.ID)
+	total := len(canteens)
+	resp := booking.QueryCanteenResponse{Rows:canteens,TotalCount:&total}
+	return resp, err
+
 }
 
 func (r *mutationResolver) CreateGroup(ctx context.Context, input booking.NewGroup) (models.Group, error) {
 	m := models.Group{
 		Name:        input.Name,
+		AdminID:       uint64(input.Admin),
 		Parent:      uint64(input.Parent),
 		Levels:      input.Levels,
 	}
@@ -61,20 +101,29 @@ func (r *mutationResolver) CreateGroup(ctx context.Context, input booking.NewGro
 
 func (r *mutationResolver) UpdateGroup(ctx context.Context, input booking.UpdateGroupInput) (models.Group, error) {
 	g := models.Group{}
+	data := make(map[string]interface{})
+
 	if input.Name != nil {
 		g.Name = *input.Name
+		data["name"] = *input.Name
 	}
 	if input.Parent != nil {
 		g.Parent = uint64(*input.Parent)
+		data["parent"] = uint64(*input.Parent)
 	}
 	if input.Levels != nil {
 		g.Levels = *input.Levels
+		data["levels"] = *input.Levels
+	}
+
+	if input.Admin != nil {
+		data["admin_id"] = *input.Admin
 	}
 
 	g.ID = uint64(input.ID)
 
 	// Insert the group to the database.
-	err := g.Update()
+	err := g.Update(data)
 	if err != nil {
 		return g, err
 	}

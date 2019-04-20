@@ -17,7 +17,9 @@ type Group struct {
 	BaseModel
 	Name   string `json:"name" gorm:"column:name;not null"`
 	Users  []User `json:"users" gorm:"many2many:user_groups;"`
+	AdminID  uint64 `json:"admin_id"`
 	Parent uint64 `json:"parent" gorm:"column:parent;"`
+	Canteens []Canteen
 	Levels string `json:"levels" gorm:"column:levels"` //保存父子层级关系图,例如 pppid.ppid.pid.id
 }
 
@@ -44,14 +46,14 @@ func (g Group) Create() (group Group, err error) {
 
 // Update updates an Group information.
 // only update name and coefficient
-func (g *Group) Update() error {
+func (g *Group) Update(data map[string]interface{}) error {
 	_, err := GetGroup(g.ID, false)
 	if err != nil {
 		return err
 	}
 
 	tx := DB.Self.Begin()
-	if err := tx.Model(&g).Update(map[string]interface{}{"name": g.Name, "parent": g.Parent}).Error; err != nil {
+	if err := tx.Model(&g).Update(data).Error; err != nil {
 		tx.Rollback()
 		return errors.New("无法更新")
 	}
@@ -59,14 +61,13 @@ func (g *Group) Update() error {
 	return nil
 }
 
-//GetAllGroup :
+// GetAllGroup :
 // params:
 // @orderBy : 格式如下:created_at_DESC or created_at_ASC
 func GetGroups(where string, value string, skip, take int, orderBy string) (gs []Group, total int, err error) {
-
 	g := &Group{}
 
-	fieldsStr := "id,name,parent,levels,created_at,updated_at,deleted_at"
+	fieldsStr := "id,name,parent,levels,created_at,admin_id,updated_at,deleted_at"
 	orderKey := ""
 	orderType := "ASC"
 
@@ -117,7 +118,7 @@ func GetGroups(where string, value string, skip, take int, orderBy string) (gs [
 }
 
 //GetGroupRelatedUsers :
-func GetGroupRelatedUsers(id uint64, offset, limit int) (users []User, total int, err error) {
+func GetGroupRelatedUsers(id uint64,where string, value string, offset, limit int) (users []User, total int, err error) {
 	if limit == 0 {
 		limit = constvar.DefaultLimit
 	}
@@ -136,24 +137,37 @@ func GetGroupRelatedUsers(id uint64, offset, limit int) (users []User, total int
 	selectSql := ""
 	countSql := ""
 	if id == 0 {
+		//如果id =0 ,就查询所有的用户
 		selectSql = "SELECT user_id from user_groups ORDER BY id offset " + strconv.Itoa(offset) + " limit " + strconv.Itoa(limit)
-	} else {
-		selectSql = "SELECT user_id from user_groups where group_id in (" + strings.Join(gids, ",") + ")" + " ORDER BY id offset " + strconv.Itoa(offset) + " limit " + strconv.Itoa(limit)
-		countSql = "SELECT  count(user_id) from user_groups where group_id in (" + strings.Join(gids, ",") + ")"
-	}
-	rows, _ := DB.Self.Debug().Raw(selectSql).Rows() // Note: Ignoring errors for brevity
 
-	for rows.Next() {
-		var id uint64
-		if err := rows.Scan(&id); err != nil {
-			return nil, 0, err
+		rows, _ := DB.Self.Debug().Raw(selectSql).Rows() // Note: Ignoring errors for brevity
+
+		for rows.Next() {
+			var id uint64
+			if err := rows.Scan(&id); err != nil {
+				return nil, 0, err
+			}
+			uids = append(uids, id)
 		}
-		uids = append(uids, id)
+
+		if err := DB.Self.Where(" id in (?)", uids).Find(&users).Error; err != nil {
+			return users, 0, err
+		}
+
+	} else {
+
+		if len(where) > 0 {
+			selectSql = "SELECT * FROM users left join user_groups on users.id=user_groups.user_id where users."+where+" like '%"+value+"%' And user_groups.group_id in (" + strings.Join(gids, ",") + ")"  + " offset " + strconv.Itoa(offset) + " limit " + strconv.Itoa(limit)
+			countSql = "SELECT count(users.id) FROM users left join user_groups on users.id=user_groups.user_id where users."+where+" like '%"+value+"%' And user_groups.group_id in (" + strings.Join(gids, ",") + ")"
+		}else{
+			selectSql = "SELECT * FROM users left join user_groups on users.id=user_groups.user_id where user_groups.group_id in (" + strings.Join(gids, ",") + ")"  + " offset " + strconv.Itoa(offset) + " limit " + strconv.Itoa(limit)
+			countSql = "SELECT count(users.id) FROM users left join user_groups on users.id=user_groups.user_id where user_groups.group_id in (" + strings.Join(gids, ",") + ")"
+		}
+
+		DB.Self.Debug().Raw(selectSql).Scan(&users) // Note: Ignoring errors for brevity
+
 	}
 
-	if err := DB.Self.Where(" id in (?)", uids).Find(&users).Error; err != nil {
-		return users, 0, err
-	}
 
 	if id == 0 {
 		DB.Self.Model(User{}).Count(&total)
@@ -166,6 +180,57 @@ func GetGroupRelatedUsers(id uint64, offset, limit int) (users []User, total int
 
 	return users, total, nil
 }
+//
+////GetGroupRelatedUsers :
+//func GetGroupRelatedUsers(id uint64, offset, limit int) (users []User, total int, err error) {
+//	if limit == 0 {
+//		limit = constvar.DefaultLimit
+//	}
+//	gs := []Group{}
+//	if err := DB.Self.Where("levels LIKE ? OR id = ?", "%."+util.Uint2Str(id)+".%", id).Order("id").Find(&gs).Error; err != nil {
+//		fmt.Println(err)
+//		return nil, 0, err
+//	}
+//
+//	gids := make([]string, len(gs))
+//	for i, g := range gs {
+//		gids[i] = util.Uint2Str(g.ID)
+//	}
+//	uids := []uint64{}
+//
+//	selectSql := ""
+//	countSql := ""
+//	if id == 0 {
+//		selectSql = "SELECT user_id from user_groups ORDER BY id offset " + strconv.Itoa(offset) + " limit " + strconv.Itoa(limit)
+//	} else {
+//		selectSql = "SELECT user_id from user_groups where group_id in (" + strings.Join(gids, ",") + ")" + "  offset " + strconv.Itoa(offset) + " limit " + strconv.Itoa(limit)
+//		countSql = "SELECT  count(user_id) from user_groups where group_id in (" + strings.Join(gids, ",") + ")"
+//	}
+//	rows, _ := DB.Self.Debug().Raw(selectSql).Rows() // Note: Ignoring errors for brevity
+//
+//	for rows.Next() {
+//		var id uint64
+//		if err := rows.Scan(&id); err != nil {
+//			return nil, 0, err
+//		}
+//		uids = append(uids, id)
+//	}
+//
+//	if err := DB.Self.Where(" id in (?)", uids).Find(&users).Error; err != nil {
+//		return users, 0, err
+//	}
+//
+//	if id == 0 {
+//		DB.Self.Model(User{}).Count(&total)
+//	} else {
+//		rows, _ := DB.Self.Raw(countSql).Rows()
+//		for rows.Next() {
+//			rows.Scan(&total)
+//		}
+//	}
+//
+//	return users, total, nil
+//}
 
 func AddUserToDefaultGroup(uid uint64) (err error) {
 	gname := viper.GetString("company.name")
@@ -237,7 +302,7 @@ func GetGroup(id uint64, withUsers bool) (result *Group, err error) {
 	if id == 0 {
 		return result, errors.New("cannot find Group by id " + util.Uint2Str(id))
 	}
-	err = DB.Self.Select("id,name,parent,levels").First(&g, id).Error
+	err = DB.Self.Select("id,name,parent,admin_id,levels").First(&g, id).Error
 	if withUsers {
 		DB.Self.Model(&result).Select("id").Association("Users").Find(&g.Users)
 	}
@@ -247,7 +312,7 @@ func GetGroup(id uint64, withUsers bool) (result *Group, err error) {
 // GetGroupByName :
 func GetGroupByName(name string) (result *Group, err error) {
 	g := &Group{}
-	err = DB.Self.Select("id,name,parent,levels").Where("name = ?", name).First(&g).Error
+	err = DB.Self.Select("id,name,parent,admin_id,levels").Where("name = ?", name).First(&g).Error
 	return g, err
 }
 
@@ -268,4 +333,32 @@ func DeleteGroup(id uint64) error {
 	tx.Commit()
 
 	return nil
+}
+
+func CountGroupUsers() map[string]int{
+	sqlstr := `select groups.name,count(user_id)  from user_groups left join groups on user_groups.group_id=groups.id group by user_groups.group_id,groups.name ;`
+
+	rows, _ := DB.Self.Raw(sqlstr).Rows()
+	data := make(map[string]int)
+	for rows.Next() {
+        name := ""
+        count := 0
+		rows.Scan(&name, &count)
+
+        data[name] = count
+	}
+
+	return data
+}
+
+// GetGroupRelatedCanteens :
+func GetGroupRelatedCanteens(id uint64) (canteens []Canteen, err error) {
+	g := &Group{}
+
+	g.ID = id
+
+	DB.Self.Model(&g).Related(&canteens)
+
+
+	return canteens,nil
 }

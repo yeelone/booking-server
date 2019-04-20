@@ -1,8 +1,8 @@
 package models
 
-
 import (
 	"errors"
+	"fmt"
 	"hrgdrc/pkg/constvar"
 	"hrgdrc/util"
 	"strconv"
@@ -162,38 +162,128 @@ func ListRoles(offset, limit int, where string, whereKeyword string) (rs []*Role
 }
 
 //GetRoleRelatedUsers :
-func GetRoleRelatedUsers(rid uint64, offset, limit int) (users []User, total int, err error) {
+//func GetRoleRelatedUsers(rid uint64, offset, limit int) (users []User, total int, err error) {
+//	if limit == 0 {
+//		limit = constvar.DefaultLimit
+//	}
+//	r := &Role{}
+//	r.ID = rid
+//
+//	uids := []uint64{}
+//
+//	selectSql := ""
+//	countSql := ""
+//	if rid == 0 {
+//		selectSql = "SELECT user_id from user_roles offset " + strconv.Itoa(offset) + " limit " + strconv.Itoa(limit)
+//	} else {
+//		selectSql = "SELECT user_id from user_roles where role_id = " + util.Uint2Str(rid) + " offset " + strconv.Itoa(offset) + " limit " + strconv.Itoa(limit)
+//		countSql = "SELECT  count(user_id) from user_roles where role_id = " + util.Uint2Str(rid)
+//	}
+//	rows, _ := DB.Self.Raw(selectSql).Rows() // Note: Ignoring errors for brevity
+//
+//	for rows.Next() {
+//		var id uint64
+//		if err := rows.Scan(&id); err != nil {
+//			return nil, 0, err
+//		}
+//		uids = append(uids, id)
+//	}
+//
+//	if err := DB.Self.Where(" id in (?)", uids).Find(&users).Error; err != nil {
+//		return users, 0, err
+//	}
+//
+//	if rid == 0 {
+//		DB.Self.Model(User{}).Count(&total)
+//	} else {
+//		rows, _ := DB.Self.Raw(countSql).Rows()
+//		for rows.Next() {
+//			rows.Scan(&total)
+//		}
+//	}
+//
+//	return users, total, nil
+//}
+
+
+// CheckUsersNotInRole 根据给出的id列表 ，判断哪些不存在于role中
+func CheckUsersNotInRole(roleId uint64, uids []uint64)(exceptList []uint64,err error){
+	//SELECT user_id
+	//FROM (VALUES(4),(5),(6),(87)) V(user_id)
+	//except
+	//SELECT user_id
+	//FROM user_roles where role_id=1;
+
+	values := []string{}
+
+	for _, id := range uids {
+		values = append(values, "(" + util.Uint2Str(id) + ")")
+	}
+
+	selectSql := `SELECT user_id FROM (VALUES`+strings.Join(values,",")+`) V(user_id) EXCEPT SELECT user_id FROM user_roles where role_id=` + util.Uint2Str(roleId)
+	rows, _ := DB.Self.Debug().Raw(selectSql).Rows()
+	for rows.Next() {
+		var user_id uint64
+		if err := rows.Scan(&user_id); err == nil {
+			fmt.Println("id", &user_id)
+			exceptList = append(exceptList, user_id)
+		}
+	}
+
+	return exceptList, err
+}
+//GetRoleRelatedUsers :
+func GetRoleRelatedUsers(id uint64,where string, value string, offset, limit int) (users []User, total int, err error) {
 	if limit == 0 {
 		limit = constvar.DefaultLimit
 	}
-	r := &Role{}
-	r.ID = rid
+	rs := []Role{}
+	if err := DB.Self.Where("id = ?", id).Order("id").Find(&rs).Error; err != nil {
+		return nil, 0, err
+	}
 
+	rids := make([]string, len(rs))
+	for i, r := range rs {
+		rids[i] = util.Uint2Str(r.ID)
+	}
 	uids := []uint64{}
 
 	selectSql := ""
 	countSql := ""
-	if rid == 0 {
-		selectSql = "SELECT user_id from user_roles offset " + strconv.Itoa(offset) + " limit " + strconv.Itoa(limit)
-	} else {
-		selectSql = "SELECT user_id from user_roles where role_id = " + util.Uint2Str(rid) + " offset " + strconv.Itoa(offset) + " limit " + strconv.Itoa(limit)
-		countSql = "SELECT  count(user_id) from user_roles where role_id = " + util.Uint2Str(rid)
-	}
-	rows, _ := DB.Self.Raw(selectSql).Rows() // Note: Ignoring errors for brevity
+	if id == 0 {
+		//如果id =0 ,就查询所有的用户
+		selectSql = "SELECT user_id from user_roles ORDER BY id offset " + strconv.Itoa(offset) + " limit " + strconv.Itoa(limit)
 
-	for rows.Next() {
-		var id uint64
-		if err := rows.Scan(&id); err != nil {
-			return nil, 0, err
+		rows, _ := DB.Self.Debug().Raw(selectSql).Rows() // Note: Ignoring errors for brevity
+
+		for rows.Next() {
+			var id uint64
+			if err := rows.Scan(&id); err != nil {
+				return nil, 0, err
+			}
+			uids = append(uids, id)
 		}
-		uids = append(uids, id)
+
+		if err := DB.Self.Where(" id in (?)", uids).Find(&users).Error; err != nil {
+			return users, 0, err
+		}
+
+	} else {
+
+		if len(where) > 0 {
+			selectSql = "SELECT * FROM users left join user_roles on users.id=user_roles.user_id where users."+where+" like '%"+value+"%' And user_roles.role_id in (" + strings.Join(rids, ",") + ")"  + " offset " + strconv.Itoa(offset) + " limit " + strconv.Itoa(limit)
+			countSql = "SELECT count(users.id) FROM users left join user_roles on users.id=user_roles.user_id where users."+where+" like '%"+value+"%' And user_roles.role_id in (" + strings.Join(rids, ",") + ")"
+		}else{
+			selectSql = "SELECT * FROM users left join user_roles on users.id=user_roles.user_id where user_roles.role_id in (" + strings.Join(rids, ",") + ")"  + " offset " + strconv.Itoa(offset) + " limit " + strconv.Itoa(limit)
+			countSql = "SELECT count(users.id) FROM users left join user_roles on users.id=user_roles.user_id where user_roles.role_id in (" + strings.Join(rids, ",") + ")"
+		}
+
+		DB.Self.Debug().Raw(selectSql).Scan(&users) // Note: Ignoring errors for brevity
+
 	}
 
-	if err := DB.Self.Where(" id in (?)", uids).Find(&users).Error; err != nil {
-		return users, 0, err
-	}
 
-	if rid == 0 {
+	if id == 0 {
 		DB.Self.Model(User{}).Count(&total)
 	} else {
 		rows, _ := DB.Self.Raw(countSql).Rows()

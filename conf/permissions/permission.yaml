@@ -11,6 +11,9 @@
   删除用户信息:
     resource: DELETE_USER_INFO
     object: deleteUser
+  重置密码:
+    resource: RESET_USER_PASSWORD
+    object: resetPassword
 群组:
   获取群组 :
     resource: QUERY_GROUP
@@ -49,3 +52,44 @@
   移除用户:
     resource: REMOVE_USERS_FROM_ROLE
     object: removeUserAndRoleRelationship
+  验证用户:
+    resource: CHECK_USER_NOT_IN_ROLE
+    object: checkUserNotInRole
+  分配权限:
+    resource: ASSIGN_PERMISSION
+    object: createRoleAndPermissionRelationship
+食堂:
+  获取食堂 :
+    resource: QUERY_CANTEEN
+    object: canteens
+  创建食堂:
+    resource: CREATE_CANTEEN
+    object: createCanteens
+  更新食堂:
+    resource: UPDATE_CANTEEN
+    object: updateCanteens
+  删除食堂:
+    resource: DELETE_CANTEEN
+    object: deleteCanteens
+  生成二维码:
+    resource: CREATE_QRCODE
+    object: createQrcode
+  预订:
+    resource: BOOKING
+    object: createBooking
+  取消预订:
+    resource: CANCEL_BOOKING
+    object: cancelBooking
+餐票:
+  获取餐票 :
+    resource: QUERY_TICKET
+    object: tickets
+  生成餐票:
+    resource: CREATE_TICKET
+    object: generateTickets
+  回收餐票:
+    resource: DELETE_TICKET
+    object: recyclingTickets
+  转让餐票:
+    resource: DELETE_TICKET
+    object: transferTickets

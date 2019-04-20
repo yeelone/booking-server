@@ -3,9 +3,9 @@ package resolvers
 import (
 	"booking"
 	"booking/models"
-	"booking/util"
 	"context"
 	"fmt"
+	"github.com/spf13/viper"
 )
 
 
@@ -74,6 +74,36 @@ func (r *userResolver) Roles(ctx context.Context, obj *models.User,pagination *b
 	}
 	return resp,err
 }
+
+func (r *userResolver) Tickets(ctx context.Context, obj *models.User,pagination *booking.Pagination,filter *booking.TicketFilterInput) (booking.QueryTicketResponse, error){
+	skip := 0
+	take := 0
+	if pagination != nil {
+		skip = pagination.Skip
+		take = pagination.Take
+	}
+
+	var err error
+	count := booking.Count{}
+	if *filter.Count &&  filter != nil {// 只计算余票数量
+		count.Breakfast,count.Lunch,count.Dinner , err = models.CountTicketsDetailByUser(obj.ID)
+		resp := booking.QueryTicketResponse{
+			Count:&count,
+		}
+
+		return resp, err
+	}
+
+	u,total,err := models.GetTicketsByUser(obj.ID)
+	resp := booking.QueryTicketResponse{
+		TotalCount:&total,
+		Skip:&skip,
+		Take:&take,
+		Rows:u.Tickets,
+	}
+	return resp,err
+}
+
 func (r *mutationResolver) CreateUser(ctx context.Context, input booking.NewUser) (user models.User, err error) {
 	u := models.User{
 		Email:    input.Email,
@@ -82,7 +112,6 @@ func (r *mutationResolver) CreateUser(ctx context.Context, input booking.NewUser
 		Username: input.Username,
 	}
 
-	fmt.Println("CreateUser",util.PrettyJson(u))
 	// Validate the data.
 	if err = u.Validate(); err != nil {
 		fmt.Println("user validate error", err )
@@ -100,11 +129,34 @@ func (r *mutationResolver) CreateUser(ctx context.Context, input booking.NewUser
 		return user,err
 	}
 
+	//如果 存在组ID，则将用户加入到该组里
+	if input.GroupID != nil {
+		if *input.GroupID != 0 {
+			uids := []uint64{}
+			uids = append(uids, u.ID)
+			err = models.AddGroupUsers(uint64(*input.GroupID), uids)
+
+			if err != nil {
+				//如果不成功，还需要将该用户删除掉
+				models.DeleteUser(u.ID)
+			}
+		}
+	}
+
+	//查看账号是否存在
+	normal := viper.GetString("role.normal")
+	roles, _, err := models.GetRoles("name",normal, 0, 1)
+
+	if len(roles) > 0 {
+		uids := []uint64{}
+		uids = append(uids, u.ID)
+		models.AddRoleUsers(roles[0].ID, uids)
+	}
+
 	return u, nil
 }
 
 func (r *mutationResolver) UpdateUser(ctx context.Context, input booking.UpdateUserInput) (user models.User, err error) {
-	fmt.Println(util.PrettyJson(input))
 	u := models.User{}
 	u.ID = uint64(input.ID)
 	data := make(map[string]interface{})
@@ -148,6 +200,24 @@ func (r *mutationResolver) UpdateUser(ctx context.Context, input booking.UpdateU
 
 	return u, nil
 }
+
+
+func (r *mutationResolver) ResetPassword(ctx context.Context, input booking.ResetPasword) (newPwd string, err error) {
+	uids := make([]uint64, len(input.Ids))
+
+	for i, id := range input.Ids {
+		uids[i] = uint64(id)
+	}
+
+	if err := models.ResetUsersPassword(uids); err != nil {
+		return "", err
+	}
+
+	password := viper.GetString("default_password")
+
+	return password, nil
+}
+
 
 func (r *mutationResolver) DeleteUser(ctx context.Context, input booking.DeleteIDInput) (result bool, err error) {
 	if len(input.Ids) > 0 {

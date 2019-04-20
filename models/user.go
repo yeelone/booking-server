@@ -17,17 +17,18 @@ const (
 // User : User represents a registered user.
 type User struct {
 	BaseModel
-	Email    string  `json:"email" gorm:"column:email;"`
-	Username string  `json:"username" gorm:"column:username;not null" binding:"required" validate:"min=1,max=32"`
-	Nickname string  `json:"nickname" gorm:"column:nichname;not null" `
-	IDCard   string  `json:"id_card"`
-	Password string  `json:"password" gorm:"column:password;not null" `
-	IsSuper  bool    `json:"is_super"`
-	Picture  string  `json:"picture"`
-	State    int     `json:"state"`
-	Groups   []Group `json:"groups" gorm:"many2many:user_groups;"`
-	Roles    []Role  `json:"roles" gorm:"many2many:user_roles"`
-	Books    []Book
+	Email    string   `json:"email" gorm:"column:email;"`
+	Username string   `json:"username" gorm:"column:username;not null" binding:"required" validate:"min=1,max=32"`
+	Nickname string   `json:"nickname" gorm:"column:nichname;not null" `
+	IDCard   string   `json:"id_card"`
+	Password string   `json:"password" gorm:"column:password;not null" `
+	IsSuper  bool     `json:"is_super"`
+	Picture  string   `json:"picture"`
+	State    int      `json:"state"`
+	Groups   []Group  `json:"groups" gorm:"many2many:user_groups;"`
+	Roles    []Role   `json:"roles" gorm:"many2many:user_roles"`
+	Tickets  []Ticket `json:"tickets"`
+	CanteenID uint64
 }
 
 // TableName :
@@ -135,10 +136,45 @@ func GetRolesByUser(uid uint64) (User, int, error) {
 	return u, total, err
 }
 
+// GetUserGroups get groups which user belong it
+func GetTicketsByUser(uid uint64) (User, int, error) {
+	u := User{}
+	u.ID = uid
+	d := DB.Self.Preload("Tickets").First(&u)
+	if d.Error != nil {
+		return u, 0, d.Error
+	}
+
+	total, err := CountTicketsByUser(uid)
+	return u, total, err
+}
+
+// CountTicketsByUser
+func CountTicketsByUser(uid uint64) (total int, err error) {
+	countSql := "SELECT count(user_id) from tickets where user_id =" + util.Uint2Str(uid)
+	rows, _ := DB.Self.Raw(countSql).Rows()
+	for rows.Next() {
+		err = rows.Scan(&total)
+	}
+	return total, nil
+}
+
+
+// CountTicketsByUser
+func CountTicketsDetailByUser(uid uint64) (breakfast,lunch,dinner int, err error) {
+	countSql := "SELECT sum(case when type=1 then 1 else 0 end) as breakfast , sum(case when type=2 then 1 else 0 end) as lunch  ,sum(case when type=3 then 1 else 0 end) as dinner  from tickets where user_id =" + util.Uint2Str(uid)
+	rows, _ := DB.Self.Debug().Raw(countSql).Rows()
+	for rows.Next() {
+		err = rows.Scan( &breakfast,&lunch,&dinner)
+	}
+	return breakfast,lunch,dinner, nil
+}
+
+
 // CountGroupsByUser
 func CountGroupsByUser(uid uint64) (total int, err error) {
 	countSql := "SELECT count(user_id) from user_groups where user_id =" + util.Uint2Str(uid)
-	rows, _ := DB.Self.Raw(countSql).Rows()
+	rows, _ := DB.Self.Debug().Raw(countSql).Rows()
 	for rows.Next() {
 		err = rows.Scan(&total)
 	}

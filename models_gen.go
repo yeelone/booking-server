@@ -9,50 +9,62 @@ import (
 	"strconv"
 )
 
-type AuthorAndBookRelationshipInput struct {
-	BookIds  []int `json:"bookIds"`
-	AuthorID int   `json:"authorId"`
+type BookingFilterInput struct {
+	UserID    *int `json:"userId"`
+	CanteenID *int `json:"canteenId"`
 }
 
-type AuthorFilterInput struct {
-	Name *string `json:"name"`
+type BookingInput struct {
+	UserID           int              `json:"userId"`
+	CanteenID        int              `json:"canteenId"`
+	Type             BookingTypeInput `json:"type"`
+	Date             string           `json:"date"`
+	AutoCurrentMonth *bool            `json:"autoCurrentMonth"`
 }
 
-type BookAndChapterRelationshipInput struct {
-	ChapterIds []int `json:"chapterIds"`
-	BookID     int   `json:"bookId"`
+type CanteenCount struct {
+	Date      string `json:"date"`
+	Breakfast int    `json:"breakfast"`
+	Lunch     int    `json:"lunch"`
+	Dinner    int    `json:"dinner"`
 }
 
-type BookFilterInput struct {
-	ID     *int    `json:"id"`
-	Name   *string `json:"name"`
-	Author *string `json:"author"`
+type CanteenFilterInput struct {
+	ID      *int    `json:"id"`
+	Name    *string `json:"name"`
+	GroupID *int    `json:"groupID"`
 }
 
-type ChapterAnalysisInput struct {
-	ChapterID int `json:"chapterId"`
+type CanteenQrcodeInput struct {
+	ID int `json:"id"`
 }
 
-type ChapterAndDictionaryRelationshipInput struct {
-	ChapterID int             `json:"chapterId"`
-	DictID    []int           `json:"dictId"`
-	Level     DictionaryLevel `json:"level"`
+type Count struct {
+	Breakfast int `json:"breakfast"`
+	Lunch     int `json:"lunch"`
+	Dinner    int `json:"dinner"`
 }
 
-type ChapterFilterInput struct {
-	Ids   []int `json:"ids"`
-	Index *int  `json:"index"`
+type DashboardResponse struct {
+	OrgInfo    []OrgDashboard `json:"orgInfo"`
+	SystemInfo SystemInfo     `json:"systemInfo"`
+	TicketInfo []string       `json:"ticketInfo"`
 }
 
 type DeleteIDInput struct {
 	Ids []int `json:"ids"`
 }
 
-type DictionaryFilterInput struct {
-	ID          *int    `json:"id"`
-	Word        *string `json:"word"`
-	Translation *string `json:"translation"`
-	Tag         *string `json:"tag"`
+type DishesFilterInput struct {
+	ID   *int    `json:"id"`
+	Name *string `json:"name"`
+}
+
+type GenarateTicketInput struct {
+	Number int `json:"number"`
+	UserID int `json:"userId"`
+	Type   int `json:"type"`
+	Price  int `json:"price"`
 }
 
 type GroupFilterInput struct {
@@ -65,54 +77,44 @@ type LoginInput struct {
 	Password string `json:"password"`
 }
 
-type NewAuthor struct {
-	Name string `json:"name"`
+type LoginResponse struct {
+	Token       string      `json:"token"`
+	Permissions []string    `json:"permissions"`
+	User        models.User `json:"user"`
 }
 
-type NewBook struct {
-	Name     string `json:"name"`
-	AuthorID int    `json:"authorId"`
-	Picture  string `json:"picture"`
-	Alias    string `json:"alias"`
-	UserID   int    `json:"userId"`
+type LogoutInput struct {
+	Username string `json:"username"`
 }
 
-type NewChapter struct {
-	ID        *int   `json:"id"`
-	Index     *int   `json:"index"`
-	Name      string `json:"name"`
-	Content   string `json:"content"`
-	PhraseIds []int  `json:"phraseIds"`
-	BookID    int    `json:"bookId"`
+type NewCanteen struct {
+	ID                       *int    `json:"id"`
+	Name                     string  `json:"name"`
+	GroupID                  int     `json:"groupID"`
+	BreakfastTime            string  `json:"breakfastTime"`
+	BreakfastPicture         *string `json:"breakfastPicture"`
+	BookingBreakfastDeadline string  `json:"bookingBreakfastDeadline"`
+	LunchTime                string  `json:"lunchTime"`
+	LunchPicture             *string `json:"lunchPicture"`
+	BookingLunchDeadline     string  `json:"bookingLunchDeadline"`
+	DinnerTime               string  `json:"dinnerTime"`
+	DinnerPicture            *string `json:"dinnerPicture"`
+	BookingDinnerDeadline    string  `json:"bookingDinnerDeadline"`
+	CancelTime               int     `json:"cancelTime"`
 }
 
-type NewDictionary struct {
-	Word        string  `json:"word"`
-	Translation string  `json:"translation"`
-	Phonetic    *string `json:"phonetic"`
-	Definition  *string `json:"definition"`
-	Pos         *string `json:"pos"`
-	Collins     *string `json:"collins"`
-	Oxford      *string `json:"oxford"`
-	Tag         *string `json:"tag"`
-	Bnc         *string `json:"bnc"`
-	Frq         *string `json:"frq"`
-	Exchange    *string `json:"exchange"`
-	Detail      *string `json:"detail"`
-	Audio       *string `json:"audio"`
+type NewDishes struct {
+	Name    string `json:"Name"`
+	Picture string `json:"Picture"`
 }
 
 type NewGroup struct {
 	ID     *int   `json:"id"`
 	Name   string `json:"name"`
+	Admin  int    `json:"admin"`
 	Parent int    `json:"parent"`
 	Levels string `json:"levels"`
 	UserID []int  `json:"userId"`
-}
-
-type NewPhrase struct {
-	ID      *int   `json:"id"`
-	Content string `json:"content"`
 }
 
 type NewRole struct {
@@ -136,6 +138,13 @@ type NewUser struct {
 	IsSuper  *bool   `json:"is_super"`
 	Picture  *string `json:"picture"`
 	State    *int    `json:"state"`
+	GroupID  *int    `json:"groupId"`
+}
+
+type OrgDashboard struct {
+	Name         string `json:"name"`
+	UserCount    int    `json:"userCount"`
+	CanteenCount int    `json:"canteenCount"`
 }
 
 type Pagination struct {
@@ -144,43 +153,35 @@ type Pagination struct {
 }
 
 type Permission struct {
-	Module   string `json:"module"`
-	Name     string `json:"name"`
-	Resource string `json:"resource"`
-	Object   string `json:"object"`
-	Checked  bool   `json:"checked"`
+	Module    string `json:"module"`
+	Name      string `json:"name"`
+	Resource  string `json:"resource"`
+	Object    string `json:"object"`
+	Checked   bool   `json:"checked"`
+	CreatedAt string `json:"createdAt"`
+	UpdatedAt string `json:"updatedAt"`
+	DeletedAt string `json:"deletedAt"`
 }
 
-type PhraseFilterInput struct {
-	Content *string `json:"content"`
-}
-
-type QueryAuthorResponse struct {
-	TotalCount *int            `json:"totalCount"`
-	Skip       *int            `json:"skip"`
-	Take       *int            `json:"take"`
-	Rows       []models.Author `json:"rows"`
-}
-
-type QueryBookResponse struct {
-	TotalCount *int          `json:"totalCount"`
-	Skip       *int          `json:"skip"`
-	Take       *int          `json:"take"`
-	Rows       []models.Book `json:"rows"`
-}
-
-type QueryChapterResponse struct {
+type QueryBookingResponse struct {
 	TotalCount *int             `json:"totalCount"`
 	Skip       *int             `json:"skip"`
 	Take       *int             `json:"take"`
-	Rows       []models.Chapter `json:"rows"`
+	Rows       []models.Booking `json:"rows"`
 }
 
-type QueryDictionaryResponse struct {
-	TotalCount *int                `json:"totalCount"`
-	Skip       *int                `json:"skip"`
-	Take       *int                `json:"take"`
-	Rows       []models.Dictionary `json:"rows"`
+type QueryCanteenResponse struct {
+	TotalCount *int             `json:"totalCount"`
+	Skip       *int             `json:"skip"`
+	Take       *int             `json:"take"`
+	Rows       []models.Canteen `json:"rows"`
+}
+
+type QueryDishesResponse struct {
+	TotalCount *int            `json:"totalCount"`
+	Skip       *int            `json:"skip"`
+	Take       *int            `json:"take"`
+	Rows       []models.Dishes `json:"rows"`
 }
 
 type QueryGroupResponse struct {
@@ -197,18 +198,26 @@ type QueryPermissionResponse struct {
 	Rows       []Permission `json:"rows"`
 }
 
-type QueryPhraseResponse struct {
-	TotalCount *int            `json:"totalCount"`
-	Skip       *int            `json:"skip"`
-	Take       *int            `json:"take"`
-	Rows       []models.Phrase `json:"rows"`
-}
-
 type QueryRoleResponse struct {
 	TotalCount *int          `json:"totalCount"`
 	Skip       *int          `json:"skip"`
 	Take       *int          `json:"take"`
 	Rows       []models.Role `json:"rows"`
+}
+
+type QueryTicketRecordResponse struct {
+	TotalCount *int                  `json:"totalCount"`
+	Skip       *int                  `json:"skip"`
+	Take       *int                  `json:"take"`
+	Rows       []models.TicketRecord `json:"rows"`
+}
+
+type QueryTicketResponse struct {
+	TotalCount *int            `json:"totalCount"`
+	Skip       *int            `json:"skip"`
+	Take       *int            `json:"take"`
+	Count      *Count          `json:"count"`
+	Rows       []models.Ticket `json:"rows"`
 }
 
 type QueryUserResponse struct {
@@ -218,9 +227,24 @@ type QueryUserResponse struct {
 	Rows       []models.User `json:"rows"`
 }
 
+type RecyclingTicketsInput struct {
+	Number int `json:"number"`
+	UserID int `json:"userId"`
+	Type   int `json:"type"`
+}
+
+type ResetPasword struct {
+	Ids []int `json:"ids"`
+}
+
 type RoleAndPermissionRelationshipInput struct {
 	Role        string   `json:"role"`
 	Permissions []string `json:"permissions"`
+}
+
+type RoleAndUserFilterInput struct {
+	RoleID  int   `json:"roleId"`
+	UserIds []int `json:"userIds"`
 }
 
 type RoleFilterInput struct {
@@ -228,56 +252,63 @@ type RoleFilterInput struct {
 	Name *string `json:"name"`
 }
 
-type UpdateAuthorInput struct {
-	ID   int     `json:"id"`
-	Name *string `json:"name"`
+type SystemInfo struct {
+	CurrentLoginCount int `json:"currentLoginCount"`
 }
 
-type UpdateBookInput struct {
-	ID       int     `json:"id"`
-	Name     *string `json:"name"`
-	AuthorID *int    `json:"authorId"`
-	Picture  *string `json:"picture"`
-	Alias    *string `json:"alias"`
-	UserID   *int    `json:"userId"`
+type TicketFilterInput struct {
+	ID     *int    `json:"id"`
+	UserID *int    `json:"userId"`
+	UUID   *string `json:"uuid"`
+	Count  *bool   `json:"count"`
 }
 
-type UpdateChapterInput struct {
-	ID        int     `json:"id"`
-	Index     *int    `json:"index"`
-	Name      *string `json:"name"`
-	Content   *string `json:"content"`
-	PhraseIds []int   `json:"phraseIds"`
+type TicketRecordFilterInput struct {
+	Operator *int `json:"operator"`
+	Owner    int  `json:"owner"`
 }
 
-type UpdateDictionaryInput struct {
-	ID          int     `json:"id"`
-	Word        *string `json:"word"`
-	Phonetic    *string `json:"phonetic"`
-	Definition  *string `json:"definition"`
-	Translation *string `json:"translation"`
-	Pos         *string `json:"pos"`
-	Collins     *string `json:"collins"`
-	Oxford      *string `json:"oxford"`
-	Tag         *string `json:"tag"`
-	Bnc         *string `json:"bnc"`
-	Frq         *string `json:"frq"`
-	Exchange    *string `json:"exchange"`
-	Detail      *string `json:"detail"`
-	Audio       *string `json:"audio"`
+type TransferResponse struct {
+	SuccessCount int     `json:"successCount"`
+	ErrorCount   int     `json:"errorCount"`
+	ErrorMsg     *string `json:"errorMsg"`
+}
+
+type TransferTicketInput struct {
+	Number     int `json:"number"`
+	FromUserID int `json:"fromUserId"`
+	ToUserID   int `json:"toUserId"`
+}
+
+type UpdateCanteenInput struct {
+	ID                       int     `json:"id"`
+	Name                     *string `json:"name"`
+	GroupID                  *int    `json:"groupID"`
+	BreakfastTime            *string `json:"breakfastTime"`
+	BreakfastPicture         *string `json:"breakfastPicture"`
+	BookingBreakfastDeadline *string `json:"bookingBreakfastDeadline"`
+	LunchTime                *string `json:"lunchTime"`
+	LunchPicture             *string `json:"lunchPicture"`
+	BookingLunchDeadline     *string `json:"bookingLunchDeadline"`
+	DinnerTime               *string `json:"dinnerTime"`
+	DinnerPicture            *string `json:"dinnerPicture"`
+	BookingDinnerDeadline    *string `json:"bookingDinnerDeadline"`
+	CancelTime               *int    `json:"cancelTime"`
+}
+
+type UpdateDishesInput struct {
+	ID      int     `json:"id"`
+	Name    *string `json:"name"`
+	Picture *string `json:"picture"`
 }
 
 type UpdateGroupInput struct {
 	ID     int     `json:"id"`
 	Name   *string `json:"name"`
+	Admin  *int    `json:"admin"`
 	Parent *int    `json:"parent"`
 	Levels *string `json:"levels"`
 	UserID []int   `json:"userId"`
-}
-
-type UpdatePhraseInput struct {
-	ID      int     `json:"id"`
-	Content *string `json:"content"`
 }
 
 type UpdateRoleInput struct {
@@ -316,44 +347,45 @@ type UserFilterInput struct {
 	State    *int    `json:"state"`
 }
 
-type DictionaryLevel string
+type CancelBookingInput struct {
+	UserID    int `json:"userId"`
+	BookingID int `json:"bookingId"`
+}
+
+type BookingTypeInput string
 
 const (
-	DictionaryLevelCet4   DictionaryLevel = "cet4"
-	DictionaryLevelCet6   DictionaryLevel = "cet6"
-	DictionaryLevelKy     DictionaryLevel = "ky"
-	DictionaryLevelToefi  DictionaryLevel = "toefi"
-	DictionaryLevelIelts  DictionaryLevel = "ielts"
-	DictionaryLevelGre    DictionaryLevel = "gre"
-	DictionaryLevelPhrase DictionaryLevel = "phrase"
+	BookingTypeInputBreakfast BookingTypeInput = "breakfast"
+	BookingTypeInputLunch     BookingTypeInput = "lunch"
+	BookingTypeInputDinner    BookingTypeInput = "dinner"
 )
 
-func (e DictionaryLevel) IsValid() bool {
+func (e BookingTypeInput) IsValid() bool {
 	switch e {
-	case DictionaryLevelCet4, DictionaryLevelCet6, DictionaryLevelKy, DictionaryLevelToefi, DictionaryLevelIelts, DictionaryLevelGre, DictionaryLevelPhrase:
+	case BookingTypeInputBreakfast, BookingTypeInputLunch, BookingTypeInputDinner:
 		return true
 	}
 	return false
 }
 
-func (e DictionaryLevel) String() string {
+func (e BookingTypeInput) String() string {
 	return string(e)
 }
 
-func (e *DictionaryLevel) UnmarshalGQL(v interface{}) error {
+func (e *BookingTypeInput) UnmarshalGQL(v interface{}) error {
 	str, ok := v.(string)
 	if !ok {
 		return fmt.Errorf("enums must be strings")
 	}
 
-	*e = DictionaryLevel(str)
+	*e = BookingTypeInput(str)
 	if !e.IsValid() {
-		return fmt.Errorf("%s is not a valid DictionaryLevel", str)
+		return fmt.Errorf("%s is not a valid BookingTypeInput", str)
 	}
 	return nil
 }
 
-func (e DictionaryLevel) MarshalGQL(w io.Writer) {
+func (e BookingTypeInput) MarshalGQL(w io.Writer) {
 	fmt.Fprint(w, strconv.Quote(e.String()))
 }
 

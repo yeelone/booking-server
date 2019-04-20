@@ -1,7 +1,0 @@
-p, 管理员, createRoleAndPermissionRelationship, read 
-p, 管理员, roles, read 
-p, 管理员, dictionary, read 
-p, 普通用户, roles, read 
-p, 普通用户, groups, read 
-p, 普通用户, permissions, read 
-p, 普通用户, users, read 

@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io"
 	"math"
+	"net/http"
 	"os"
 	"path"
 	"strconv"
@@ -18,7 +19,6 @@ import (
 func GenShortId() (string, error) {
 	return shortid.Generate()
 }
-
 
 func Uint2Str(i uint64) string {
 	return fmt.Sprintf("%v", i)
@@ -217,5 +217,45 @@ func FindUpdatedField(oldModel interface{}, newModel interface{}) (result map[st
 		}
 	}
 	return result
+}
+
+// CountDays : 根据年份月份计算天数
+func CountDays(year int, month int) (days int) {
+	if month != 2 {
+		if month == 4 || month == 6 || month == 9 || month == 11 {
+			days = 30
+
+		} else {
+			days = 31
+			fmt.Fprintln(os.Stdout, "The month has 31 days");
+		}
+	} else {
+		if (((year % 4) == 0 && (year % 100) != 0) || (year % 400) == 0) {
+			days = 29
+		} else {
+			days = 28
+		}
+	}
+	fmt.Fprintf(os.Stdout, "The %d-%d has %d days.\n", year, month, days)
+	return
+}
+
+// Abs returns the absolute value of x.
+func Abs(x int) int {
+	if x < 0 {
+		return -x
+	}
+	return x
+}
+
+func ReadUserIP(r *http.Request) string {
+	IPAddress := r.Header.Get("X-Forwarded-For")
+	if IPAddress == "" {
+		IPAddress = r.Header.Get("X-Real-Ip")
+	}
+	if IPAddress == "" {
+		IPAddress = r.RemoteAddr
+	}
+	return IPAddress
 }
 

@@ -1,6 +1,5 @@
 directive @hasRole(resolver: String!) on FIELD_DEFINITION
-directive @needLogin on FIELD_DEFINITION
-
+directive @needLogin(resolver: String!) on FIELD_DEFINITION
 
 type QueryUserResponse{
     totalCount:Int,
@@ -8,7 +7,6 @@ type QueryUserResponse{
     take:Int,
     rows: [User!]!
 }
-
 
 type User {
     id: ID!
@@ -20,11 +18,12 @@ type User {
     is_super: Boolean!
     picture: String!
     state: Int!
-    created_at: String!
-    updated_at: String!
-    deleted_at: String!
+    createdAt: String!
+    updatedAt: String!
+    deletedAt: String!
     groups(pagination: Pagination):QueryGroupResponse!
     roles(pagination: Pagination):QueryRoleResponse!
+    tickets(pagination: Pagination,filter:TicketFilterInput):QueryTicketResponse!
 }
 
 type QueryGroupResponse{
@@ -38,22 +37,161 @@ type Group {
     id: ID!
     name: String!
     parent: Int!
+    adminId: Int!
+    adminInfo: User!
     levels: String!
-    created_at: String!
-    updated_at: String!
-    deleted_at: String!
+    createdAt: String!
+    updatedAt: String!
+    deletedAt: String!
 
     users(filter:UserFilterInput, pagination: Pagination):QueryUserResponse!
+    canteens(filter:CanteenFilterInput, pagination: Pagination):QueryCanteenResponse!
+}
+
+type Booking {
+    userId:Int!
+    canteenId:Int!
+    type:String!
+    date:String!
+
+    createdAt: String!
+    updatedAt: String!
+    deletedAt: String!
+}
+
+type QueryBookingResponse{
+    totalCount: Int
+    skip: Int
+    take: Int
+    rows: [Booking!]!
+}
+
+type Count{
+    breakfast: Int!
+    lunch: Int!
+    dinner: Int!
+}
+
+type QueryTicketResponse{
+    totalCount:Int
+    skip:Int
+    take:Int
+    count: Count
+    rows: [Ticket!]!
+}
+
+type Ticket {
+    id: ID!
+    UUID: String!
+    userId:Int!
+    type:Int!
+    price:Int!
+    createdAt: String!
+    updatedAt: String!
+}
+
+input TicketFilterInput {
+    id: Int
+    userId:Int
+    uuid:String
+    count: Boolean
+}
+
+type QueryTicketRecordResponse {
+    totalCount:Int
+    skip:Int
+    take:Int
+    rows: [TicketRecord!]!
+}
+
+type TicketRecord {
+    id: ID!
+    operator: Int!
+    owner: Int!
+    number: Int!
+    action: String!
+    description: String!
+    createdAt: String!
+    updatedAt: String!
+    deletedAt: String!
+}
+
+input TicketRecordFilterInput{
+    operator: Int
+    owner: Int!
+}
+
+type QueryDishesResponse{
+    totalCount:Int
+    skip:Int
+    take:Int
+    rows: [Dishes!]!
+}
+
+type Dishes {
+    id: ID!
+    name: String!
+    picture: String!
+    createdAt: String!
+    updatedAt: String!
+    deletedAt: String!
+}
+
+input DishesFilterInput {
+    id: Int
+    name:String
+}
+
+type CanteenCount{
+    date:String!
+    breakfast:Int!
+    lunch:Int!
+    dinner:Int!
+}
+
+type Canteen {
+    id: ID!
+    name: String!
+    groupID: Int!
+    breakfastTime: String!
+    breakfastPicture: String
+    bookingBreakfastDeadline: String!
+    lunchTime: String!
+    lunchPicture: String
+    bookingLunchDeadline: String!
+    dinnerTime: String!
+    dinnerPicture: String
+    bookingDinnerDeadline: String!
+    cancelTime:Int!
+    createdAt: String!
+    updatedAt: String!
+    deletedAt: String!
+    qrcode: String!
+    count: [CanteenCount!]
+}
+
+type QueryCanteenResponse{
+    totalCount:Int,
+    skip:Int,
+    take:Int,
+    rows: [Canteen!]!
+}
+
+input CanteenFilterInput {
+    id: Int
+    name:String
+    groupID: Int
 }
 
 type Role {
     id: ID!
     name: String!
-    created_at: String!
-    updated_at: String!
-    deleted_at: String!
+    createdAt: String!
+    updatedAt: String!
+    deletedAt: String!
     users(filter:UserFilterInput, pagination: Pagination):QueryUserResponse!
 }
+
 type QueryRoleResponse{
     totalCount:Int,
     skip:Int,
@@ -67,100 +205,16 @@ type Permission {
     resource:String!
     object:String!
     checked:Boolean!
+    createdAt: String!
+    updatedAt: String!
+    deletedAt: String!
 }
 
 type QueryPermissionResponse{
-    totalCount:Int,
-    skip:Int,
-    take:Int,
+    totalCount: Int,
+    skip: Int,
+    take: Int,
     rows: [Permission!]!
-}
-
-type Dictionary {
-    id:Int!
-	word: String!
-	phonetic: String!
-	definition: String!
-	translation: String!
-	pos: String!
-	collins: String!
-	oxford: String!
-	tag: String!
-	bnc: String!
-	frq: String!
-	exchange: String!
-	detail: String!
-	audio: String!
-}
-
-type QueryDictionaryResponse{
-    totalCount:Int,
-    skip:Int,
-    take:Int,
-    rows: [Dictionary!]!
-}
-
-type Book {
-    id: Int!
-    name: String!
-    authors: QueryAuthorResponse!
-    picture: String!
-    alias: String!
-    users: QueryUserResponse!
-    chapters(filter:ChapterFilterInput, pagination: Pagination):QueryChapterResponse!
-}
-
-type QueryBookResponse{
-    totalCount:Int,
-    skip:Int,
-    take:Int,
-    rows: [Book!]!
-}
-
-type Chapter {
-    id: Int!
-    index: Int!
-    name: String!
-    content: String!
-    phrases:QueryDictionaryResponse!
-    cet4Words:QueryDictionaryResponse!
-    cet6Words:QueryDictionaryResponse!
-    kyWords:QueryDictionaryResponse!
-    toefiWords:QueryDictionaryResponse!
-    ieltsWords:QueryDictionaryResponse!
-    greWords:QueryDictionaryResponse!
-}
-
-type QueryChapterResponse{
-    totalCount:Int,
-    skip:Int,
-    take:Int,
-    rows: [Chapter!]!
-}
-
-type Author{
-    id: Int!
-    name: String!
-    books(filter:BookFilterInput, pagination: Pagination):QueryBookResponse!
-}
-
-type QueryAuthorResponse{
-    totalCount:Int,
-    skip:Int,
-    take:Int,
-    rows: [Author!]!
-}
-
-type Phrase{
-    id: Int!
-    content: String!
-    translation:String!
-}
-type QueryPhraseResponse{
-    totalCount:Int,
-    skip:Int,
-    take:Int,
-    rows: [Phrase!]!
 }
 
 input Pagination {
@@ -177,14 +231,6 @@ input UserFilterInput {
     state:Int
 }
 
-input DictionaryFilterInput {
-    id: Int
-    word:String
-    translation:String
-    tag:String
-}
-
-
 input GroupFilterInput {
     id: Int
     name:String
@@ -195,26 +241,9 @@ input RoleFilterInput {
     name:String
 }
 
-input BookFilterInput {
-    id: Int
-    name:String
-    author:String
-}
-
-input ChapterFilterInput {
-    ids: [Int!]
-    index: Int
-}
-input AuthorFilterInput {
-    name:String
-}
-
-input PhraseFilterInput {
-    content:String
-}
-
-input ChapterAnalysisInput{
-    chapterId:Int!
+input BookingFilterInput {
+    userId: Int
+    canteenId:Int
 }
 
 # order by
@@ -225,18 +254,44 @@ enum GroupOrderByInput {
     created_at_DESC
 }
 
+input RoleAndUserFilterInput {
+    roleId:Int!
+    userIds:[Int!]!
+}
+
+type OrgDashboard{
+    name:String!
+    userCount:Int!
+    canteenCount: Int!
+}
+
+type SystemInfo {
+    currentLoginCount: Int!
+}
+
+type DashboardResponse {
+    orgInfo: [OrgDashboard!]!
+    systemInfo: SystemInfo!
+    ticketInfo: [String!]
+}
+
 type Query {
-    dictionaries(filter:DictionaryFilterInput, pagination: Pagination): QueryDictionaryResponse!  @hasRole(resolver: "dictionaries") @needLogin
-    groups(filter:GroupFilterInput, pagination: Pagination,orderBy:GroupOrderByInput): QueryGroupResponse!  @hasRole(resolver: "groups") @needLogin
-    users(filter:UserFilterInput, pagination: Pagination):QueryUserResponse!  @hasRole(resolver: "users") @needLogin
-    roles(filter:RoleFilterInput, pagination: Pagination):QueryRoleResponse!  @hasRole(resolver: "roles") @needLogin
-    permissions(filter:RoleFilterInput!):QueryPermissionResponse!  @hasRole(resolver: "permissions") @needLogin
-    books(filter:BookFilterInput, pagination: Pagination):QueryBookResponse! @hasRole(resolver: "books") @needLogin
-    chapters(filter:ChapterFilterInput):[Chapter!]! @hasRole(resolver: "chapters") @needLogin
-    authors(filter:AuthorFilterInput, pagination: Pagination):QueryAuthorResponse! @hasRole(resolver: "authors") @needLogin
-    phrases(filter:PhraseFilterInput, pagination: Pagination): QueryPhraseResponse! @hasRole(resolver: "phrases") @needLogin
-    analysis(input:ChapterAnalysisInput!): QueryDictionaryResponse! @hasRole(resolver: "analysis") @needLogin
+    groups(filter:GroupFilterInput, pagination: Pagination,orderBy:GroupOrderByInput): QueryGroupResponse!  @hasRole(resolver: "groups") @needLogin(resolver: "groups")
+    users(filter:UserFilterInput, pagination: Pagination):QueryUserResponse!  @hasRole(resolver: "users") @needLogin(resolver: "users")
+    roles(filter:RoleFilterInput, pagination: Pagination):QueryRoleResponse!  @hasRole(resolver: "roles") @needLogin(resolver: "roles")
+    checkUserNotInRole(filter:RoleAndUserFilterInput): [Int!]!  @hasRole(resolver: "checkUserNotInRole") @needLogin(resolver: "checkUserNotInRole")
+    permissions(filter:RoleFilterInput!):QueryPermissionResponse!  @hasRole(resolver: "permissions") @needLogin(resolver: "permissions")
+    tickets(filter:TicketFilterInput, pagination: Pagination):QueryTicketResponse!  @hasRole(resolver: "tickets") @needLogin(resolver: "tickets")
+    ticketRecords(filter:TicketRecordFilterInput, pagination: Pagination):QueryTicketRecordResponse!  @hasRole(resolver: "ticketRecords") @needLogin(resolver: "ticketRecords")
+    dishes(filter:DishesFilterInput, pagination: Pagination):QueryDishesResponse!  @hasRole(resolver: "dishes") @needLogin(resolver: "dishes")
+    canteens(filter:CanteenFilterInput, pagination: Pagination):QueryCanteenResponse!  @hasRole(resolver: "canteens") @needLogin(resolver: "canteens")
+    booking(filter:BookingFilterInput):QueryBookingResponse!  @hasRole(resolver: "booking") @needLogin(resolver: "booking")
+    dashboard:DashboardResponse!  @needLogin(resolver: "dashboard")
     messages:String!
+}
+
+input ResetPasword {
+    ids:[Int!]!
 }
 
 input NewTodo {
@@ -254,6 +309,7 @@ input NewUser {
     is_super: Boolean
     picture: String
     state: Int
+    groupId: Int
 }
 
 input UpdateUserInput {
@@ -271,17 +327,70 @@ input UpdateUserInput {
 input NewGroup {
     id: Int
     name: String!
+    admin: Int!
     parent: Int!
     levels: String!
     userId: [Int!]
 }
 
+input NewCanteen {
+    id: Int
+    name: String!
+    groupID: Int!
+    breakfastTime: String!
+    breakfastPicture: String
+    bookingBreakfastDeadline: String!
+    lunchTime: String!
+    lunchPicture: String
+    bookingLunchDeadline: String!
+    dinnerTime: String!
+    dinnerPicture: String
+    bookingDinnerDeadline: String!
+    cancelTime:Int!
+}
+
+input GenarateTicketInput {
+    number: Int!
+    userId: Int!
+    type: Int!
+    price: Int!
+}
+
+input TransferTicketInput {
+    number: Int!
+    fromUserId: Int!
+    toUserId: Int!
+}
+
+input RecyclingTicketsInput{
+    number: Int!
+    userId: Int!
+    type: Int!
+}
+
 input UpdateGroupInput {
     id: Int!
     name: String
+    admin: Int
     parent: Int
     levels: String
     userId: [Int!]
+}
+
+input UpdateCanteenInput {
+    id: Int!
+    name: String
+    groupID: Int
+    breakfastTime: String
+    breakfastPicture: String
+    bookingBreakfastDeadline: String
+    lunchTime: String
+    lunchPicture: String
+    bookingLunchDeadline: String
+    dinnerTime: String
+    dinnerPicture: String
+    bookingDinnerDeadline: String
+    cancelTime:Int
 }
 
 input NewRole {
@@ -296,110 +405,19 @@ input UpdateRoleInput {
     userId: [Int!]
 }
 
-input NewBook {
-    name: String!
-    authorId: Int!
-    picture: String!
-    alias: String!
-    userId:  Int!
+input NewDishes  {
+    Name: String!
+    Picture: String!
 }
 
-input NewAuthor {
-    name: String!
-}
-
-input UpdateAuthorInput {
+input UpdateDishesInput {
     id: Int!
     name: String
-}
-
-input UpdateBookInput {
-    id: Int!
-    name: String
-    authorId: Int
     picture: String
-    alias: String
-    userId:  Int
 }
 
 input DeleteIDInput{
     ids:[Int!]!
-}
-
-input NewChapter {
-    id: Int
-    index: Int
-    name: String!
-    content: String!
-    phraseIds:[Int!]
-    bookId:Int!
-}
-
-input UpdateChapterInput {
-    id: Int!
-    index: Int
-    name: String
-    content: String
-    phraseIds:[Int!]
-}
-
-input NewPhrase {
-    id: Int
-    content: String!
-}
-
-input UpdatePhraseInput {
-    id: Int!
-    content: String
-}
-
-input NewDictionary {
-    word: String!
-    translation: String!
-    phonetic: String
-    definition: String
-    pos: String
-    collins: String
-    oxford: String
-    tag: String
-    bnc: String
-    frq: String
-    exchange: String
-    detail: String
-    audio: String
-}
-
-input UpdateDictionaryInput {
-    id:Int!
-    word: String
-    phonetic: String
-    definition: String
-    translation: String
-    pos: String
-    collins: String
-    oxford: String
-    tag: String
-    bnc: String
-    frq: String
-    exchange: String
-    detail: String
-    audio: String
-}
-
-enum DictionaryLevel  {
-    cet4
-    cet6
-    ky
-    toefi
-    ielts
-    gre
-    phrase
-}
-
-input ChapterAndDictionaryRelationshipInput {
-    chapterId: Int!
-    dictId:[Int!]!
-    level: DictionaryLevel!
 }
 
 input UserAndGroupRelationshipInput{
@@ -407,19 +425,9 @@ input UserAndGroupRelationshipInput{
     groupId: Int!
 }
 
-input AuthorAndBookRelationshipInput{
-    bookIds: [Int!]!
-    authorId: Int!
-}
-
 input UserAndRoleRelationshipInput{
     userIds: [Int!]!
     roleId: Int!
-}
-
-input BookAndChapterRelationshipInput{
-    chapterIds: [Int!]!
-    bookId: Int!
 }
 
 input RoleAndPermissionRelationshipInput {
@@ -432,52 +440,82 @@ input LoginInput {
     password:String!
 }
 
+input LogoutInput {
+    username:String!
+}
+
+type LoginResponse {
+    token:String!
+    permissions:[String!]!
+    user:User!
+}
+
+enum BookingTypeInput {
+    breakfast
+    lunch
+    dinner
+}
+
+input BookingInput {
+    userId:Int!
+    canteenId:Int!
+    type:BookingTypeInput!
+    date:String!
+    autoCurrentMonth:Boolean
+}
+
+input cancelBookingInput{
+    userId:Int!
+    bookingId:Int!
+}
+
+type TransferResponse {
+    successCount: Int!
+    errorCount: Int!
+    errorMsg: String
+}
+
+input CanteenQrcodeInput{
+    id: Int!
+}
+
 type Mutation {
-    login(input:LoginInput!):String!
-    createUser(input: NewUser!): User! @hasRole(resolver: "createUser") @needLogin
-    updateUser(input: UpdateUserInput!): User! @hasRole(resolver: "updateUser") @needLogin
-    deleteUser(input: DeleteIDInput!)  : Boolean! @hasRole(resolver: "deleteUser") @needLogin
+    login(input:LoginInput!):LoginResponse!
+    logout(input:LogoutInput!):Boolean!
+    createUser(input: NewUser!): User! @hasRole(resolver: "createUser") @needLogin(resolver: "createUser")
+    updateUser(input: UpdateUserInput!): User! @hasRole(resolver: "updateUser") @needLogin(resolver: "updateUser")
+    deleteUser(input: DeleteIDInput!)  : Boolean! @hasRole(resolver: "deleteUser") @needLogin(resolver: "deleteUser")
+    resetPassword(input: ResetPasword!) : String! @hasRole(resolver: "resetPassword") @needLogin(resolver: "resetPassword")
 
-    createGroup(input: NewGroup!): Group! @hasRole(resolver: "createGroup") @needLogin
-    updateGroup(input: UpdateGroupInput!): Group! @hasRole(resolver: "updateGroup") @needLogin
-    deleteGroup(input: DeleteIDInput!)  : Boolean! @hasRole(resolver: "deleteGroup") @needLogin
+    createGroup(input: NewGroup!): Group! @hasRole(resolver: "createGroup") @needLogin(resolver: "createGroup")
+    updateGroup(input: UpdateGroupInput!): Group! @hasRole(resolver: "updateGroup") @needLogin(resolver: "updateGroup")
+    deleteGroup(input: DeleteIDInput!)  : Boolean! @hasRole(resolver: "deleteGroup") @needLogin(resolver: "deleteGroup")
 
-    createUserAndGroupRelationship(input: UserAndGroupRelationshipInput!): Boolean! @hasRole(resolver: "createUserAndGroupRelationship") @needLogin
-    removeUserAndGroupRelationship(input: UserAndGroupRelationshipInput!): Boolean! @hasRole(resolver: "removeUserAndGroupRelationship") @needLogin
+    createUserAndGroupRelationship(input: UserAndGroupRelationshipInput!): Boolean! @hasRole(resolver: "createUserAndGroupRelationship") @needLogin(resolver: "createUserAndGroupRelationship")
+    removeUserAndGroupRelationship(input: UserAndGroupRelationshipInput!): Boolean! @hasRole(resolver: "removeUserAndGroupRelationship") @needLogin(resolver: "removeUserAndGroupRelationship")
 
-    createRole(input: NewRole!): Role! @hasRole(resolver: "createRole") @needLogin
-    updateRole(input: UpdateRoleInput!): Role! @hasRole(resolver: "updateRole") @needLogin
-    createUserAndRoleRelationship(input: UserAndRoleRelationshipInput!): Boolean! @hasRole(resolver: "createUserAndRoleRelationship") @needLogin
-    removeUserAndRoleRelationship(input: UserAndRoleRelationshipInput!): Boolean! @hasRole(resolver: "removeUserAndRoleRelationship") @needLogin
-    createRoleAndPermissionRelationship(input: RoleAndPermissionRelationshipInput!) : Boolean! @hasRole(resolver: "createRoleAndPermissionRelationship") @needLogin
+    createRole(input: NewRole!): Role! @hasRole(resolver: "createRole") @needLogin(resolver: "createRole")
+    updateRole(input: UpdateRoleInput!): Role! @hasRole(resolver: "updateRole") @needLogin(resolver: "updateRole")
+    createUserAndRoleRelationship(input: UserAndRoleRelationshipInput!): Boolean! @hasRole(resolver: "createUserAndRoleRelationship") @needLogin(resolver: "createUserAndRoleRelationship")
+    removeUserAndRoleRelationship(input: UserAndRoleRelationshipInput!): Boolean! @hasRole(resolver: "removeUserAndRoleRelationship") @needLogin(resolver: "removeUserAndRoleRelationship")
+    createRoleAndPermissionRelationship(input: RoleAndPermissionRelationshipInput!) : Boolean! @hasRole(resolver: "createRoleAndPermissionRelationship") @needLogin(resolver: "createRoleAndPermissionRelationship")
 
-    createBook(input: NewBook!): Book! @hasRole(resolver: "createBook") @needLogin
-    updateBook(input: UpdateBookInput!): Book! @hasRole(resolver: "updateBook") @needLogin
-    deleteBook(input: DeleteIDInput!)  : Boolean! @hasRole(resolver: "deleteBook") @needLogin
-    addBookChapters(input: BookAndChapterRelationshipInput!) : Boolean! @hasRole(resolver: "addBookChapters") @needLogin
-    removeBookChapters(input:BookAndChapterRelationshipInput!) : Boolean! @hasRole(resolver: "removeBookChapters") @needLogin
+    createDishes(input: NewDishes!): Dishes! @hasRole(resolver: "createDishes") @needLogin(resolver: "createDishes")
+    updateDishes(input: UpdateDishesInput!): Dishes! @hasRole(resolver: "updateDishes") @needLogin(resolver: "updateDishes")
+    deleteDishes(input: DeleteIDInput!)  : Boolean! @hasRole(resolver: "deleteUser") @needLogin(resolver: "deleteUser")
 
-    createAuthor(input: NewAuthor!): Author! @hasRole(resolver: "createAuthor") @needLogin
-    updateAuthor(input: UpdateAuthorInput!): Author! @hasRole(resolver: "updateAuthor") @needLogin
-    deleteAuthor(input: DeleteIDInput!)  : Boolean! @hasRole(resolver: "deleteAuthor") @needLogin
-    createAuthorAndBookRelationship(input: AuthorAndBookRelationshipInput!): Boolean! @hasRole(resolver: "createAuthorAndBookRelationship") @needLogin
-    removeAuthorAndBookRelationship(input: AuthorAndBookRelationshipInput!): Boolean! @hasRole(resolver: "removeAuthorAndBookRelationship") @needLogin
+    createCanteens(input: NewCanteen!): Canteen! @hasRole(resolver: "createCanteens") @needLogin(resolver: "createCanteens")
+    updateCanteens(input: UpdateCanteenInput!): Canteen! @hasRole(resolver: "updateCanteens") @needLogin(resolver: "updateCanteens")
+    deleteCanteens(input: DeleteIDInput!)  : Boolean! @hasRole(resolver: "deleteCanteens") @needLogin(resolver: "deleteCanteens")
 
-    createChapter(input: NewChapter!): Chapter! @hasRole(resolver: "createChapter") @needLogin
-    updateChapter(input: UpdateChapterInput!): Chapter! @hasRole(resolver: "updateChapter") @needLogin
-    deleteChapter(input: DeleteIDInput!)  : Boolean! @hasRole(resolver: "deleteChapter") @needLogin
-    createChapterAndDictionaryRelationship(input: ChapterAndDictionaryRelationshipInput!): Boolean! @hasRole(resolver:"createChapterAndDictionaryRelationship") @needLogin
-    removeChapterAndDictionaryRelationship(input: ChapterAndDictionaryRelationshipInput!): Boolean! @hasRole(resolver: "removeChapterAndDictionaryRelationship") @needLogin
+    generateTickets(input: GenarateTicketInput!): QueryTicketResponse!  @hasRole(resolver: "generateTickets") @needLogin(resolver: "generateTickets")
+    transferTickets(input: TransferTicketInput!): TransferResponse!  @hasRole(resolver: "transferTickets") @needLogin(resolver: "transferTickets")
+    recyclingTickets(input: RecyclingTicketsInput!): Boolean! @hasRole(resolver: "recyclingTickets") @needLogin(resolver: "recyclingTickets")
 
-    createDictionary(input: NewDictionary!): Dictionary! @hasRole(resolver: "createDictionary") @needLogin
-    updateDictionary(input: UpdateDictionaryInput!): Dictionary! @hasRole(resolver: "updateDictionary") @needLogin
-    deleteDictionary(input: DeleteIDInput!): Boolean! @hasRole(resolver: "deleteDictionary") @needLogin
+    createQrcode(input: CanteenQrcodeInput!): String! @hasRole(resolver: "createQrcode") @needLogin(resolver: "createQrcode")
 
-    createPhrase(input: NewPhrase!): Phrase! @hasRole(resolver: "createPhrase") @needLogin
-    updatePhrase(input: UpdatePhraseInput!): Phrase! @hasRole(resolver: "updatePhrase") @needLogin
-    deletePhrase(input: DeleteIDInput!): Boolean! @hasRole(resolver: "deletePhrase") @needLogin
-
-
+    cancelBooking(input:cancelBookingInput!): Boolean! @hasRole(resolver: "cancelBooking") @needLogin(resolver: "cancelBooking")
+    booking(input:BookingInput!): Boolean! @hasRole(resolver: "createBooking") @needLogin(resolver: "createBooking")
 }
 
 type Subscription {

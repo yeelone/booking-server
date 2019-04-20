@@ -6,13 +6,14 @@ import (
 	"booking/pkg/constvar"
 	"context"
 	"fmt"
+	"strconv"
 )
 
 
 type roleResolver struct{ *Resolver }
 
 func (r *roleResolver) ID(ctx context.Context, obj *models.Role) (string, error) {
-	return fmt.Sprintf("id:%d", obj.ID), nil
+	return fmt.Sprintf("%d", obj.ID), nil
 }
 
 func (r *roleResolver) Name(ctx context.Context, obj *models.Role) (string, error) {
@@ -39,7 +40,24 @@ func (r *roleResolver)  Users(ctx context.Context, obj *models.Role, filter *boo
 			Take: constvar.DefaultLimit,
 		}
 	}
-	users, total, err := models.GetRoleRelatedUsers(obj.ID, pagination.Skip, pagination.Take)
+
+	where := ""
+	whereValue := ""
+	if filter != nil {
+		if filter.Username != nil  && *filter.Username != ""{
+			where = "username"
+			whereValue = *filter.Username
+		}
+
+		if filter.ID != nil  && *filter.ID != 0 {
+			where = "id"
+			whereValue = strconv.Itoa(*filter.ID)
+		}
+	}
+
+
+
+	users, total, err := models.GetRoleRelatedUsers(obj.ID, where,whereValue, pagination.Skip, pagination.Take)
 	resp := booking.QueryUserResponse{Rows:users,TotalCount:&total}
 	return resp, err
 }

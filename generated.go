@@ -32,172 +32,183 @@ type Config struct {
 }
 
 type ResolverRoot interface {
-	Author() AuthorResolver
-	Book() BookResolver
-	Chapter() ChapterResolver
-	Dictionary() DictionaryResolver
+	Booking() BookingResolver
+	Canteen() CanteenResolver
+	Dishes() DishesResolver
 	Group() GroupResolver
 	Mutation() MutationResolver
-	Phrase() PhraseResolver
 	Query() QueryResolver
 	Role() RoleResolver
 	Subscription() SubscriptionResolver
+	Ticket() TicketResolver
+	TicketRecord() TicketRecordResolver
 	User() UserResolver
 }
 
 type DirectiveRoot struct {
 	HasRole func(ctx context.Context, obj interface{}, next graphql.Resolver, resolver string) (res interface{}, err error)
 
-	NeedLogin func(ctx context.Context, obj interface{}, next graphql.Resolver) (res interface{}, err error)
+	NeedLogin func(ctx context.Context, obj interface{}, next graphql.Resolver, resolver string) (res interface{}, err error)
 }
 
 type ComplexityRoot struct {
-	Author struct {
-		Id    func(childComplexity int) int
-		Name  func(childComplexity int) int
-		Books func(childComplexity int, filter *BookFilterInput, pagination *Pagination) int
+	Booking struct {
+		UserId    func(childComplexity int) int
+		CanteenId func(childComplexity int) int
+		Type      func(childComplexity int) int
+		Date      func(childComplexity int) int
+		CreatedAt func(childComplexity int) int
+		UpdatedAt func(childComplexity int) int
+		DeletedAt func(childComplexity int) int
 	}
 
-	Book struct {
-		Id       func(childComplexity int) int
-		Name     func(childComplexity int) int
-		Authors  func(childComplexity int) int
-		Picture  func(childComplexity int) int
-		Alias    func(childComplexity int) int
-		Users    func(childComplexity int) int
-		Chapters func(childComplexity int, filter *ChapterFilterInput, pagination *Pagination) int
+	Canteen struct {
+		Id                       func(childComplexity int) int
+		Name                     func(childComplexity int) int
+		GroupId                  func(childComplexity int) int
+		BreakfastTime            func(childComplexity int) int
+		BreakfastPicture         func(childComplexity int) int
+		BookingBreakfastDeadline func(childComplexity int) int
+		LunchTime                func(childComplexity int) int
+		LunchPicture             func(childComplexity int) int
+		BookingLunchDeadline     func(childComplexity int) int
+		DinnerTime               func(childComplexity int) int
+		DinnerPicture            func(childComplexity int) int
+		BookingDinnerDeadline    func(childComplexity int) int
+		CancelTime               func(childComplexity int) int
+		CreatedAt                func(childComplexity int) int
+		UpdatedAt                func(childComplexity int) int
+		DeletedAt                func(childComplexity int) int
+		Qrcode                   func(childComplexity int) int
+		Count                    func(childComplexity int) int
 	}
 
-	Chapter struct {
-		Id         func(childComplexity int) int
-		Index      func(childComplexity int) int
-		Name       func(childComplexity int) int
-		Content    func(childComplexity int) int
-		Phrases    func(childComplexity int) int
-		Cet4Words  func(childComplexity int) int
-		Cet6Words  func(childComplexity int) int
-		KyWords    func(childComplexity int) int
-		ToefiWords func(childComplexity int) int
-		IeltsWords func(childComplexity int) int
-		GreWords   func(childComplexity int) int
+	CanteenCount struct {
+		Date      func(childComplexity int) int
+		Breakfast func(childComplexity int) int
+		Lunch     func(childComplexity int) int
+		Dinner    func(childComplexity int) int
 	}
 
-	Dictionary struct {
-		Id          func(childComplexity int) int
-		Word        func(childComplexity int) int
-		Phonetic    func(childComplexity int) int
-		Definition  func(childComplexity int) int
-		Translation func(childComplexity int) int
-		Pos         func(childComplexity int) int
-		Collins     func(childComplexity int) int
-		Oxford      func(childComplexity int) int
-		Tag         func(childComplexity int) int
-		Bnc         func(childComplexity int) int
-		Frq         func(childComplexity int) int
-		Exchange    func(childComplexity int) int
-		Detail      func(childComplexity int) int
-		Audio       func(childComplexity int) int
+	Count struct {
+		Breakfast func(childComplexity int) int
+		Lunch     func(childComplexity int) int
+		Dinner    func(childComplexity int) int
+	}
+
+	DashboardResponse struct {
+		OrgInfo    func(childComplexity int) int
+		SystemInfo func(childComplexity int) int
+		TicketInfo func(childComplexity int) int
+	}
+
+	Dishes struct {
+		Id        func(childComplexity int) int
+		Name      func(childComplexity int) int
+		Picture   func(childComplexity int) int
+		CreatedAt func(childComplexity int) int
+		UpdatedAt func(childComplexity int) int
+		DeletedAt func(childComplexity int) int
 	}
 
 	Group struct {
 		Id        func(childComplexity int) int
 		Name      func(childComplexity int) int
 		Parent    func(childComplexity int) int
+		AdminId   func(childComplexity int) int
+		AdminInfo func(childComplexity int) int
 		Levels    func(childComplexity int) int
 		CreatedAt func(childComplexity int) int
 		UpdatedAt func(childComplexity int) int
 		DeletedAt func(childComplexity int) int
 		Users     func(childComplexity int, filter *UserFilterInput, pagination *Pagination) int
+		Canteens  func(childComplexity int, filter *CanteenFilterInput, pagination *Pagination) int
+	}
+
+	LoginResponse struct {
+		Token       func(childComplexity int) int
+		Permissions func(childComplexity int) int
+		User        func(childComplexity int) int
 	}
 
 	Mutation struct {
-		Login                                  func(childComplexity int, input LoginInput) int
-		CreateUser                             func(childComplexity int, input NewUser) int
-		UpdateUser                             func(childComplexity int, input UpdateUserInput) int
-		DeleteUser                             func(childComplexity int, input DeleteIDInput) int
-		CreateGroup                            func(childComplexity int, input NewGroup) int
-		UpdateGroup                            func(childComplexity int, input UpdateGroupInput) int
-		DeleteGroup                            func(childComplexity int, input DeleteIDInput) int
-		CreateUserAndGroupRelationship         func(childComplexity int, input UserAndGroupRelationshipInput) int
-		RemoveUserAndGroupRelationship         func(childComplexity int, input UserAndGroupRelationshipInput) int
-		CreateRole                             func(childComplexity int, input NewRole) int
-		UpdateRole                             func(childComplexity int, input UpdateRoleInput) int
-		CreateUserAndRoleRelationship          func(childComplexity int, input UserAndRoleRelationshipInput) int
-		RemoveUserAndRoleRelationship          func(childComplexity int, input UserAndRoleRelationshipInput) int
-		CreateRoleAndPermissionRelationship    func(childComplexity int, input RoleAndPermissionRelationshipInput) int
-		CreateBook                             func(childComplexity int, input NewBook) int
-		UpdateBook                             func(childComplexity int, input UpdateBookInput) int
-		DeleteBook                             func(childComplexity int, input DeleteIDInput) int
-		AddBookChapters                        func(childComplexity int, input BookAndChapterRelationshipInput) int
-		RemoveBookChapters                     func(childComplexity int, input BookAndChapterRelationshipInput) int
-		CreateAuthor                           func(childComplexity int, input NewAuthor) int
-		UpdateAuthor                           func(childComplexity int, input UpdateAuthorInput) int
-		DeleteAuthor                           func(childComplexity int, input DeleteIDInput) int
-		CreateAuthorAndBookRelationship        func(childComplexity int, input AuthorAndBookRelationshipInput) int
-		RemoveAuthorAndBookRelationship        func(childComplexity int, input AuthorAndBookRelationshipInput) int
-		CreateChapter                          func(childComplexity int, input NewChapter) int
-		UpdateChapter                          func(childComplexity int, input UpdateChapterInput) int
-		DeleteChapter                          func(childComplexity int, input DeleteIDInput) int
-		CreateChapterAndDictionaryRelationship func(childComplexity int, input ChapterAndDictionaryRelationshipInput) int
-		RemoveChapterAndDictionaryRelationship func(childComplexity int, input ChapterAndDictionaryRelationshipInput) int
-		CreateDictionary                       func(childComplexity int, input NewDictionary) int
-		UpdateDictionary                       func(childComplexity int, input UpdateDictionaryInput) int
-		DeleteDictionary                       func(childComplexity int, input DeleteIDInput) int
-		CreatePhrase                           func(childComplexity int, input NewPhrase) int
-		UpdatePhrase                           func(childComplexity int, input UpdatePhraseInput) int
-		DeletePhrase                           func(childComplexity int, input DeleteIDInput) int
+		Login                               func(childComplexity int, input LoginInput) int
+		Logout                              func(childComplexity int, input LogoutInput) int
+		CreateUser                          func(childComplexity int, input NewUser) int
+		UpdateUser                          func(childComplexity int, input UpdateUserInput) int
+		DeleteUser                          func(childComplexity int, input DeleteIDInput) int
+		ResetPassword                       func(childComplexity int, input ResetPasword) int
+		CreateGroup                         func(childComplexity int, input NewGroup) int
+		UpdateGroup                         func(childComplexity int, input UpdateGroupInput) int
+		DeleteGroup                         func(childComplexity int, input DeleteIDInput) int
+		CreateUserAndGroupRelationship      func(childComplexity int, input UserAndGroupRelationshipInput) int
+		RemoveUserAndGroupRelationship      func(childComplexity int, input UserAndGroupRelationshipInput) int
+		CreateRole                          func(childComplexity int, input NewRole) int
+		UpdateRole                          func(childComplexity int, input UpdateRoleInput) int
+		CreateUserAndRoleRelationship       func(childComplexity int, input UserAndRoleRelationshipInput) int
+		RemoveUserAndRoleRelationship       func(childComplexity int, input UserAndRoleRelationshipInput) int
+		CreateRoleAndPermissionRelationship func(childComplexity int, input RoleAndPermissionRelationshipInput) int
+		CreateDishes                        func(childComplexity int, input NewDishes) int
+		UpdateDishes                        func(childComplexity int, input UpdateDishesInput) int
+		DeleteDishes                        func(childComplexity int, input DeleteIDInput) int
+		CreateCanteens                      func(childComplexity int, input NewCanteen) int
+		UpdateCanteens                      func(childComplexity int, input UpdateCanteenInput) int
+		DeleteCanteens                      func(childComplexity int, input DeleteIDInput) int
+		GenerateTickets                     func(childComplexity int, input GenarateTicketInput) int
+		TransferTickets                     func(childComplexity int, input TransferTicketInput) int
+		RecyclingTickets                    func(childComplexity int, input RecyclingTicketsInput) int
+		CreateQrcode                        func(childComplexity int, input CanteenQrcodeInput) int
+		CancelBooking                       func(childComplexity int, input CancelBookingInput) int
+		Booking                             func(childComplexity int, input BookingInput) int
+	}
+
+	OrgDashboard struct {
+		Name         func(childComplexity int) int
+		UserCount    func(childComplexity int) int
+		CanteenCount func(childComplexity int) int
 	}
 
 	Permission struct {
-		Module   func(childComplexity int) int
-		Name     func(childComplexity int) int
-		Resource func(childComplexity int) int
-		Object   func(childComplexity int) int
-		Checked  func(childComplexity int) int
-	}
-
-	Phrase struct {
-		Id          func(childComplexity int) int
-		Content     func(childComplexity int) int
-		Translation func(childComplexity int) int
+		Module    func(childComplexity int) int
+		Name      func(childComplexity int) int
+		Resource  func(childComplexity int) int
+		Object    func(childComplexity int) int
+		Checked   func(childComplexity int) int
+		CreatedAt func(childComplexity int) int
+		UpdatedAt func(childComplexity int) int
+		DeletedAt func(childComplexity int) int
 	}
 
 	Query struct {
-		Dictionaries func(childComplexity int, filter *DictionaryFilterInput, pagination *Pagination) int
-		Groups       func(childComplexity int, filter *GroupFilterInput, pagination *Pagination, orderBy *GroupOrderByInput) int
-		Users        func(childComplexity int, filter *UserFilterInput, pagination *Pagination) int
-		Roles        func(childComplexity int, filter *RoleFilterInput, pagination *Pagination) int
-		Permissions  func(childComplexity int, filter RoleFilterInput) int
-		Books        func(childComplexity int, filter *BookFilterInput, pagination *Pagination) int
-		Chapters     func(childComplexity int, filter *ChapterFilterInput) int
-		Authors      func(childComplexity int, filter *AuthorFilterInput, pagination *Pagination) int
-		Phrases      func(childComplexity int, filter *PhraseFilterInput, pagination *Pagination) int
-		Analysis     func(childComplexity int, input ChapterAnalysisInput) int
-		Messages     func(childComplexity int) int
+		Groups             func(childComplexity int, filter *GroupFilterInput, pagination *Pagination, orderBy *GroupOrderByInput) int
+		Users              func(childComplexity int, filter *UserFilterInput, pagination *Pagination) int
+		Roles              func(childComplexity int, filter *RoleFilterInput, pagination *Pagination) int
+		CheckUserNotInRole func(childComplexity int, filter *RoleAndUserFilterInput) int
+		Permissions        func(childComplexity int, filter RoleFilterInput) int
+		Tickets            func(childComplexity int, filter *TicketFilterInput, pagination *Pagination) int
+		TicketRecords      func(childComplexity int, filter *TicketRecordFilterInput, pagination *Pagination) int
+		Dishes             func(childComplexity int, filter *DishesFilterInput, pagination *Pagination) int
+		Canteens           func(childComplexity int, filter *CanteenFilterInput, pagination *Pagination) int
+		Booking            func(childComplexity int, filter *BookingFilterInput) int
+		Dashboard          func(childComplexity int) int
+		Messages           func(childComplexity int) int
 	}
 
-	QueryAuthorResponse struct {
+	QueryBookingResponse struct {
 		TotalCount func(childComplexity int) int
 		Skip       func(childComplexity int) int
 		Take       func(childComplexity int) int
 		Rows       func(childComplexity int) int
 	}
 
-	QueryBookResponse struct {
+	QueryCanteenResponse struct {
 		TotalCount func(childComplexity int) int
 		Skip       func(childComplexity int) int
 		Take       func(childComplexity int) int
 		Rows       func(childComplexity int) int
 	}
 
-	QueryChapterResponse struct {
-		TotalCount func(childComplexity int) int
-		Skip       func(childComplexity int) int
-		Take       func(childComplexity int) int
-		Rows       func(childComplexity int) int
-	}
-
-	QueryDictionaryResponse struct {
+	QueryDishesResponse struct {
 		TotalCount func(childComplexity int) int
 		Skip       func(childComplexity int) int
 		Take       func(childComplexity int) int
@@ -218,17 +229,25 @@ type ComplexityRoot struct {
 		Rows       func(childComplexity int) int
 	}
 
-	QueryPhraseResponse struct {
+	QueryRoleResponse struct {
 		TotalCount func(childComplexity int) int
 		Skip       func(childComplexity int) int
 		Take       func(childComplexity int) int
 		Rows       func(childComplexity int) int
 	}
 
-	QueryRoleResponse struct {
+	QueryTicketRecordResponse struct {
 		TotalCount func(childComplexity int) int
 		Skip       func(childComplexity int) int
 		Take       func(childComplexity int) int
+		Rows       func(childComplexity int) int
+	}
+
+	QueryTicketResponse struct {
+		TotalCount func(childComplexity int) int
+		Skip       func(childComplexity int) int
+		Take       func(childComplexity int) int
+		Count      func(childComplexity int) int
 		Rows       func(childComplexity int) int
 	}
 
@@ -252,6 +271,38 @@ type ComplexityRoot struct {
 		MessageAdded func(childComplexity int, roomName string) int
 	}
 
+	SystemInfo struct {
+		CurrentLoginCount func(childComplexity int) int
+	}
+
+	Ticket struct {
+		Id        func(childComplexity int) int
+		Uuid      func(childComplexity int) int
+		UserId    func(childComplexity int) int
+		Type      func(childComplexity int) int
+		Price     func(childComplexity int) int
+		CreatedAt func(childComplexity int) int
+		UpdatedAt func(childComplexity int) int
+	}
+
+	TicketRecord struct {
+		Id          func(childComplexity int) int
+		Operator    func(childComplexity int) int
+		Owner       func(childComplexity int) int
+		Number      func(childComplexity int) int
+		Action      func(childComplexity int) int
+		Description func(childComplexity int) int
+		CreatedAt   func(childComplexity int) int
+		UpdatedAt   func(childComplexity int) int
+		DeletedAt   func(childComplexity int) int
+	}
+
+	TransferResponse struct {
+		SuccessCount func(childComplexity int) int
+		ErrorCount   func(childComplexity int) int
+		ErrorMsg     func(childComplexity int) int
+	}
+
 	User struct {
 		Id        func(childComplexity int) int
 		Email     func(childComplexity int) int
@@ -267,51 +318,57 @@ type ComplexityRoot struct {
 		DeletedAt func(childComplexity int) int
 		Groups    func(childComplexity int, pagination *Pagination) int
 		Roles     func(childComplexity int, pagination *Pagination) int
+		Tickets   func(childComplexity int, pagination *Pagination, filter *TicketFilterInput) int
 	}
 }
 
-type AuthorResolver interface {
-	ID(ctx context.Context, obj *models.Author) (int, error)
-
-	Books(ctx context.Context, obj *models.Author, filter *BookFilterInput, pagination *Pagination) (QueryBookResponse, error)
+type BookingResolver interface {
+	UserID(ctx context.Context, obj *models.Booking) (int, error)
+	CanteenID(ctx context.Context, obj *models.Booking) (int, error)
+	Type(ctx context.Context, obj *models.Booking) (string, error)
+	Date(ctx context.Context, obj *models.Booking) (string, error)
+	CreatedAt(ctx context.Context, obj *models.Booking) (string, error)
+	UpdatedAt(ctx context.Context, obj *models.Booking) (string, error)
+	DeletedAt(ctx context.Context, obj *models.Booking) (string, error)
 }
-type BookResolver interface {
-	ID(ctx context.Context, obj *models.Book) (int, error)
+type CanteenResolver interface {
+	ID(ctx context.Context, obj *models.Canteen) (string, error)
 
-	Authors(ctx context.Context, obj *models.Book) (QueryAuthorResponse, error)
+	GroupID(ctx context.Context, obj *models.Canteen) (int, error)
 
-	Users(ctx context.Context, obj *models.Book) (QueryUserResponse, error)
-	Chapters(ctx context.Context, obj *models.Book, filter *ChapterFilterInput, pagination *Pagination) (QueryChapterResponse, error)
+	CreatedAt(ctx context.Context, obj *models.Canteen) (string, error)
+	UpdatedAt(ctx context.Context, obj *models.Canteen) (string, error)
+	DeletedAt(ctx context.Context, obj *models.Canteen) (string, error)
+
+	Count(ctx context.Context, obj *models.Canteen) ([]CanteenCount, error)
 }
-type ChapterResolver interface {
-	ID(ctx context.Context, obj *models.Chapter) (int, error)
+type DishesResolver interface {
+	ID(ctx context.Context, obj *models.Dishes) (string, error)
 
-	Phrases(ctx context.Context, obj *models.Chapter) (QueryDictionaryResponse, error)
-	Cet4Words(ctx context.Context, obj *models.Chapter) (QueryDictionaryResponse, error)
-	Cet6Words(ctx context.Context, obj *models.Chapter) (QueryDictionaryResponse, error)
-	KyWords(ctx context.Context, obj *models.Chapter) (QueryDictionaryResponse, error)
-	ToefiWords(ctx context.Context, obj *models.Chapter) (QueryDictionaryResponse, error)
-	IeltsWords(ctx context.Context, obj *models.Chapter) (QueryDictionaryResponse, error)
-	GreWords(ctx context.Context, obj *models.Chapter) (QueryDictionaryResponse, error)
-}
-type DictionaryResolver interface {
-	ID(ctx context.Context, obj *models.Dictionary) (int, error)
+	CreatedAt(ctx context.Context, obj *models.Dishes) (string, error)
+	UpdatedAt(ctx context.Context, obj *models.Dishes) (string, error)
+	DeletedAt(ctx context.Context, obj *models.Dishes) (string, error)
 }
 type GroupResolver interface {
 	ID(ctx context.Context, obj *models.Group) (string, error)
 
 	Parent(ctx context.Context, obj *models.Group) (int, error)
+	AdminID(ctx context.Context, obj *models.Group) (int, error)
+	AdminInfo(ctx context.Context, obj *models.Group) (models.User, error)
 
 	CreatedAt(ctx context.Context, obj *models.Group) (string, error)
 	UpdatedAt(ctx context.Context, obj *models.Group) (string, error)
 	DeletedAt(ctx context.Context, obj *models.Group) (string, error)
 	Users(ctx context.Context, obj *models.Group, filter *UserFilterInput, pagination *Pagination) (QueryUserResponse, error)
+	Canteens(ctx context.Context, obj *models.Group, filter *CanteenFilterInput, pagination *Pagination) (QueryCanteenResponse, error)
 }
 type MutationResolver interface {
-	Login(ctx context.Context, input LoginInput) (string, error)
+	Login(ctx context.Context, input LoginInput) (LoginResponse, error)
+	Logout(ctx context.Context, input LogoutInput) (bool, error)
 	CreateUser(ctx context.Context, input NewUser) (models.User, error)
 	UpdateUser(ctx context.Context, input UpdateUserInput) (models.User, error)
 	DeleteUser(ctx context.Context, input DeleteIDInput) (bool, error)
+	ResetPassword(ctx context.Context, input ResetPasword) (string, error)
 	CreateGroup(ctx context.Context, input NewGroup) (models.Group, error)
 	UpdateGroup(ctx context.Context, input UpdateGroupInput) (models.Group, error)
 	DeleteGroup(ctx context.Context, input DeleteIDInput) (bool, error)
@@ -322,44 +379,31 @@ type MutationResolver interface {
 	CreateUserAndRoleRelationship(ctx context.Context, input UserAndRoleRelationshipInput) (bool, error)
 	RemoveUserAndRoleRelationship(ctx context.Context, input UserAndRoleRelationshipInput) (bool, error)
 	CreateRoleAndPermissionRelationship(ctx context.Context, input RoleAndPermissionRelationshipInput) (bool, error)
-	CreateBook(ctx context.Context, input NewBook) (models.Book, error)
-	UpdateBook(ctx context.Context, input UpdateBookInput) (models.Book, error)
-	DeleteBook(ctx context.Context, input DeleteIDInput) (bool, error)
-	AddBookChapters(ctx context.Context, input BookAndChapterRelationshipInput) (bool, error)
-	RemoveBookChapters(ctx context.Context, input BookAndChapterRelationshipInput) (bool, error)
-	CreateAuthor(ctx context.Context, input NewAuthor) (models.Author, error)
-	UpdateAuthor(ctx context.Context, input UpdateAuthorInput) (models.Author, error)
-	DeleteAuthor(ctx context.Context, input DeleteIDInput) (bool, error)
-	CreateAuthorAndBookRelationship(ctx context.Context, input AuthorAndBookRelationshipInput) (bool, error)
-	RemoveAuthorAndBookRelationship(ctx context.Context, input AuthorAndBookRelationshipInput) (bool, error)
-	CreateChapter(ctx context.Context, input NewChapter) (models.Chapter, error)
-	UpdateChapter(ctx context.Context, input UpdateChapterInput) (models.Chapter, error)
-	DeleteChapter(ctx context.Context, input DeleteIDInput) (bool, error)
-	CreateChapterAndDictionaryRelationship(ctx context.Context, input ChapterAndDictionaryRelationshipInput) (bool, error)
-	RemoveChapterAndDictionaryRelationship(ctx context.Context, input ChapterAndDictionaryRelationshipInput) (bool, error)
-	CreateDictionary(ctx context.Context, input NewDictionary) (models.Dictionary, error)
-	UpdateDictionary(ctx context.Context, input UpdateDictionaryInput) (models.Dictionary, error)
-	DeleteDictionary(ctx context.Context, input DeleteIDInput) (bool, error)
-	CreatePhrase(ctx context.Context, input NewPhrase) (models.Phrase, error)
-	UpdatePhrase(ctx context.Context, input UpdatePhraseInput) (models.Phrase, error)
-	DeletePhrase(ctx context.Context, input DeleteIDInput) (bool, error)
-}
-type PhraseResolver interface {
-	ID(ctx context.Context, obj *models.Phrase) (int, error)
-
-	Translation(ctx context.Context, obj *models.Phrase) (string, error)
+	CreateDishes(ctx context.Context, input NewDishes) (models.Dishes, error)
+	UpdateDishes(ctx context.Context, input UpdateDishesInput) (models.Dishes, error)
+	DeleteDishes(ctx context.Context, input DeleteIDInput) (bool, error)
+	CreateCanteens(ctx context.Context, input NewCanteen) (models.Canteen, error)
+	UpdateCanteens(ctx context.Context, input UpdateCanteenInput) (models.Canteen, error)
+	DeleteCanteens(ctx context.Context, input DeleteIDInput) (bool, error)
+	GenerateTickets(ctx context.Context, input GenarateTicketInput) (QueryTicketResponse, error)
+	TransferTickets(ctx context.Context, input TransferTicketInput) (TransferResponse, error)
+	RecyclingTickets(ctx context.Context, input RecyclingTicketsInput) (bool, error)
+	CreateQrcode(ctx context.Context, input CanteenQrcodeInput) (string, error)
+	CancelBooking(ctx context.Context, input CancelBookingInput) (bool, error)
+	Booking(ctx context.Context, input BookingInput) (bool, error)
 }
 type QueryResolver interface {
-	Dictionaries(ctx context.Context, filter *DictionaryFilterInput, pagination *Pagination) (QueryDictionaryResponse, error)
 	Groups(ctx context.Context, filter *GroupFilterInput, pagination *Pagination, orderBy *GroupOrderByInput) (QueryGroupResponse, error)
 	Users(ctx context.Context, filter *UserFilterInput, pagination *Pagination) (QueryUserResponse, error)
 	Roles(ctx context.Context, filter *RoleFilterInput, pagination *Pagination) (QueryRoleResponse, error)
+	CheckUserNotInRole(ctx context.Context, filter *RoleAndUserFilterInput) ([]int, error)
 	Permissions(ctx context.Context, filter RoleFilterInput) (QueryPermissionResponse, error)
-	Books(ctx context.Context, filter *BookFilterInput, pagination *Pagination) (QueryBookResponse, error)
-	Chapters(ctx context.Context, filter *ChapterFilterInput) ([]models.Chapter, error)
-	Authors(ctx context.Context, filter *AuthorFilterInput, pagination *Pagination) (QueryAuthorResponse, error)
-	Phrases(ctx context.Context, filter *PhraseFilterInput, pagination *Pagination) (QueryPhraseResponse, error)
-	Analysis(ctx context.Context, input ChapterAnalysisInput) (QueryDictionaryResponse, error)
+	Tickets(ctx context.Context, filter *TicketFilterInput, pagination *Pagination) (QueryTicketResponse, error)
+	TicketRecords(ctx context.Context, filter *TicketRecordFilterInput, pagination *Pagination) (QueryTicketRecordResponse, error)
+	Dishes(ctx context.Context, filter *DishesFilterInput, pagination *Pagination) (QueryDishesResponse, error)
+	Canteens(ctx context.Context, filter *CanteenFilterInput, pagination *Pagination) (QueryCanteenResponse, error)
+	Booking(ctx context.Context, filter *BookingFilterInput) (QueryBookingResponse, error)
+	Dashboard(ctx context.Context) (DashboardResponse, error)
 	Messages(ctx context.Context) (string, error)
 }
 type RoleResolver interface {
@@ -373,6 +417,23 @@ type RoleResolver interface {
 type SubscriptionResolver interface {
 	MessageAdded(ctx context.Context, roomName string) (<-chan string, error)
 }
+type TicketResolver interface {
+	ID(ctx context.Context, obj *models.Ticket) (string, error)
+
+	UserID(ctx context.Context, obj *models.Ticket) (int, error)
+
+	CreatedAt(ctx context.Context, obj *models.Ticket) (string, error)
+	UpdatedAt(ctx context.Context, obj *models.Ticket) (string, error)
+}
+type TicketRecordResolver interface {
+	ID(ctx context.Context, obj *models.TicketRecord) (string, error)
+	Operator(ctx context.Context, obj *models.TicketRecord) (int, error)
+	Owner(ctx context.Context, obj *models.TicketRecord) (int, error)
+
+	CreatedAt(ctx context.Context, obj *models.TicketRecord) (string, error)
+	UpdatedAt(ctx context.Context, obj *models.TicketRecord) (string, error)
+	DeletedAt(ctx context.Context, obj *models.TicketRecord) (string, error)
+}
 type UserResolver interface {
 	ID(ctx context.Context, obj *models.User) (string, error)
 
@@ -381,74 +442,7 @@ type UserResolver interface {
 	DeletedAt(ctx context.Context, obj *models.User) (string, error)
 	Groups(ctx context.Context, obj *models.User, pagination *Pagination) (QueryGroupResponse, error)
 	Roles(ctx context.Context, obj *models.User, pagination *Pagination) (QueryRoleResponse, error)
-}
-
-func field_Author_books_args(rawArgs map[string]interface{}) (map[string]interface{}, error) {
-	args := map[string]interface{}{}
-	var arg0 *BookFilterInput
-	if tmp, ok := rawArgs["filter"]; ok {
-		var err error
-		var ptr1 BookFilterInput
-		if tmp != nil {
-			ptr1, err = UnmarshalBookFilterInput(tmp)
-			arg0 = &ptr1
-		}
-
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["filter"] = arg0
-	var arg1 *Pagination
-	if tmp, ok := rawArgs["pagination"]; ok {
-		var err error
-		var ptr1 Pagination
-		if tmp != nil {
-			ptr1, err = UnmarshalPagination(tmp)
-			arg1 = &ptr1
-		}
-
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["pagination"] = arg1
-	return args, nil
-
-}
-
-func field_Book_chapters_args(rawArgs map[string]interface{}) (map[string]interface{}, error) {
-	args := map[string]interface{}{}
-	var arg0 *ChapterFilterInput
-	if tmp, ok := rawArgs["filter"]; ok {
-		var err error
-		var ptr1 ChapterFilterInput
-		if tmp != nil {
-			ptr1, err = UnmarshalChapterFilterInput(tmp)
-			arg0 = &ptr1
-		}
-
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["filter"] = arg0
-	var arg1 *Pagination
-	if tmp, ok := rawArgs["pagination"]; ok {
-		var err error
-		var ptr1 Pagination
-		if tmp != nil {
-			ptr1, err = UnmarshalPagination(tmp)
-			arg1 = &ptr1
-		}
-
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["pagination"] = arg1
-	return args, nil
-
+	Tickets(ctx context.Context, obj *models.User, pagination *Pagination, filter *TicketFilterInput) (QueryTicketResponse, error)
 }
 
 func field_Group_users_args(rawArgs map[string]interface{}) (map[string]interface{}, error) {
@@ -485,12 +479,61 @@ func field_Group_users_args(rawArgs map[string]interface{}) (map[string]interfac
 
 }
 
+func field_Group_canteens_args(rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	args := map[string]interface{}{}
+	var arg0 *CanteenFilterInput
+	if tmp, ok := rawArgs["filter"]; ok {
+		var err error
+		var ptr1 CanteenFilterInput
+		if tmp != nil {
+			ptr1, err = UnmarshalCanteenFilterInput(tmp)
+			arg0 = &ptr1
+		}
+
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["filter"] = arg0
+	var arg1 *Pagination
+	if tmp, ok := rawArgs["pagination"]; ok {
+		var err error
+		var ptr1 Pagination
+		if tmp != nil {
+			ptr1, err = UnmarshalPagination(tmp)
+			arg1 = &ptr1
+		}
+
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["pagination"] = arg1
+	return args, nil
+
+}
+
 func field_Mutation_login_args(rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	args := map[string]interface{}{}
 	var arg0 LoginInput
 	if tmp, ok := rawArgs["input"]; ok {
 		var err error
 		arg0, err = UnmarshalLoginInput(tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+
+}
+
+func field_Mutation_logout_args(rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	args := map[string]interface{}{}
+	var arg0 LogoutInput
+	if tmp, ok := rawArgs["input"]; ok {
+		var err error
+		arg0, err = UnmarshalLogoutInput(tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -536,6 +579,21 @@ func field_Mutation_deleteUser_args(rawArgs map[string]interface{}) (map[string]
 	if tmp, ok := rawArgs["input"]; ok {
 		var err error
 		arg0, err = UnmarshalDeleteIDInput(tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+
+}
+
+func field_Mutation_resetPassword_args(rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	args := map[string]interface{}{}
+	var arg0 ResetPasword
+	if tmp, ok := rawArgs["input"]; ok {
+		var err error
+		arg0, err = UnmarshalResetPasword(tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -695,12 +753,12 @@ func field_Mutation_createRoleAndPermissionRelationship_args(rawArgs map[string]
 
 }
 
-func field_Mutation_createBook_args(rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func field_Mutation_createDishes_args(rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	args := map[string]interface{}{}
-	var arg0 NewBook
+	var arg0 NewDishes
 	if tmp, ok := rawArgs["input"]; ok {
 		var err error
-		arg0, err = UnmarshalNewBook(tmp)
+		arg0, err = UnmarshalNewDishes(tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -710,12 +768,12 @@ func field_Mutation_createBook_args(rawArgs map[string]interface{}) (map[string]
 
 }
 
-func field_Mutation_updateBook_args(rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func field_Mutation_updateDishes_args(rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	args := map[string]interface{}{}
-	var arg0 UpdateBookInput
+	var arg0 UpdateDishesInput
 	if tmp, ok := rawArgs["input"]; ok {
 		var err error
-		arg0, err = UnmarshalUpdateBookInput(tmp)
+		arg0, err = UnmarshalUpdateDishesInput(tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -725,7 +783,7 @@ func field_Mutation_updateBook_args(rawArgs map[string]interface{}) (map[string]
 
 }
 
-func field_Mutation_deleteBook_args(rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func field_Mutation_deleteDishes_args(rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	args := map[string]interface{}{}
 	var arg0 DeleteIDInput
 	if tmp, ok := rawArgs["input"]; ok {
@@ -740,12 +798,12 @@ func field_Mutation_deleteBook_args(rawArgs map[string]interface{}) (map[string]
 
 }
 
-func field_Mutation_addBookChapters_args(rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func field_Mutation_createCanteens_args(rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	args := map[string]interface{}{}
-	var arg0 BookAndChapterRelationshipInput
+	var arg0 NewCanteen
 	if tmp, ok := rawArgs["input"]; ok {
 		var err error
-		arg0, err = UnmarshalBookAndChapterRelationshipInput(tmp)
+		arg0, err = UnmarshalNewCanteen(tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -755,12 +813,12 @@ func field_Mutation_addBookChapters_args(rawArgs map[string]interface{}) (map[st
 
 }
 
-func field_Mutation_removeBookChapters_args(rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func field_Mutation_updateCanteens_args(rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	args := map[string]interface{}{}
-	var arg0 BookAndChapterRelationshipInput
+	var arg0 UpdateCanteenInput
 	if tmp, ok := rawArgs["input"]; ok {
 		var err error
-		arg0, err = UnmarshalBookAndChapterRelationshipInput(tmp)
+		arg0, err = UnmarshalUpdateCanteenInput(tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -770,37 +828,7 @@ func field_Mutation_removeBookChapters_args(rawArgs map[string]interface{}) (map
 
 }
 
-func field_Mutation_createAuthor_args(rawArgs map[string]interface{}) (map[string]interface{}, error) {
-	args := map[string]interface{}{}
-	var arg0 NewAuthor
-	if tmp, ok := rawArgs["input"]; ok {
-		var err error
-		arg0, err = UnmarshalNewAuthor(tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["input"] = arg0
-	return args, nil
-
-}
-
-func field_Mutation_updateAuthor_args(rawArgs map[string]interface{}) (map[string]interface{}, error) {
-	args := map[string]interface{}{}
-	var arg0 UpdateAuthorInput
-	if tmp, ok := rawArgs["input"]; ok {
-		var err error
-		arg0, err = UnmarshalUpdateAuthorInput(tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["input"] = arg0
-	return args, nil
-
-}
-
-func field_Mutation_deleteAuthor_args(rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func field_Mutation_deleteCanteens_args(rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	args := map[string]interface{}{}
 	var arg0 DeleteIDInput
 	if tmp, ok := rawArgs["input"]; ok {
@@ -815,12 +843,12 @@ func field_Mutation_deleteAuthor_args(rawArgs map[string]interface{}) (map[strin
 
 }
 
-func field_Mutation_createAuthorAndBookRelationship_args(rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func field_Mutation_generateTickets_args(rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	args := map[string]interface{}{}
-	var arg0 AuthorAndBookRelationshipInput
+	var arg0 GenarateTicketInput
 	if tmp, ok := rawArgs["input"]; ok {
 		var err error
-		arg0, err = UnmarshalAuthorAndBookRelationshipInput(tmp)
+		arg0, err = UnmarshalGenarateTicketInput(tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -830,12 +858,12 @@ func field_Mutation_createAuthorAndBookRelationship_args(rawArgs map[string]inte
 
 }
 
-func field_Mutation_removeAuthorAndBookRelationship_args(rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func field_Mutation_transferTickets_args(rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	args := map[string]interface{}{}
-	var arg0 AuthorAndBookRelationshipInput
+	var arg0 TransferTicketInput
 	if tmp, ok := rawArgs["input"]; ok {
 		var err error
-		arg0, err = UnmarshalAuthorAndBookRelationshipInput(tmp)
+		arg0, err = UnmarshalTransferTicketInput(tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -845,12 +873,12 @@ func field_Mutation_removeAuthorAndBookRelationship_args(rawArgs map[string]inte
 
 }
 
-func field_Mutation_createChapter_args(rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func field_Mutation_recyclingTickets_args(rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	args := map[string]interface{}{}
-	var arg0 NewChapter
+	var arg0 RecyclingTicketsInput
 	if tmp, ok := rawArgs["input"]; ok {
 		var err error
-		arg0, err = UnmarshalNewChapter(tmp)
+		arg0, err = UnmarshalRecyclingTicketsInput(tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -860,12 +888,12 @@ func field_Mutation_createChapter_args(rawArgs map[string]interface{}) (map[stri
 
 }
 
-func field_Mutation_updateChapter_args(rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func field_Mutation_createQrcode_args(rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	args := map[string]interface{}{}
-	var arg0 UpdateChapterInput
+	var arg0 CanteenQrcodeInput
 	if tmp, ok := rawArgs["input"]; ok {
 		var err error
-		arg0, err = UnmarshalUpdateChapterInput(tmp)
+		arg0, err = UnmarshalCanteenQrcodeInput(tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -875,12 +903,12 @@ func field_Mutation_updateChapter_args(rawArgs map[string]interface{}) (map[stri
 
 }
 
-func field_Mutation_deleteChapter_args(rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func field_Mutation_cancelBooking_args(rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	args := map[string]interface{}{}
-	var arg0 DeleteIDInput
+	var arg0 CancelBookingInput
 	if tmp, ok := rawArgs["input"]; ok {
 		var err error
-		arg0, err = UnmarshalDeleteIDInput(tmp)
+		arg0, err = UnmarshalcancelBookingInput(tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -890,156 +918,17 @@ func field_Mutation_deleteChapter_args(rawArgs map[string]interface{}) (map[stri
 
 }
 
-func field_Mutation_createChapterAndDictionaryRelationship_args(rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func field_Mutation_booking_args(rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	args := map[string]interface{}{}
-	var arg0 ChapterAndDictionaryRelationshipInput
+	var arg0 BookingInput
 	if tmp, ok := rawArgs["input"]; ok {
 		var err error
-		arg0, err = UnmarshalChapterAndDictionaryRelationshipInput(tmp)
+		arg0, err = UnmarshalBookingInput(tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
 	args["input"] = arg0
-	return args, nil
-
-}
-
-func field_Mutation_removeChapterAndDictionaryRelationship_args(rawArgs map[string]interface{}) (map[string]interface{}, error) {
-	args := map[string]interface{}{}
-	var arg0 ChapterAndDictionaryRelationshipInput
-	if tmp, ok := rawArgs["input"]; ok {
-		var err error
-		arg0, err = UnmarshalChapterAndDictionaryRelationshipInput(tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["input"] = arg0
-	return args, nil
-
-}
-
-func field_Mutation_createDictionary_args(rawArgs map[string]interface{}) (map[string]interface{}, error) {
-	args := map[string]interface{}{}
-	var arg0 NewDictionary
-	if tmp, ok := rawArgs["input"]; ok {
-		var err error
-		arg0, err = UnmarshalNewDictionary(tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["input"] = arg0
-	return args, nil
-
-}
-
-func field_Mutation_updateDictionary_args(rawArgs map[string]interface{}) (map[string]interface{}, error) {
-	args := map[string]interface{}{}
-	var arg0 UpdateDictionaryInput
-	if tmp, ok := rawArgs["input"]; ok {
-		var err error
-		arg0, err = UnmarshalUpdateDictionaryInput(tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["input"] = arg0
-	return args, nil
-
-}
-
-func field_Mutation_deleteDictionary_args(rawArgs map[string]interface{}) (map[string]interface{}, error) {
-	args := map[string]interface{}{}
-	var arg0 DeleteIDInput
-	if tmp, ok := rawArgs["input"]; ok {
-		var err error
-		arg0, err = UnmarshalDeleteIDInput(tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["input"] = arg0
-	return args, nil
-
-}
-
-func field_Mutation_createPhrase_args(rawArgs map[string]interface{}) (map[string]interface{}, error) {
-	args := map[string]interface{}{}
-	var arg0 NewPhrase
-	if tmp, ok := rawArgs["input"]; ok {
-		var err error
-		arg0, err = UnmarshalNewPhrase(tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["input"] = arg0
-	return args, nil
-
-}
-
-func field_Mutation_updatePhrase_args(rawArgs map[string]interface{}) (map[string]interface{}, error) {
-	args := map[string]interface{}{}
-	var arg0 UpdatePhraseInput
-	if tmp, ok := rawArgs["input"]; ok {
-		var err error
-		arg0, err = UnmarshalUpdatePhraseInput(tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["input"] = arg0
-	return args, nil
-
-}
-
-func field_Mutation_deletePhrase_args(rawArgs map[string]interface{}) (map[string]interface{}, error) {
-	args := map[string]interface{}{}
-	var arg0 DeleteIDInput
-	if tmp, ok := rawArgs["input"]; ok {
-		var err error
-		arg0, err = UnmarshalDeleteIDInput(tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["input"] = arg0
-	return args, nil
-
-}
-
-func field_Query_dictionaries_args(rawArgs map[string]interface{}) (map[string]interface{}, error) {
-	args := map[string]interface{}{}
-	var arg0 *DictionaryFilterInput
-	if tmp, ok := rawArgs["filter"]; ok {
-		var err error
-		var ptr1 DictionaryFilterInput
-		if tmp != nil {
-			ptr1, err = UnmarshalDictionaryFilterInput(tmp)
-			arg0 = &ptr1
-		}
-
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["filter"] = arg0
-	var arg1 *Pagination
-	if tmp, ok := rawArgs["pagination"]; ok {
-		var err error
-		var ptr1 Pagination
-		if tmp != nil {
-			ptr1, err = UnmarshalPagination(tmp)
-			arg1 = &ptr1
-		}
-
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["pagination"] = arg1
 	return args, nil
 
 }
@@ -1160,6 +1049,26 @@ func field_Query_roles_args(rawArgs map[string]interface{}) (map[string]interfac
 
 }
 
+func field_Query_checkUserNotInRole_args(rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	args := map[string]interface{}{}
+	var arg0 *RoleAndUserFilterInput
+	if tmp, ok := rawArgs["filter"]; ok {
+		var err error
+		var ptr1 RoleAndUserFilterInput
+		if tmp != nil {
+			ptr1, err = UnmarshalRoleAndUserFilterInput(tmp)
+			arg0 = &ptr1
+		}
+
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["filter"] = arg0
+	return args, nil
+
+}
+
 func field_Query_permissions_args(rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	args := map[string]interface{}{}
 	var arg0 RoleFilterInput
@@ -1175,14 +1084,14 @@ func field_Query_permissions_args(rawArgs map[string]interface{}) (map[string]in
 
 }
 
-func field_Query_books_args(rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func field_Query_tickets_args(rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	args := map[string]interface{}{}
-	var arg0 *BookFilterInput
+	var arg0 *TicketFilterInput
 	if tmp, ok := rawArgs["filter"]; ok {
 		var err error
-		var ptr1 BookFilterInput
+		var ptr1 TicketFilterInput
 		if tmp != nil {
-			ptr1, err = UnmarshalBookFilterInput(tmp)
+			ptr1, err = UnmarshalTicketFilterInput(tmp)
 			arg0 = &ptr1
 		}
 
@@ -1209,34 +1118,14 @@ func field_Query_books_args(rawArgs map[string]interface{}) (map[string]interfac
 
 }
 
-func field_Query_chapters_args(rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func field_Query_ticketRecords_args(rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	args := map[string]interface{}{}
-	var arg0 *ChapterFilterInput
+	var arg0 *TicketRecordFilterInput
 	if tmp, ok := rawArgs["filter"]; ok {
 		var err error
-		var ptr1 ChapterFilterInput
+		var ptr1 TicketRecordFilterInput
 		if tmp != nil {
-			ptr1, err = UnmarshalChapterFilterInput(tmp)
-			arg0 = &ptr1
-		}
-
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["filter"] = arg0
-	return args, nil
-
-}
-
-func field_Query_authors_args(rawArgs map[string]interface{}) (map[string]interface{}, error) {
-	args := map[string]interface{}{}
-	var arg0 *AuthorFilterInput
-	if tmp, ok := rawArgs["filter"]; ok {
-		var err error
-		var ptr1 AuthorFilterInput
-		if tmp != nil {
-			ptr1, err = UnmarshalAuthorFilterInput(tmp)
+			ptr1, err = UnmarshalTicketRecordFilterInput(tmp)
 			arg0 = &ptr1
 		}
 
@@ -1263,14 +1152,14 @@ func field_Query_authors_args(rawArgs map[string]interface{}) (map[string]interf
 
 }
 
-func field_Query_phrases_args(rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func field_Query_dishes_args(rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	args := map[string]interface{}{}
-	var arg0 *PhraseFilterInput
+	var arg0 *DishesFilterInput
 	if tmp, ok := rawArgs["filter"]; ok {
 		var err error
-		var ptr1 PhraseFilterInput
+		var ptr1 DishesFilterInput
 		if tmp != nil {
-			ptr1, err = UnmarshalPhraseFilterInput(tmp)
+			ptr1, err = UnmarshalDishesFilterInput(tmp)
 			arg0 = &ptr1
 		}
 
@@ -1297,17 +1186,56 @@ func field_Query_phrases_args(rawArgs map[string]interface{}) (map[string]interf
 
 }
 
-func field_Query_analysis_args(rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func field_Query_canteens_args(rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	args := map[string]interface{}{}
-	var arg0 ChapterAnalysisInput
-	if tmp, ok := rawArgs["input"]; ok {
+	var arg0 *CanteenFilterInput
+	if tmp, ok := rawArgs["filter"]; ok {
 		var err error
-		arg0, err = UnmarshalChapterAnalysisInput(tmp)
+		var ptr1 CanteenFilterInput
+		if tmp != nil {
+			ptr1, err = UnmarshalCanteenFilterInput(tmp)
+			arg0 = &ptr1
+		}
+
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["input"] = arg0
+	args["filter"] = arg0
+	var arg1 *Pagination
+	if tmp, ok := rawArgs["pagination"]; ok {
+		var err error
+		var ptr1 Pagination
+		if tmp != nil {
+			ptr1, err = UnmarshalPagination(tmp)
+			arg1 = &ptr1
+		}
+
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["pagination"] = arg1
+	return args, nil
+
+}
+
+func field_Query_booking_args(rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	args := map[string]interface{}{}
+	var arg0 *BookingFilterInput
+	if tmp, ok := rawArgs["filter"]; ok {
+		var err error
+		var ptr1 BookingFilterInput
+		if tmp != nil {
+			ptr1, err = UnmarshalBookingFilterInput(tmp)
+			arg0 = &ptr1
+		}
+
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["filter"] = arg0
 	return args, nil
 
 }
@@ -1416,6 +1344,40 @@ func field_User_roles_args(rawArgs map[string]interface{}) (map[string]interface
 
 }
 
+func field_User_tickets_args(rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	args := map[string]interface{}{}
+	var arg0 *Pagination
+	if tmp, ok := rawArgs["pagination"]; ok {
+		var err error
+		var ptr1 Pagination
+		if tmp != nil {
+			ptr1, err = UnmarshalPagination(tmp)
+			arg0 = &ptr1
+		}
+
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["pagination"] = arg0
+	var arg1 *TicketFilterInput
+	if tmp, ok := rawArgs["filter"]; ok {
+		var err error
+		var ptr1 TicketFilterInput
+		if tmp != nil {
+			ptr1, err = UnmarshalTicketFilterInput(tmp)
+			arg1 = &ptr1
+		}
+
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["filter"] = arg1
+	return args, nil
+
+}
+
 func field___Type_fields_args(rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	args := map[string]interface{}{}
 	var arg0 bool
@@ -1461,6 +1423,21 @@ func dir_hasRole_args(rawArgs map[string]interface{}) (map[string]interface{}, e
 
 }
 
+func dir_needLogin_args(rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["resolver"]; ok {
+		var err error
+		arg0, err = graphql.UnmarshalString(tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["resolver"] = arg0
+	return args, nil
+
+}
+
 type executableSchema struct {
 	resolvers  ResolverRoot
 	directives DirectiveRoot
@@ -1474,260 +1451,292 @@ func (e *executableSchema) Schema() *ast.Schema {
 func (e *executableSchema) Complexity(typeName, field string, childComplexity int, rawArgs map[string]interface{}) (int, bool) {
 	switch typeName + "." + field {
 
-	case "Author.id":
-		if e.complexity.Author.Id == nil {
+	case "Booking.userId":
+		if e.complexity.Booking.UserId == nil {
 			break
 		}
 
-		return e.complexity.Author.Id(childComplexity), true
+		return e.complexity.Booking.UserId(childComplexity), true
 
-	case "Author.name":
-		if e.complexity.Author.Name == nil {
+	case "Booking.canteenId":
+		if e.complexity.Booking.CanteenId == nil {
 			break
 		}
 
-		return e.complexity.Author.Name(childComplexity), true
+		return e.complexity.Booking.CanteenId(childComplexity), true
 
-	case "Author.books":
-		if e.complexity.Author.Books == nil {
+	case "Booking.type":
+		if e.complexity.Booking.Type == nil {
 			break
 		}
 
-		args, err := field_Author_books_args(rawArgs)
-		if err != nil {
-			return 0, false
-		}
+		return e.complexity.Booking.Type(childComplexity), true
 
-		return e.complexity.Author.Books(childComplexity, args["filter"].(*BookFilterInput), args["pagination"].(*Pagination)), true
-
-	case "Book.id":
-		if e.complexity.Book.Id == nil {
+	case "Booking.date":
+		if e.complexity.Booking.Date == nil {
 			break
 		}
 
-		return e.complexity.Book.Id(childComplexity), true
+		return e.complexity.Booking.Date(childComplexity), true
 
-	case "Book.name":
-		if e.complexity.Book.Name == nil {
+	case "Booking.createdAt":
+		if e.complexity.Booking.CreatedAt == nil {
 			break
 		}
 
-		return e.complexity.Book.Name(childComplexity), true
+		return e.complexity.Booking.CreatedAt(childComplexity), true
 
-	case "Book.authors":
-		if e.complexity.Book.Authors == nil {
+	case "Booking.updatedAt":
+		if e.complexity.Booking.UpdatedAt == nil {
 			break
 		}
 
-		return e.complexity.Book.Authors(childComplexity), true
+		return e.complexity.Booking.UpdatedAt(childComplexity), true
 
-	case "Book.picture":
-		if e.complexity.Book.Picture == nil {
+	case "Booking.deletedAt":
+		if e.complexity.Booking.DeletedAt == nil {
 			break
 		}
 
-		return e.complexity.Book.Picture(childComplexity), true
+		return e.complexity.Booking.DeletedAt(childComplexity), true
 
-	case "Book.alias":
-		if e.complexity.Book.Alias == nil {
+	case "Canteen.id":
+		if e.complexity.Canteen.Id == nil {
 			break
 		}
 
-		return e.complexity.Book.Alias(childComplexity), true
+		return e.complexity.Canteen.Id(childComplexity), true
 
-	case "Book.users":
-		if e.complexity.Book.Users == nil {
+	case "Canteen.name":
+		if e.complexity.Canteen.Name == nil {
 			break
 		}
 
-		return e.complexity.Book.Users(childComplexity), true
+		return e.complexity.Canteen.Name(childComplexity), true
 
-	case "Book.chapters":
-		if e.complexity.Book.Chapters == nil {
+	case "Canteen.groupID":
+		if e.complexity.Canteen.GroupId == nil {
 			break
 		}
 
-		args, err := field_Book_chapters_args(rawArgs)
-		if err != nil {
-			return 0, false
-		}
+		return e.complexity.Canteen.GroupId(childComplexity), true
 
-		return e.complexity.Book.Chapters(childComplexity, args["filter"].(*ChapterFilterInput), args["pagination"].(*Pagination)), true
-
-	case "Chapter.id":
-		if e.complexity.Chapter.Id == nil {
+	case "Canteen.breakfastTime":
+		if e.complexity.Canteen.BreakfastTime == nil {
 			break
 		}
 
-		return e.complexity.Chapter.Id(childComplexity), true
+		return e.complexity.Canteen.BreakfastTime(childComplexity), true
 
-	case "Chapter.index":
-		if e.complexity.Chapter.Index == nil {
+	case "Canteen.breakfastPicture":
+		if e.complexity.Canteen.BreakfastPicture == nil {
 			break
 		}
 
-		return e.complexity.Chapter.Index(childComplexity), true
+		return e.complexity.Canteen.BreakfastPicture(childComplexity), true
 
-	case "Chapter.name":
-		if e.complexity.Chapter.Name == nil {
+	case "Canteen.bookingBreakfastDeadline":
+		if e.complexity.Canteen.BookingBreakfastDeadline == nil {
 			break
 		}
 
-		return e.complexity.Chapter.Name(childComplexity), true
+		return e.complexity.Canteen.BookingBreakfastDeadline(childComplexity), true
 
-	case "Chapter.content":
-		if e.complexity.Chapter.Content == nil {
+	case "Canteen.lunchTime":
+		if e.complexity.Canteen.LunchTime == nil {
 			break
 		}
 
-		return e.complexity.Chapter.Content(childComplexity), true
+		return e.complexity.Canteen.LunchTime(childComplexity), true
 
-	case "Chapter.phrases":
-		if e.complexity.Chapter.Phrases == nil {
+	case "Canteen.lunchPicture":
+		if e.complexity.Canteen.LunchPicture == nil {
 			break
 		}
 
-		return e.complexity.Chapter.Phrases(childComplexity), true
+		return e.complexity.Canteen.LunchPicture(childComplexity), true
 
-	case "Chapter.cet4Words":
-		if e.complexity.Chapter.Cet4Words == nil {
+	case "Canteen.bookingLunchDeadline":
+		if e.complexity.Canteen.BookingLunchDeadline == nil {
 			break
 		}
 
-		return e.complexity.Chapter.Cet4Words(childComplexity), true
+		return e.complexity.Canteen.BookingLunchDeadline(childComplexity), true
 
-	case "Chapter.cet6Words":
-		if e.complexity.Chapter.Cet6Words == nil {
+	case "Canteen.dinnerTime":
+		if e.complexity.Canteen.DinnerTime == nil {
 			break
 		}
 
-		return e.complexity.Chapter.Cet6Words(childComplexity), true
+		return e.complexity.Canteen.DinnerTime(childComplexity), true
 
-	case "Chapter.kyWords":
-		if e.complexity.Chapter.KyWords == nil {
+	case "Canteen.dinnerPicture":
+		if e.complexity.Canteen.DinnerPicture == nil {
 			break
 		}
 
-		return e.complexity.Chapter.KyWords(childComplexity), true
+		return e.complexity.Canteen.DinnerPicture(childComplexity), true
 
-	case "Chapter.toefiWords":
-		if e.complexity.Chapter.ToefiWords == nil {
+	case "Canteen.bookingDinnerDeadline":
+		if e.complexity.Canteen.BookingDinnerDeadline == nil {
 			break
 		}
 
-		return e.complexity.Chapter.ToefiWords(childComplexity), true
+		return e.complexity.Canteen.BookingDinnerDeadline(childComplexity), true
 
-	case "Chapter.ieltsWords":
-		if e.complexity.Chapter.IeltsWords == nil {
+	case "Canteen.cancelTime":
+		if e.complexity.Canteen.CancelTime == nil {
 			break
 		}
 
-		return e.complexity.Chapter.IeltsWords(childComplexity), true
+		return e.complexity.Canteen.CancelTime(childComplexity), true
 
-	case "Chapter.greWords":
-		if e.complexity.Chapter.GreWords == nil {
+	case "Canteen.createdAt":
+		if e.complexity.Canteen.CreatedAt == nil {
 			break
 		}
 
-		return e.complexity.Chapter.GreWords(childComplexity), true
+		return e.complexity.Canteen.CreatedAt(childComplexity), true
 
-	case "Dictionary.id":
-		if e.complexity.Dictionary.Id == nil {
+	case "Canteen.updatedAt":
+		if e.complexity.Canteen.UpdatedAt == nil {
 			break
 		}
 
-		return e.complexity.Dictionary.Id(childComplexity), true
+		return e.complexity.Canteen.UpdatedAt(childComplexity), true
 
-	case "Dictionary.word":
-		if e.complexity.Dictionary.Word == nil {
+	case "Canteen.deletedAt":
+		if e.complexity.Canteen.DeletedAt == nil {
 			break
 		}
 
-		return e.complexity.Dictionary.Word(childComplexity), true
+		return e.complexity.Canteen.DeletedAt(childComplexity), true
 
-	case "Dictionary.phonetic":
-		if e.complexity.Dictionary.Phonetic == nil {
+	case "Canteen.qrcode":
+		if e.complexity.Canteen.Qrcode == nil {
 			break
 		}
 
-		return e.complexity.Dictionary.Phonetic(childComplexity), true
+		return e.complexity.Canteen.Qrcode(childComplexity), true
 
-	case "Dictionary.definition":
-		if e.complexity.Dictionary.Definition == nil {
+	case "Canteen.count":
+		if e.complexity.Canteen.Count == nil {
 			break
 		}
 
-		return e.complexity.Dictionary.Definition(childComplexity), true
+		return e.complexity.Canteen.Count(childComplexity), true
 
-	case "Dictionary.translation":
-		if e.complexity.Dictionary.Translation == nil {
+	case "CanteenCount.date":
+		if e.complexity.CanteenCount.Date == nil {
 			break
 		}
 
-		return e.complexity.Dictionary.Translation(childComplexity), true
+		return e.complexity.CanteenCount.Date(childComplexity), true
 
-	case "Dictionary.pos":
-		if e.complexity.Dictionary.Pos == nil {
+	case "CanteenCount.breakfast":
+		if e.complexity.CanteenCount.Breakfast == nil {
 			break
 		}
 
-		return e.complexity.Dictionary.Pos(childComplexity), true
+		return e.complexity.CanteenCount.Breakfast(childComplexity), true
 
-	case "Dictionary.collins":
-		if e.complexity.Dictionary.Collins == nil {
+	case "CanteenCount.lunch":
+		if e.complexity.CanteenCount.Lunch == nil {
 			break
 		}
 
-		return e.complexity.Dictionary.Collins(childComplexity), true
+		return e.complexity.CanteenCount.Lunch(childComplexity), true
 
-	case "Dictionary.oxford":
-		if e.complexity.Dictionary.Oxford == nil {
+	case "CanteenCount.dinner":
+		if e.complexity.CanteenCount.Dinner == nil {
 			break
 		}
 
-		return e.complexity.Dictionary.Oxford(childComplexity), true
+		return e.complexity.CanteenCount.Dinner(childComplexity), true
 
-	case "Dictionary.tag":
-		if e.complexity.Dictionary.Tag == nil {
+	case "Count.breakfast":
+		if e.complexity.Count.Breakfast == nil {
 			break
 		}
 
-		return e.complexity.Dictionary.Tag(childComplexity), true
+		return e.complexity.Count.Breakfast(childComplexity), true
 
-	case "Dictionary.bnc":
-		if e.complexity.Dictionary.Bnc == nil {
+	case "Count.lunch":
+		if e.complexity.Count.Lunch == nil {
 			break
 		}
 
-		return e.complexity.Dictionary.Bnc(childComplexity), true
+		return e.complexity.Count.Lunch(childComplexity), true
 
-	case "Dictionary.frq":
-		if e.complexity.Dictionary.Frq == nil {
+	case "Count.dinner":
+		if e.complexity.Count.Dinner == nil {
 			break
 		}
 
-		return e.complexity.Dictionary.Frq(childComplexity), true
+		return e.complexity.Count.Dinner(childComplexity), true
 
-	case "Dictionary.exchange":
-		if e.complexity.Dictionary.Exchange == nil {
+	case "DashboardResponse.orgInfo":
+		if e.complexity.DashboardResponse.OrgInfo == nil {
 			break
 		}
 
-		return e.complexity.Dictionary.Exchange(childComplexity), true
+		return e.complexity.DashboardResponse.OrgInfo(childComplexity), true
 
-	case "Dictionary.detail":
-		if e.complexity.Dictionary.Detail == nil {
+	case "DashboardResponse.systemInfo":
+		if e.complexity.DashboardResponse.SystemInfo == nil {
 			break
 		}
 
-		return e.complexity.Dictionary.Detail(childComplexity), true
+		return e.complexity.DashboardResponse.SystemInfo(childComplexity), true
 
-	case "Dictionary.audio":
-		if e.complexity.Dictionary.Audio == nil {
+	case "DashboardResponse.ticketInfo":
+		if e.complexity.DashboardResponse.TicketInfo == nil {
 			break
 		}
 
-		return e.complexity.Dictionary.Audio(childComplexity), true
+		return e.complexity.DashboardResponse.TicketInfo(childComplexity), true
+
+	case "Dishes.id":
+		if e.complexity.Dishes.Id == nil {
+			break
+		}
+
+		return e.complexity.Dishes.Id(childComplexity), true
+
+	case "Dishes.name":
+		if e.complexity.Dishes.Name == nil {
+			break
+		}
+
+		return e.complexity.Dishes.Name(childComplexity), true
+
+	case "Dishes.picture":
+		if e.complexity.Dishes.Picture == nil {
+			break
+		}
+
+		return e.complexity.Dishes.Picture(childComplexity), true
+
+	case "Dishes.createdAt":
+		if e.complexity.Dishes.CreatedAt == nil {
+			break
+		}
+
+		return e.complexity.Dishes.CreatedAt(childComplexity), true
+
+	case "Dishes.updatedAt":
+		if e.complexity.Dishes.UpdatedAt == nil {
+			break
+		}
+
+		return e.complexity.Dishes.UpdatedAt(childComplexity), true
+
+	case "Dishes.deletedAt":
+		if e.complexity.Dishes.DeletedAt == nil {
+			break
+		}
+
+		return e.complexity.Dishes.DeletedAt(childComplexity), true
 
 	case "Group.id":
 		if e.complexity.Group.Id == nil {
@@ -1750,6 +1759,20 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Group.Parent(childComplexity), true
 
+	case "Group.adminId":
+		if e.complexity.Group.AdminId == nil {
+			break
+		}
+
+		return e.complexity.Group.AdminId(childComplexity), true
+
+	case "Group.adminInfo":
+		if e.complexity.Group.AdminInfo == nil {
+			break
+		}
+
+		return e.complexity.Group.AdminInfo(childComplexity), true
+
 	case "Group.levels":
 		if e.complexity.Group.Levels == nil {
 			break
@@ -1757,21 +1780,21 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Group.Levels(childComplexity), true
 
-	case "Group.created_at":
+	case "Group.createdAt":
 		if e.complexity.Group.CreatedAt == nil {
 			break
 		}
 
 		return e.complexity.Group.CreatedAt(childComplexity), true
 
-	case "Group.updated_at":
+	case "Group.updatedAt":
 		if e.complexity.Group.UpdatedAt == nil {
 			break
 		}
 
 		return e.complexity.Group.UpdatedAt(childComplexity), true
 
-	case "Group.deleted_at":
+	case "Group.deletedAt":
 		if e.complexity.Group.DeletedAt == nil {
 			break
 		}
@@ -1790,6 +1813,39 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Group.Users(childComplexity, args["filter"].(*UserFilterInput), args["pagination"].(*Pagination)), true
 
+	case "Group.canteens":
+		if e.complexity.Group.Canteens == nil {
+			break
+		}
+
+		args, err := field_Group_canteens_args(rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Group.Canteens(childComplexity, args["filter"].(*CanteenFilterInput), args["pagination"].(*Pagination)), true
+
+	case "LoginResponse.token":
+		if e.complexity.LoginResponse.Token == nil {
+			break
+		}
+
+		return e.complexity.LoginResponse.Token(childComplexity), true
+
+	case "LoginResponse.permissions":
+		if e.complexity.LoginResponse.Permissions == nil {
+			break
+		}
+
+		return e.complexity.LoginResponse.Permissions(childComplexity), true
+
+	case "LoginResponse.user":
+		if e.complexity.LoginResponse.User == nil {
+			break
+		}
+
+		return e.complexity.LoginResponse.User(childComplexity), true
+
 	case "Mutation.login":
 		if e.complexity.Mutation.Login == nil {
 			break
@@ -1801,6 +1857,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Mutation.Login(childComplexity, args["input"].(LoginInput)), true
+
+	case "Mutation.logout":
+		if e.complexity.Mutation.Logout == nil {
+			break
+		}
+
+		args, err := field_Mutation_logout_args(rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.Logout(childComplexity, args["input"].(LogoutInput)), true
 
 	case "Mutation.createUser":
 		if e.complexity.Mutation.CreateUser == nil {
@@ -1837,6 +1905,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Mutation.DeleteUser(childComplexity, args["input"].(DeleteIDInput)), true
+
+	case "Mutation.resetPassword":
+		if e.complexity.Mutation.ResetPassword == nil {
+			break
+		}
+
+		args, err := field_Mutation_resetPassword_args(rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.ResetPassword(childComplexity, args["input"].(ResetPasword)), true
 
 	case "Mutation.createGroup":
 		if e.complexity.Mutation.CreateGroup == nil {
@@ -1958,257 +2038,170 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Mutation.CreateRoleAndPermissionRelationship(childComplexity, args["input"].(RoleAndPermissionRelationshipInput)), true
 
-	case "Mutation.createBook":
-		if e.complexity.Mutation.CreateBook == nil {
+	case "Mutation.createDishes":
+		if e.complexity.Mutation.CreateDishes == nil {
 			break
 		}
 
-		args, err := field_Mutation_createBook_args(rawArgs)
+		args, err := field_Mutation_createDishes_args(rawArgs)
 		if err != nil {
 			return 0, false
 		}
 
-		return e.complexity.Mutation.CreateBook(childComplexity, args["input"].(NewBook)), true
+		return e.complexity.Mutation.CreateDishes(childComplexity, args["input"].(NewDishes)), true
 
-	case "Mutation.updateBook":
-		if e.complexity.Mutation.UpdateBook == nil {
+	case "Mutation.updateDishes":
+		if e.complexity.Mutation.UpdateDishes == nil {
 			break
 		}
 
-		args, err := field_Mutation_updateBook_args(rawArgs)
+		args, err := field_Mutation_updateDishes_args(rawArgs)
 		if err != nil {
 			return 0, false
 		}
 
-		return e.complexity.Mutation.UpdateBook(childComplexity, args["input"].(UpdateBookInput)), true
+		return e.complexity.Mutation.UpdateDishes(childComplexity, args["input"].(UpdateDishesInput)), true
 
-	case "Mutation.deleteBook":
-		if e.complexity.Mutation.DeleteBook == nil {
+	case "Mutation.deleteDishes":
+		if e.complexity.Mutation.DeleteDishes == nil {
 			break
 		}
 
-		args, err := field_Mutation_deleteBook_args(rawArgs)
+		args, err := field_Mutation_deleteDishes_args(rawArgs)
 		if err != nil {
 			return 0, false
 		}
 
-		return e.complexity.Mutation.DeleteBook(childComplexity, args["input"].(DeleteIDInput)), true
+		return e.complexity.Mutation.DeleteDishes(childComplexity, args["input"].(DeleteIDInput)), true
 
-	case "Mutation.addBookChapters":
-		if e.complexity.Mutation.AddBookChapters == nil {
+	case "Mutation.createCanteens":
+		if e.complexity.Mutation.CreateCanteens == nil {
 			break
 		}
 
-		args, err := field_Mutation_addBookChapters_args(rawArgs)
+		args, err := field_Mutation_createCanteens_args(rawArgs)
 		if err != nil {
 			return 0, false
 		}
 
-		return e.complexity.Mutation.AddBookChapters(childComplexity, args["input"].(BookAndChapterRelationshipInput)), true
+		return e.complexity.Mutation.CreateCanteens(childComplexity, args["input"].(NewCanteen)), true
 
-	case "Mutation.removeBookChapters":
-		if e.complexity.Mutation.RemoveBookChapters == nil {
+	case "Mutation.updateCanteens":
+		if e.complexity.Mutation.UpdateCanteens == nil {
 			break
 		}
 
-		args, err := field_Mutation_removeBookChapters_args(rawArgs)
+		args, err := field_Mutation_updateCanteens_args(rawArgs)
 		if err != nil {
 			return 0, false
 		}
 
-		return e.complexity.Mutation.RemoveBookChapters(childComplexity, args["input"].(BookAndChapterRelationshipInput)), true
+		return e.complexity.Mutation.UpdateCanteens(childComplexity, args["input"].(UpdateCanteenInput)), true
 
-	case "Mutation.createAuthor":
-		if e.complexity.Mutation.CreateAuthor == nil {
+	case "Mutation.deleteCanteens":
+		if e.complexity.Mutation.DeleteCanteens == nil {
 			break
 		}
 
-		args, err := field_Mutation_createAuthor_args(rawArgs)
+		args, err := field_Mutation_deleteCanteens_args(rawArgs)
 		if err != nil {
 			return 0, false
 		}
 
-		return e.complexity.Mutation.CreateAuthor(childComplexity, args["input"].(NewAuthor)), true
+		return e.complexity.Mutation.DeleteCanteens(childComplexity, args["input"].(DeleteIDInput)), true
 
-	case "Mutation.updateAuthor":
-		if e.complexity.Mutation.UpdateAuthor == nil {
+	case "Mutation.generateTickets":
+		if e.complexity.Mutation.GenerateTickets == nil {
 			break
 		}
 
-		args, err := field_Mutation_updateAuthor_args(rawArgs)
+		args, err := field_Mutation_generateTickets_args(rawArgs)
 		if err != nil {
 			return 0, false
 		}
 
-		return e.complexity.Mutation.UpdateAuthor(childComplexity, args["input"].(UpdateAuthorInput)), true
+		return e.complexity.Mutation.GenerateTickets(childComplexity, args["input"].(GenarateTicketInput)), true
 
-	case "Mutation.deleteAuthor":
-		if e.complexity.Mutation.DeleteAuthor == nil {
+	case "Mutation.transferTickets":
+		if e.complexity.Mutation.TransferTickets == nil {
 			break
 		}
 
-		args, err := field_Mutation_deleteAuthor_args(rawArgs)
+		args, err := field_Mutation_transferTickets_args(rawArgs)
 		if err != nil {
 			return 0, false
 		}
 
-		return e.complexity.Mutation.DeleteAuthor(childComplexity, args["input"].(DeleteIDInput)), true
+		return e.complexity.Mutation.TransferTickets(childComplexity, args["input"].(TransferTicketInput)), true
 
-	case "Mutation.createAuthorAndBookRelationship":
-		if e.complexity.Mutation.CreateAuthorAndBookRelationship == nil {
+	case "Mutation.recyclingTickets":
+		if e.complexity.Mutation.RecyclingTickets == nil {
 			break
 		}
 
-		args, err := field_Mutation_createAuthorAndBookRelationship_args(rawArgs)
+		args, err := field_Mutation_recyclingTickets_args(rawArgs)
 		if err != nil {
 			return 0, false
 		}
 
-		return e.complexity.Mutation.CreateAuthorAndBookRelationship(childComplexity, args["input"].(AuthorAndBookRelationshipInput)), true
+		return e.complexity.Mutation.RecyclingTickets(childComplexity, args["input"].(RecyclingTicketsInput)), true
 
-	case "Mutation.removeAuthorAndBookRelationship":
-		if e.complexity.Mutation.RemoveAuthorAndBookRelationship == nil {
+	case "Mutation.createQrcode":
+		if e.complexity.Mutation.CreateQrcode == nil {
 			break
 		}
 
-		args, err := field_Mutation_removeAuthorAndBookRelationship_args(rawArgs)
+		args, err := field_Mutation_createQrcode_args(rawArgs)
 		if err != nil {
 			return 0, false
 		}
 
-		return e.complexity.Mutation.RemoveAuthorAndBookRelationship(childComplexity, args["input"].(AuthorAndBookRelationshipInput)), true
+		return e.complexity.Mutation.CreateQrcode(childComplexity, args["input"].(CanteenQrcodeInput)), true
 
-	case "Mutation.createChapter":
-		if e.complexity.Mutation.CreateChapter == nil {
+	case "Mutation.cancelBooking":
+		if e.complexity.Mutation.CancelBooking == nil {
 			break
 		}
 
-		args, err := field_Mutation_createChapter_args(rawArgs)
+		args, err := field_Mutation_cancelBooking_args(rawArgs)
 		if err != nil {
 			return 0, false
 		}
 
-		return e.complexity.Mutation.CreateChapter(childComplexity, args["input"].(NewChapter)), true
+		return e.complexity.Mutation.CancelBooking(childComplexity, args["input"].(CancelBookingInput)), true
 
-	case "Mutation.updateChapter":
-		if e.complexity.Mutation.UpdateChapter == nil {
+	case "Mutation.booking":
+		if e.complexity.Mutation.Booking == nil {
 			break
 		}
 
-		args, err := field_Mutation_updateChapter_args(rawArgs)
+		args, err := field_Mutation_booking_args(rawArgs)
 		if err != nil {
 			return 0, false
 		}
 
-		return e.complexity.Mutation.UpdateChapter(childComplexity, args["input"].(UpdateChapterInput)), true
+		return e.complexity.Mutation.Booking(childComplexity, args["input"].(BookingInput)), true
 
-	case "Mutation.deleteChapter":
-		if e.complexity.Mutation.DeleteChapter == nil {
+	case "OrgDashboard.name":
+		if e.complexity.OrgDashboard.Name == nil {
 			break
 		}
 
-		args, err := field_Mutation_deleteChapter_args(rawArgs)
-		if err != nil {
-			return 0, false
-		}
+		return e.complexity.OrgDashboard.Name(childComplexity), true
 
-		return e.complexity.Mutation.DeleteChapter(childComplexity, args["input"].(DeleteIDInput)), true
-
-	case "Mutation.createChapterAndDictionaryRelationship":
-		if e.complexity.Mutation.CreateChapterAndDictionaryRelationship == nil {
+	case "OrgDashboard.userCount":
+		if e.complexity.OrgDashboard.UserCount == nil {
 			break
 		}
 
-		args, err := field_Mutation_createChapterAndDictionaryRelationship_args(rawArgs)
-		if err != nil {
-			return 0, false
-		}
+		return e.complexity.OrgDashboard.UserCount(childComplexity), true
 
-		return e.complexity.Mutation.CreateChapterAndDictionaryRelationship(childComplexity, args["input"].(ChapterAndDictionaryRelationshipInput)), true
-
-	case "Mutation.removeChapterAndDictionaryRelationship":
-		if e.complexity.Mutation.RemoveChapterAndDictionaryRelationship == nil {
+	case "OrgDashboard.canteenCount":
+		if e.complexity.OrgDashboard.CanteenCount == nil {
 			break
 		}
 
-		args, err := field_Mutation_removeChapterAndDictionaryRelationship_args(rawArgs)
-		if err != nil {
-			return 0, false
-		}
-
-		return e.complexity.Mutation.RemoveChapterAndDictionaryRelationship(childComplexity, args["input"].(ChapterAndDictionaryRelationshipInput)), true
-
-	case "Mutation.createDictionary":
-		if e.complexity.Mutation.CreateDictionary == nil {
-			break
-		}
-
-		args, err := field_Mutation_createDictionary_args(rawArgs)
-		if err != nil {
-			return 0, false
-		}
-
-		return e.complexity.Mutation.CreateDictionary(childComplexity, args["input"].(NewDictionary)), true
-
-	case "Mutation.updateDictionary":
-		if e.complexity.Mutation.UpdateDictionary == nil {
-			break
-		}
-
-		args, err := field_Mutation_updateDictionary_args(rawArgs)
-		if err != nil {
-			return 0, false
-		}
-
-		return e.complexity.Mutation.UpdateDictionary(childComplexity, args["input"].(UpdateDictionaryInput)), true
-
-	case "Mutation.deleteDictionary":
-		if e.complexity.Mutation.DeleteDictionary == nil {
-			break
-		}
-
-		args, err := field_Mutation_deleteDictionary_args(rawArgs)
-		if err != nil {
-			return 0, false
-		}
-
-		return e.complexity.Mutation.DeleteDictionary(childComplexity, args["input"].(DeleteIDInput)), true
-
-	case "Mutation.createPhrase":
-		if e.complexity.Mutation.CreatePhrase == nil {
-			break
-		}
-
-		args, err := field_Mutation_createPhrase_args(rawArgs)
-		if err != nil {
-			return 0, false
-		}
-
-		return e.complexity.Mutation.CreatePhrase(childComplexity, args["input"].(NewPhrase)), true
-
-	case "Mutation.updatePhrase":
-		if e.complexity.Mutation.UpdatePhrase == nil {
-			break
-		}
-
-		args, err := field_Mutation_updatePhrase_args(rawArgs)
-		if err != nil {
-			return 0, false
-		}
-
-		return e.complexity.Mutation.UpdatePhrase(childComplexity, args["input"].(UpdatePhraseInput)), true
-
-	case "Mutation.deletePhrase":
-		if e.complexity.Mutation.DeletePhrase == nil {
-			break
-		}
-
-		args, err := field_Mutation_deletePhrase_args(rawArgs)
-		if err != nil {
-			return 0, false
-		}
-
-		return e.complexity.Mutation.DeletePhrase(childComplexity, args["input"].(DeleteIDInput)), true
+		return e.complexity.OrgDashboard.CanteenCount(childComplexity), true
 
 	case "Permission.module":
 		if e.complexity.Permission.Module == nil {
@@ -2245,38 +2238,26 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Permission.Checked(childComplexity), true
 
-	case "Phrase.id":
-		if e.complexity.Phrase.Id == nil {
+	case "Permission.createdAt":
+		if e.complexity.Permission.CreatedAt == nil {
 			break
 		}
 
-		return e.complexity.Phrase.Id(childComplexity), true
+		return e.complexity.Permission.CreatedAt(childComplexity), true
 
-	case "Phrase.content":
-		if e.complexity.Phrase.Content == nil {
+	case "Permission.updatedAt":
+		if e.complexity.Permission.UpdatedAt == nil {
 			break
 		}
 
-		return e.complexity.Phrase.Content(childComplexity), true
+		return e.complexity.Permission.UpdatedAt(childComplexity), true
 
-	case "Phrase.translation":
-		if e.complexity.Phrase.Translation == nil {
+	case "Permission.deletedAt":
+		if e.complexity.Permission.DeletedAt == nil {
 			break
 		}
 
-		return e.complexity.Phrase.Translation(childComplexity), true
-
-	case "Query.dictionaries":
-		if e.complexity.Query.Dictionaries == nil {
-			break
-		}
-
-		args, err := field_Query_dictionaries_args(rawArgs)
-		if err != nil {
-			return 0, false
-		}
-
-		return e.complexity.Query.Dictionaries(childComplexity, args["filter"].(*DictionaryFilterInput), args["pagination"].(*Pagination)), true
+		return e.complexity.Permission.DeletedAt(childComplexity), true
 
 	case "Query.groups":
 		if e.complexity.Query.Groups == nil {
@@ -2314,6 +2295,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Query.Roles(childComplexity, args["filter"].(*RoleFilterInput), args["pagination"].(*Pagination)), true
 
+	case "Query.checkUserNotInRole":
+		if e.complexity.Query.CheckUserNotInRole == nil {
+			break
+		}
+
+		args, err := field_Query_checkUserNotInRole_args(rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.CheckUserNotInRole(childComplexity, args["filter"].(*RoleAndUserFilterInput)), true
+
 	case "Query.permissions":
 		if e.complexity.Query.Permissions == nil {
 			break
@@ -2326,65 +2319,72 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Query.Permissions(childComplexity, args["filter"].(RoleFilterInput)), true
 
-	case "Query.books":
-		if e.complexity.Query.Books == nil {
+	case "Query.tickets":
+		if e.complexity.Query.Tickets == nil {
 			break
 		}
 
-		args, err := field_Query_books_args(rawArgs)
+		args, err := field_Query_tickets_args(rawArgs)
 		if err != nil {
 			return 0, false
 		}
 
-		return e.complexity.Query.Books(childComplexity, args["filter"].(*BookFilterInput), args["pagination"].(*Pagination)), true
+		return e.complexity.Query.Tickets(childComplexity, args["filter"].(*TicketFilterInput), args["pagination"].(*Pagination)), true
 
-	case "Query.chapters":
-		if e.complexity.Query.Chapters == nil {
+	case "Query.ticketRecords":
+		if e.complexity.Query.TicketRecords == nil {
 			break
 		}
 
-		args, err := field_Query_chapters_args(rawArgs)
+		args, err := field_Query_ticketRecords_args(rawArgs)
 		if err != nil {
 			return 0, false
 		}
 
-		return e.complexity.Query.Chapters(childComplexity, args["filter"].(*ChapterFilterInput)), true
+		return e.complexity.Query.TicketRecords(childComplexity, args["filter"].(*TicketRecordFilterInput), args["pagination"].(*Pagination)), true
 
-	case "Query.authors":
-		if e.complexity.Query.Authors == nil {
+	case "Query.dishes":
+		if e.complexity.Query.Dishes == nil {
 			break
 		}
 
-		args, err := field_Query_authors_args(rawArgs)
+		args, err := field_Query_dishes_args(rawArgs)
 		if err != nil {
 			return 0, false
 		}
 
-		return e.complexity.Query.Authors(childComplexity, args["filter"].(*AuthorFilterInput), args["pagination"].(*Pagination)), true
+		return e.complexity.Query.Dishes(childComplexity, args["filter"].(*DishesFilterInput), args["pagination"].(*Pagination)), true
 
-	case "Query.phrases":
-		if e.complexity.Query.Phrases == nil {
+	case "Query.canteens":
+		if e.complexity.Query.Canteens == nil {
 			break
 		}
 
-		args, err := field_Query_phrases_args(rawArgs)
+		args, err := field_Query_canteens_args(rawArgs)
 		if err != nil {
 			return 0, false
 		}
 
-		return e.complexity.Query.Phrases(childComplexity, args["filter"].(*PhraseFilterInput), args["pagination"].(*Pagination)), true
+		return e.complexity.Query.Canteens(childComplexity, args["filter"].(*CanteenFilterInput), args["pagination"].(*Pagination)), true
 
-	case "Query.analysis":
-		if e.complexity.Query.Analysis == nil {
+	case "Query.booking":
+		if e.complexity.Query.Booking == nil {
 			break
 		}
 
-		args, err := field_Query_analysis_args(rawArgs)
+		args, err := field_Query_booking_args(rawArgs)
 		if err != nil {
 			return 0, false
 		}
 
-		return e.complexity.Query.Analysis(childComplexity, args["input"].(ChapterAnalysisInput)), true
+		return e.complexity.Query.Booking(childComplexity, args["filter"].(*BookingFilterInput)), true
+
+	case "Query.dashboard":
+		if e.complexity.Query.Dashboard == nil {
+			break
+		}
+
+		return e.complexity.Query.Dashboard(childComplexity), true
 
 	case "Query.messages":
 		if e.complexity.Query.Messages == nil {
@@ -2393,117 +2393,89 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Query.Messages(childComplexity), true
 
-	case "QueryAuthorResponse.totalCount":
-		if e.complexity.QueryAuthorResponse.TotalCount == nil {
+	case "QueryBookingResponse.totalCount":
+		if e.complexity.QueryBookingResponse.TotalCount == nil {
 			break
 		}
 
-		return e.complexity.QueryAuthorResponse.TotalCount(childComplexity), true
+		return e.complexity.QueryBookingResponse.TotalCount(childComplexity), true
 
-	case "QueryAuthorResponse.skip":
-		if e.complexity.QueryAuthorResponse.Skip == nil {
+	case "QueryBookingResponse.skip":
+		if e.complexity.QueryBookingResponse.Skip == nil {
 			break
 		}
 
-		return e.complexity.QueryAuthorResponse.Skip(childComplexity), true
+		return e.complexity.QueryBookingResponse.Skip(childComplexity), true
 
-	case "QueryAuthorResponse.take":
-		if e.complexity.QueryAuthorResponse.Take == nil {
+	case "QueryBookingResponse.take":
+		if e.complexity.QueryBookingResponse.Take == nil {
 			break
 		}
 
-		return e.complexity.QueryAuthorResponse.Take(childComplexity), true
+		return e.complexity.QueryBookingResponse.Take(childComplexity), true
 
-	case "QueryAuthorResponse.rows":
-		if e.complexity.QueryAuthorResponse.Rows == nil {
+	case "QueryBookingResponse.rows":
+		if e.complexity.QueryBookingResponse.Rows == nil {
 			break
 		}
 
-		return e.complexity.QueryAuthorResponse.Rows(childComplexity), true
+		return e.complexity.QueryBookingResponse.Rows(childComplexity), true
 
-	case "QueryBookResponse.totalCount":
-		if e.complexity.QueryBookResponse.TotalCount == nil {
+	case "QueryCanteenResponse.totalCount":
+		if e.complexity.QueryCanteenResponse.TotalCount == nil {
 			break
 		}
 
-		return e.complexity.QueryBookResponse.TotalCount(childComplexity), true
+		return e.complexity.QueryCanteenResponse.TotalCount(childComplexity), true
 
-	case "QueryBookResponse.skip":
-		if e.complexity.QueryBookResponse.Skip == nil {
+	case "QueryCanteenResponse.skip":
+		if e.complexity.QueryCanteenResponse.Skip == nil {
 			break
 		}
 
-		return e.complexity.QueryBookResponse.Skip(childComplexity), true
+		return e.complexity.QueryCanteenResponse.Skip(childComplexity), true
 
-	case "QueryBookResponse.take":
-		if e.complexity.QueryBookResponse.Take == nil {
+	case "QueryCanteenResponse.take":
+		if e.complexity.QueryCanteenResponse.Take == nil {
 			break
 		}
 
-		return e.complexity.QueryBookResponse.Take(childComplexity), true
+		return e.complexity.QueryCanteenResponse.Take(childComplexity), true
 
-	case "QueryBookResponse.rows":
-		if e.complexity.QueryBookResponse.Rows == nil {
+	case "QueryCanteenResponse.rows":
+		if e.complexity.QueryCanteenResponse.Rows == nil {
 			break
 		}
 
-		return e.complexity.QueryBookResponse.Rows(childComplexity), true
+		return e.complexity.QueryCanteenResponse.Rows(childComplexity), true
 
-	case "QueryChapterResponse.totalCount":
-		if e.complexity.QueryChapterResponse.TotalCount == nil {
+	case "QueryDishesResponse.totalCount":
+		if e.complexity.QueryDishesResponse.TotalCount == nil {
 			break
 		}
 
-		return e.complexity.QueryChapterResponse.TotalCount(childComplexity), true
+		return e.complexity.QueryDishesResponse.TotalCount(childComplexity), true
 
-	case "QueryChapterResponse.skip":
-		if e.complexity.QueryChapterResponse.Skip == nil {
+	case "QueryDishesResponse.skip":
+		if e.complexity.QueryDishesResponse.Skip == nil {
 			break
 		}
 
-		return e.complexity.QueryChapterResponse.Skip(childComplexity), true
+		return e.complexity.QueryDishesResponse.Skip(childComplexity), true
 
-	case "QueryChapterResponse.take":
-		if e.complexity.QueryChapterResponse.Take == nil {
+	case "QueryDishesResponse.take":
+		if e.complexity.QueryDishesResponse.Take == nil {
 			break
 		}
 
-		return e.complexity.QueryChapterResponse.Take(childComplexity), true
+		return e.complexity.QueryDishesResponse.Take(childComplexity), true
 
-	case "QueryChapterResponse.rows":
-		if e.complexity.QueryChapterResponse.Rows == nil {
+	case "QueryDishesResponse.rows":
+		if e.complexity.QueryDishesResponse.Rows == nil {
 			break
 		}
 
-		return e.complexity.QueryChapterResponse.Rows(childComplexity), true
-
-	case "QueryDictionaryResponse.totalCount":
-		if e.complexity.QueryDictionaryResponse.TotalCount == nil {
-			break
-		}
-
-		return e.complexity.QueryDictionaryResponse.TotalCount(childComplexity), true
-
-	case "QueryDictionaryResponse.skip":
-		if e.complexity.QueryDictionaryResponse.Skip == nil {
-			break
-		}
-
-		return e.complexity.QueryDictionaryResponse.Skip(childComplexity), true
-
-	case "QueryDictionaryResponse.take":
-		if e.complexity.QueryDictionaryResponse.Take == nil {
-			break
-		}
-
-		return e.complexity.QueryDictionaryResponse.Take(childComplexity), true
-
-	case "QueryDictionaryResponse.rows":
-		if e.complexity.QueryDictionaryResponse.Rows == nil {
-			break
-		}
-
-		return e.complexity.QueryDictionaryResponse.Rows(childComplexity), true
+		return e.complexity.QueryDishesResponse.Rows(childComplexity), true
 
 	case "QueryGroupResponse.totalCount":
 		if e.complexity.QueryGroupResponse.TotalCount == nil {
@@ -2561,34 +2533,6 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.QueryPermissionResponse.Rows(childComplexity), true
 
-	case "QueryPhraseResponse.totalCount":
-		if e.complexity.QueryPhraseResponse.TotalCount == nil {
-			break
-		}
-
-		return e.complexity.QueryPhraseResponse.TotalCount(childComplexity), true
-
-	case "QueryPhraseResponse.skip":
-		if e.complexity.QueryPhraseResponse.Skip == nil {
-			break
-		}
-
-		return e.complexity.QueryPhraseResponse.Skip(childComplexity), true
-
-	case "QueryPhraseResponse.take":
-		if e.complexity.QueryPhraseResponse.Take == nil {
-			break
-		}
-
-		return e.complexity.QueryPhraseResponse.Take(childComplexity), true
-
-	case "QueryPhraseResponse.rows":
-		if e.complexity.QueryPhraseResponse.Rows == nil {
-			break
-		}
-
-		return e.complexity.QueryPhraseResponse.Rows(childComplexity), true
-
 	case "QueryRoleResponse.totalCount":
 		if e.complexity.QueryRoleResponse.TotalCount == nil {
 			break
@@ -2616,6 +2560,69 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.QueryRoleResponse.Rows(childComplexity), true
+
+	case "QueryTicketRecordResponse.totalCount":
+		if e.complexity.QueryTicketRecordResponse.TotalCount == nil {
+			break
+		}
+
+		return e.complexity.QueryTicketRecordResponse.TotalCount(childComplexity), true
+
+	case "QueryTicketRecordResponse.skip":
+		if e.complexity.QueryTicketRecordResponse.Skip == nil {
+			break
+		}
+
+		return e.complexity.QueryTicketRecordResponse.Skip(childComplexity), true
+
+	case "QueryTicketRecordResponse.take":
+		if e.complexity.QueryTicketRecordResponse.Take == nil {
+			break
+		}
+
+		return e.complexity.QueryTicketRecordResponse.Take(childComplexity), true
+
+	case "QueryTicketRecordResponse.rows":
+		if e.complexity.QueryTicketRecordResponse.Rows == nil {
+			break
+		}
+
+		return e.complexity.QueryTicketRecordResponse.Rows(childComplexity), true
+
+	case "QueryTicketResponse.totalCount":
+		if e.complexity.QueryTicketResponse.TotalCount == nil {
+			break
+		}
+
+		return e.complexity.QueryTicketResponse.TotalCount(childComplexity), true
+
+	case "QueryTicketResponse.skip":
+		if e.complexity.QueryTicketResponse.Skip == nil {
+			break
+		}
+
+		return e.complexity.QueryTicketResponse.Skip(childComplexity), true
+
+	case "QueryTicketResponse.take":
+		if e.complexity.QueryTicketResponse.Take == nil {
+			break
+		}
+
+		return e.complexity.QueryTicketResponse.Take(childComplexity), true
+
+	case "QueryTicketResponse.count":
+		if e.complexity.QueryTicketResponse.Count == nil {
+			break
+		}
+
+		return e.complexity.QueryTicketResponse.Count(childComplexity), true
+
+	case "QueryTicketResponse.rows":
+		if e.complexity.QueryTicketResponse.Rows == nil {
+			break
+		}
+
+		return e.complexity.QueryTicketResponse.Rows(childComplexity), true
 
 	case "QueryUserResponse.totalCount":
 		if e.complexity.QueryUserResponse.TotalCount == nil {
@@ -2659,21 +2666,21 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Role.Name(childComplexity), true
 
-	case "Role.created_at":
+	case "Role.createdAt":
 		if e.complexity.Role.CreatedAt == nil {
 			break
 		}
 
 		return e.complexity.Role.CreatedAt(childComplexity), true
 
-	case "Role.updated_at":
+	case "Role.updatedAt":
 		if e.complexity.Role.UpdatedAt == nil {
 			break
 		}
 
 		return e.complexity.Role.UpdatedAt(childComplexity), true
 
-	case "Role.deleted_at":
+	case "Role.deletedAt":
 		if e.complexity.Role.DeletedAt == nil {
 			break
 		}
@@ -2703,6 +2710,146 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Subscription.MessageAdded(childComplexity, args["roomName"].(string)), true
+
+	case "SystemInfo.currentLoginCount":
+		if e.complexity.SystemInfo.CurrentLoginCount == nil {
+			break
+		}
+
+		return e.complexity.SystemInfo.CurrentLoginCount(childComplexity), true
+
+	case "Ticket.id":
+		if e.complexity.Ticket.Id == nil {
+			break
+		}
+
+		return e.complexity.Ticket.Id(childComplexity), true
+
+	case "Ticket.UUID":
+		if e.complexity.Ticket.Uuid == nil {
+			break
+		}
+
+		return e.complexity.Ticket.Uuid(childComplexity), true
+
+	case "Ticket.userId":
+		if e.complexity.Ticket.UserId == nil {
+			break
+		}
+
+		return e.complexity.Ticket.UserId(childComplexity), true
+
+	case "Ticket.type":
+		if e.complexity.Ticket.Type == nil {
+			break
+		}
+
+		return e.complexity.Ticket.Type(childComplexity), true
+
+	case "Ticket.price":
+		if e.complexity.Ticket.Price == nil {
+			break
+		}
+
+		return e.complexity.Ticket.Price(childComplexity), true
+
+	case "Ticket.createdAt":
+		if e.complexity.Ticket.CreatedAt == nil {
+			break
+		}
+
+		return e.complexity.Ticket.CreatedAt(childComplexity), true
+
+	case "Ticket.updatedAt":
+		if e.complexity.Ticket.UpdatedAt == nil {
+			break
+		}
+
+		return e.complexity.Ticket.UpdatedAt(childComplexity), true
+
+	case "TicketRecord.id":
+		if e.complexity.TicketRecord.Id == nil {
+			break
+		}
+
+		return e.complexity.TicketRecord.Id(childComplexity), true
+
+	case "TicketRecord.operator":
+		if e.complexity.TicketRecord.Operator == nil {
+			break
+		}
+
+		return e.complexity.TicketRecord.Operator(childComplexity), true
+
+	case "TicketRecord.owner":
+		if e.complexity.TicketRecord.Owner == nil {
+			break
+		}
+
+		return e.complexity.TicketRecord.Owner(childComplexity), true
+
+	case "TicketRecord.number":
+		if e.complexity.TicketRecord.Number == nil {
+			break
+		}
+
+		return e.complexity.TicketRecord.Number(childComplexity), true
+
+	case "TicketRecord.action":
+		if e.complexity.TicketRecord.Action == nil {
+			break
+		}
+
+		return e.complexity.TicketRecord.Action(childComplexity), true
+
+	case "TicketRecord.description":
+		if e.complexity.TicketRecord.Description == nil {
+			break
+		}
+
+		return e.complexity.TicketRecord.Description(childComplexity), true
+
+	case "TicketRecord.createdAt":
+		if e.complexity.TicketRecord.CreatedAt == nil {
+			break
+		}
+
+		return e.complexity.TicketRecord.CreatedAt(childComplexity), true
+
+	case "TicketRecord.updatedAt":
+		if e.complexity.TicketRecord.UpdatedAt == nil {
+			break
+		}
+
+		return e.complexity.TicketRecord.UpdatedAt(childComplexity), true
+
+	case "TicketRecord.deletedAt":
+		if e.complexity.TicketRecord.DeletedAt == nil {
+			break
+		}
+
+		return e.complexity.TicketRecord.DeletedAt(childComplexity), true
+
+	case "TransferResponse.successCount":
+		if e.complexity.TransferResponse.SuccessCount == nil {
+			break
+		}
+
+		return e.complexity.TransferResponse.SuccessCount(childComplexity), true
+
+	case "TransferResponse.errorCount":
+		if e.complexity.TransferResponse.ErrorCount == nil {
+			break
+		}
+
+		return e.complexity.TransferResponse.ErrorCount(childComplexity), true
+
+	case "TransferResponse.errorMsg":
+		if e.complexity.TransferResponse.ErrorMsg == nil {
+			break
+		}
+
+		return e.complexity.TransferResponse.ErrorMsg(childComplexity), true
 
 	case "User.id":
 		if e.complexity.User.Id == nil {
@@ -2767,21 +2914,21 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.User.State(childComplexity), true
 
-	case "User.created_at":
+	case "User.createdAt":
 		if e.complexity.User.CreatedAt == nil {
 			break
 		}
 
 		return e.complexity.User.CreatedAt(childComplexity), true
 
-	case "User.updated_at":
+	case "User.updatedAt":
 		if e.complexity.User.UpdatedAt == nil {
 			break
 		}
 
 		return e.complexity.User.UpdatedAt(childComplexity), true
 
-	case "User.deleted_at":
+	case "User.deletedAt":
 		if e.complexity.User.DeletedAt == nil {
 			break
 		}
@@ -2811,6 +2958,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.User.Roles(childComplexity, args["pagination"].(*Pagination)), true
+
+	case "User.tickets":
+		if e.complexity.User.Tickets == nil {
+			break
+		}
+
+		args, err := field_User_tickets_args(rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.User.Tickets(childComplexity, args["pagination"].(*Pagination), args["filter"].(*TicketFilterInput)), true
 
 	}
 	return 0, false
@@ -2887,11 +3046,11 @@ type executionContext struct {
 	*executableSchema
 }
 
-var authorImplementors = []string{"Author"}
+var bookingImplementors = []string{"Booking"}
 
 // nolint: gocyclo, errcheck, gas, goconst
-func (ec *executionContext) _Author(ctx context.Context, sel ast.SelectionSet, obj *models.Author) graphql.Marshaler {
-	fields := graphql.CollectFields(ctx, sel, authorImplementors)
+func (ec *executionContext) _Booking(ctx context.Context, sel ast.SelectionSet, obj *models.Booking) graphql.Marshaler {
+	fields := graphql.CollectFields(ctx, sel, bookingImplementors)
 
 	var wg sync.WaitGroup
 	out := graphql.NewOrderedMap(len(fields))
@@ -2901,25 +3060,65 @@ func (ec *executionContext) _Author(ctx context.Context, sel ast.SelectionSet, o
 
 		switch field.Name {
 		case "__typename":
-			out.Values[i] = graphql.MarshalString("Author")
-		case "id":
+			out.Values[i] = graphql.MarshalString("Booking")
+		case "userId":
 			wg.Add(1)
 			go func(i int, field graphql.CollectedField) {
-				out.Values[i] = ec._Author_id(ctx, field, obj)
+				out.Values[i] = ec._Booking_userId(ctx, field, obj)
 				if out.Values[i] == graphql.Null {
 					invalid = true
 				}
 				wg.Done()
 			}(i, field)
-		case "name":
-			out.Values[i] = ec._Author_name(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				invalid = true
-			}
-		case "books":
+		case "canteenId":
 			wg.Add(1)
 			go func(i int, field graphql.CollectedField) {
-				out.Values[i] = ec._Author_books(ctx, field, obj)
+				out.Values[i] = ec._Booking_canteenId(ctx, field, obj)
+				if out.Values[i] == graphql.Null {
+					invalid = true
+				}
+				wg.Done()
+			}(i, field)
+		case "type":
+			wg.Add(1)
+			go func(i int, field graphql.CollectedField) {
+				out.Values[i] = ec._Booking_type(ctx, field, obj)
+				if out.Values[i] == graphql.Null {
+					invalid = true
+				}
+				wg.Done()
+			}(i, field)
+		case "date":
+			wg.Add(1)
+			go func(i int, field graphql.CollectedField) {
+				out.Values[i] = ec._Booking_date(ctx, field, obj)
+				if out.Values[i] == graphql.Null {
+					invalid = true
+				}
+				wg.Done()
+			}(i, field)
+		case "createdAt":
+			wg.Add(1)
+			go func(i int, field graphql.CollectedField) {
+				out.Values[i] = ec._Booking_createdAt(ctx, field, obj)
+				if out.Values[i] == graphql.Null {
+					invalid = true
+				}
+				wg.Done()
+			}(i, field)
+		case "updatedAt":
+			wg.Add(1)
+			go func(i int, field graphql.CollectedField) {
+				out.Values[i] = ec._Booking_updatedAt(ctx, field, obj)
+				if out.Values[i] == graphql.Null {
+					invalid = true
+				}
+				wg.Done()
+			}(i, field)
+		case "deletedAt":
+			wg.Add(1)
+			go func(i int, field graphql.CollectedField) {
+				out.Values[i] = ec._Booking_deletedAt(ctx, field, obj)
 				if out.Values[i] == graphql.Null {
 					invalid = true
 				}
@@ -2937,11 +3136,11 @@ func (ec *executionContext) _Author(ctx context.Context, sel ast.SelectionSet, o
 }
 
 // nolint: vetshadow
-func (ec *executionContext) _Author_id(ctx context.Context, field graphql.CollectedField, obj *models.Author) graphql.Marshaler {
+func (ec *executionContext) _Booking_userId(ctx context.Context, field graphql.CollectedField, obj *models.Booking) graphql.Marshaler {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
 	rctx := &graphql.ResolverContext{
-		Object: "Author",
+		Object: "Booking",
 		Args:   nil,
 		Field:  field,
 	}
@@ -2949,7 +3148,7 @@ func (ec *executionContext) _Author_id(ctx context.Context, field graphql.Collec
 	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
 	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Author().ID(rctx, obj)
+		return ec.resolvers.Booking().UserID(rctx, obj)
 	})
 	if resTmp == nil {
 		if !ec.HasError(rctx) {
@@ -2964,11 +3163,328 @@ func (ec *executionContext) _Author_id(ctx context.Context, field graphql.Collec
 }
 
 // nolint: vetshadow
-func (ec *executionContext) _Author_name(ctx context.Context, field graphql.CollectedField, obj *models.Author) graphql.Marshaler {
+func (ec *executionContext) _Booking_canteenId(ctx context.Context, field graphql.CollectedField, obj *models.Booking) graphql.Marshaler {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
 	rctx := &graphql.ResolverContext{
-		Object: "Author",
+		Object: "Booking",
+		Args:   nil,
+		Field:  field,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Booking().CanteenID(rctx, obj)
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return graphql.MarshalInt(res)
+}
+
+// nolint: vetshadow
+func (ec *executionContext) _Booking_type(ctx context.Context, field graphql.CollectedField, obj *models.Booking) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object: "Booking",
+		Args:   nil,
+		Field:  field,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Booking().Type(rctx, obj)
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return graphql.MarshalString(res)
+}
+
+// nolint: vetshadow
+func (ec *executionContext) _Booking_date(ctx context.Context, field graphql.CollectedField, obj *models.Booking) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object: "Booking",
+		Args:   nil,
+		Field:  field,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Booking().Date(rctx, obj)
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return graphql.MarshalString(res)
+}
+
+// nolint: vetshadow
+func (ec *executionContext) _Booking_createdAt(ctx context.Context, field graphql.CollectedField, obj *models.Booking) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object: "Booking",
+		Args:   nil,
+		Field:  field,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Booking().CreatedAt(rctx, obj)
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return graphql.MarshalString(res)
+}
+
+// nolint: vetshadow
+func (ec *executionContext) _Booking_updatedAt(ctx context.Context, field graphql.CollectedField, obj *models.Booking) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object: "Booking",
+		Args:   nil,
+		Field:  field,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Booking().UpdatedAt(rctx, obj)
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return graphql.MarshalString(res)
+}
+
+// nolint: vetshadow
+func (ec *executionContext) _Booking_deletedAt(ctx context.Context, field graphql.CollectedField, obj *models.Booking) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object: "Booking",
+		Args:   nil,
+		Field:  field,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Booking().DeletedAt(rctx, obj)
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return graphql.MarshalString(res)
+}
+
+var canteenImplementors = []string{"Canteen"}
+
+// nolint: gocyclo, errcheck, gas, goconst
+func (ec *executionContext) _Canteen(ctx context.Context, sel ast.SelectionSet, obj *models.Canteen) graphql.Marshaler {
+	fields := graphql.CollectFields(ctx, sel, canteenImplementors)
+
+	var wg sync.WaitGroup
+	out := graphql.NewOrderedMap(len(fields))
+	invalid := false
+	for i, field := range fields {
+		out.Keys[i] = field.Alias
+
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("Canteen")
+		case "id":
+			wg.Add(1)
+			go func(i int, field graphql.CollectedField) {
+				out.Values[i] = ec._Canteen_id(ctx, field, obj)
+				if out.Values[i] == graphql.Null {
+					invalid = true
+				}
+				wg.Done()
+			}(i, field)
+		case "name":
+			out.Values[i] = ec._Canteen_name(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalid = true
+			}
+		case "groupID":
+			wg.Add(1)
+			go func(i int, field graphql.CollectedField) {
+				out.Values[i] = ec._Canteen_groupID(ctx, field, obj)
+				if out.Values[i] == graphql.Null {
+					invalid = true
+				}
+				wg.Done()
+			}(i, field)
+		case "breakfastTime":
+			out.Values[i] = ec._Canteen_breakfastTime(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalid = true
+			}
+		case "breakfastPicture":
+			out.Values[i] = ec._Canteen_breakfastPicture(ctx, field, obj)
+		case "bookingBreakfastDeadline":
+			out.Values[i] = ec._Canteen_bookingBreakfastDeadline(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalid = true
+			}
+		case "lunchTime":
+			out.Values[i] = ec._Canteen_lunchTime(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalid = true
+			}
+		case "lunchPicture":
+			out.Values[i] = ec._Canteen_lunchPicture(ctx, field, obj)
+		case "bookingLunchDeadline":
+			out.Values[i] = ec._Canteen_bookingLunchDeadline(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalid = true
+			}
+		case "dinnerTime":
+			out.Values[i] = ec._Canteen_dinnerTime(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalid = true
+			}
+		case "dinnerPicture":
+			out.Values[i] = ec._Canteen_dinnerPicture(ctx, field, obj)
+		case "bookingDinnerDeadline":
+			out.Values[i] = ec._Canteen_bookingDinnerDeadline(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalid = true
+			}
+		case "cancelTime":
+			out.Values[i] = ec._Canteen_cancelTime(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalid = true
+			}
+		case "createdAt":
+			wg.Add(1)
+			go func(i int, field graphql.CollectedField) {
+				out.Values[i] = ec._Canteen_createdAt(ctx, field, obj)
+				if out.Values[i] == graphql.Null {
+					invalid = true
+				}
+				wg.Done()
+			}(i, field)
+		case "updatedAt":
+			wg.Add(1)
+			go func(i int, field graphql.CollectedField) {
+				out.Values[i] = ec._Canteen_updatedAt(ctx, field, obj)
+				if out.Values[i] == graphql.Null {
+					invalid = true
+				}
+				wg.Done()
+			}(i, field)
+		case "deletedAt":
+			wg.Add(1)
+			go func(i int, field graphql.CollectedField) {
+				out.Values[i] = ec._Canteen_deletedAt(ctx, field, obj)
+				if out.Values[i] == graphql.Null {
+					invalid = true
+				}
+				wg.Done()
+			}(i, field)
+		case "qrcode":
+			out.Values[i] = ec._Canteen_qrcode(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalid = true
+			}
+		case "count":
+			wg.Add(1)
+			go func(i int, field graphql.CollectedField) {
+				out.Values[i] = ec._Canteen_count(ctx, field, obj)
+				wg.Done()
+			}(i, field)
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	wg.Wait()
+	if invalid {
+		return graphql.Null
+	}
+	return out
+}
+
+// nolint: vetshadow
+func (ec *executionContext) _Canteen_id(ctx context.Context, field graphql.CollectedField, obj *models.Canteen) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object: "Canteen",
+		Args:   nil,
+		Field:  field,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Canteen().ID(rctx, obj)
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return graphql.MarshalID(res)
+}
+
+// nolint: vetshadow
+func (ec *executionContext) _Canteen_name(ctx context.Context, field graphql.CollectedField, obj *models.Canteen) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object: "Canteen",
 		Args:   nil,
 		Field:  field,
 	}
@@ -2991,25 +3507,19 @@ func (ec *executionContext) _Author_name(ctx context.Context, field graphql.Coll
 }
 
 // nolint: vetshadow
-func (ec *executionContext) _Author_books(ctx context.Context, field graphql.CollectedField, obj *models.Author) graphql.Marshaler {
+func (ec *executionContext) _Canteen_groupID(ctx context.Context, field graphql.CollectedField, obj *models.Canteen) graphql.Marshaler {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
-	rawArgs := field.ArgumentMap(ec.Variables)
-	args, err := field_Author_books_args(rawArgs)
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
 	rctx := &graphql.ResolverContext{
-		Object: "Author",
-		Args:   args,
+		Object: "Canteen",
+		Args:   nil,
 		Field:  field,
 	}
 	ctx = graphql.WithResolverContext(ctx, rctx)
 	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
 	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Author().Books(rctx, obj, args["filter"].(*BookFilterInput), args["pagination"].(*Pagination))
+		return ec.resolvers.Canteen().GroupID(rctx, obj)
 	})
 	if resTmp == nil {
 		if !ec.HasError(rctx) {
@@ -3017,18 +3527,875 @@ func (ec *executionContext) _Author_books(ctx context.Context, field graphql.Col
 		}
 		return graphql.Null
 	}
-	res := resTmp.(QueryBookResponse)
+	res := resTmp.(int)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return graphql.MarshalInt(res)
+}
+
+// nolint: vetshadow
+func (ec *executionContext) _Canteen_breakfastTime(ctx context.Context, field graphql.CollectedField, obj *models.Canteen) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object: "Canteen",
+		Args:   nil,
+		Field:  field,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.BreakfastTime, nil
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return graphql.MarshalString(res)
+}
+
+// nolint: vetshadow
+func (ec *executionContext) _Canteen_breakfastPicture(ctx context.Context, field graphql.CollectedField, obj *models.Canteen) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object: "Canteen",
+		Args:   nil,
+		Field:  field,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.BreakfastPicture, nil
+	})
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return graphql.MarshalString(res)
+}
+
+// nolint: vetshadow
+func (ec *executionContext) _Canteen_bookingBreakfastDeadline(ctx context.Context, field graphql.CollectedField, obj *models.Canteen) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object: "Canteen",
+		Args:   nil,
+		Field:  field,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.BookingBreakfastDeadline, nil
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return graphql.MarshalString(res)
+}
+
+// nolint: vetshadow
+func (ec *executionContext) _Canteen_lunchTime(ctx context.Context, field graphql.CollectedField, obj *models.Canteen) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object: "Canteen",
+		Args:   nil,
+		Field:  field,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.LunchTime, nil
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return graphql.MarshalString(res)
+}
+
+// nolint: vetshadow
+func (ec *executionContext) _Canteen_lunchPicture(ctx context.Context, field graphql.CollectedField, obj *models.Canteen) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object: "Canteen",
+		Args:   nil,
+		Field:  field,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.LunchPicture, nil
+	})
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return graphql.MarshalString(res)
+}
+
+// nolint: vetshadow
+func (ec *executionContext) _Canteen_bookingLunchDeadline(ctx context.Context, field graphql.CollectedField, obj *models.Canteen) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object: "Canteen",
+		Args:   nil,
+		Field:  field,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.BookingLunchDeadline, nil
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return graphql.MarshalString(res)
+}
+
+// nolint: vetshadow
+func (ec *executionContext) _Canteen_dinnerTime(ctx context.Context, field graphql.CollectedField, obj *models.Canteen) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object: "Canteen",
+		Args:   nil,
+		Field:  field,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.DinnerTime, nil
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return graphql.MarshalString(res)
+}
+
+// nolint: vetshadow
+func (ec *executionContext) _Canteen_dinnerPicture(ctx context.Context, field graphql.CollectedField, obj *models.Canteen) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object: "Canteen",
+		Args:   nil,
+		Field:  field,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.DinnerPicture, nil
+	})
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return graphql.MarshalString(res)
+}
+
+// nolint: vetshadow
+func (ec *executionContext) _Canteen_bookingDinnerDeadline(ctx context.Context, field graphql.CollectedField, obj *models.Canteen) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object: "Canteen",
+		Args:   nil,
+		Field:  field,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.BookingDinnerDeadline, nil
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return graphql.MarshalString(res)
+}
+
+// nolint: vetshadow
+func (ec *executionContext) _Canteen_cancelTime(ctx context.Context, field graphql.CollectedField, obj *models.Canteen) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object: "Canteen",
+		Args:   nil,
+		Field:  field,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.CancelTime, nil
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return graphql.MarshalInt(res)
+}
+
+// nolint: vetshadow
+func (ec *executionContext) _Canteen_createdAt(ctx context.Context, field graphql.CollectedField, obj *models.Canteen) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object: "Canteen",
+		Args:   nil,
+		Field:  field,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Canteen().CreatedAt(rctx, obj)
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return graphql.MarshalString(res)
+}
+
+// nolint: vetshadow
+func (ec *executionContext) _Canteen_updatedAt(ctx context.Context, field graphql.CollectedField, obj *models.Canteen) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object: "Canteen",
+		Args:   nil,
+		Field:  field,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Canteen().UpdatedAt(rctx, obj)
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return graphql.MarshalString(res)
+}
+
+// nolint: vetshadow
+func (ec *executionContext) _Canteen_deletedAt(ctx context.Context, field graphql.CollectedField, obj *models.Canteen) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object: "Canteen",
+		Args:   nil,
+		Field:  field,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Canteen().DeletedAt(rctx, obj)
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return graphql.MarshalString(res)
+}
+
+// nolint: vetshadow
+func (ec *executionContext) _Canteen_qrcode(ctx context.Context, field graphql.CollectedField, obj *models.Canteen) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object: "Canteen",
+		Args:   nil,
+		Field:  field,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Qrcode, nil
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return graphql.MarshalString(res)
+}
+
+// nolint: vetshadow
+func (ec *executionContext) _Canteen_count(ctx context.Context, field graphql.CollectedField, obj *models.Canteen) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object: "Canteen",
+		Args:   nil,
+		Field:  field,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Canteen().Count(rctx, obj)
+	})
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.([]CanteenCount)
 	rctx.Result = res
 	ctx = ec.Tracer.StartFieldChildExecution(ctx)
 
-	return ec._QueryBookResponse(ctx, field.Selections, &res)
+	arr1 := make(graphql.Array, len(res))
+	var wg sync.WaitGroup
+
+	isLen1 := len(res) == 1
+	if !isLen1 {
+		wg.Add(len(res))
+	}
+
+	for idx1 := range res {
+		idx1 := idx1
+		rctx := &graphql.ResolverContext{
+			Index:  &idx1,
+			Result: &res[idx1],
+		}
+		ctx := graphql.WithResolverContext(ctx, rctx)
+		f := func(idx1 int) {
+			if !isLen1 {
+				defer wg.Done()
+			}
+			arr1[idx1] = func() graphql.Marshaler {
+
+				return ec._CanteenCount(ctx, field.Selections, &res[idx1])
+			}()
+		}
+		if isLen1 {
+			f(idx1)
+		} else {
+			go f(idx1)
+		}
+
+	}
+	wg.Wait()
+	return arr1
 }
 
-var bookImplementors = []string{"Book"}
+var canteenCountImplementors = []string{"CanteenCount"}
 
 // nolint: gocyclo, errcheck, gas, goconst
-func (ec *executionContext) _Book(ctx context.Context, sel ast.SelectionSet, obj *models.Book) graphql.Marshaler {
-	fields := graphql.CollectFields(ctx, sel, bookImplementors)
+func (ec *executionContext) _CanteenCount(ctx context.Context, sel ast.SelectionSet, obj *CanteenCount) graphql.Marshaler {
+	fields := graphql.CollectFields(ctx, sel, canteenCountImplementors)
+
+	out := graphql.NewOrderedMap(len(fields))
+	invalid := false
+	for i, field := range fields {
+		out.Keys[i] = field.Alias
+
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("CanteenCount")
+		case "date":
+			out.Values[i] = ec._CanteenCount_date(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalid = true
+			}
+		case "breakfast":
+			out.Values[i] = ec._CanteenCount_breakfast(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalid = true
+			}
+		case "lunch":
+			out.Values[i] = ec._CanteenCount_lunch(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalid = true
+			}
+		case "dinner":
+			out.Values[i] = ec._CanteenCount_dinner(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalid = true
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+
+	if invalid {
+		return graphql.Null
+	}
+	return out
+}
+
+// nolint: vetshadow
+func (ec *executionContext) _CanteenCount_date(ctx context.Context, field graphql.CollectedField, obj *CanteenCount) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object: "CanteenCount",
+		Args:   nil,
+		Field:  field,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Date, nil
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return graphql.MarshalString(res)
+}
+
+// nolint: vetshadow
+func (ec *executionContext) _CanteenCount_breakfast(ctx context.Context, field graphql.CollectedField, obj *CanteenCount) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object: "CanteenCount",
+		Args:   nil,
+		Field:  field,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Breakfast, nil
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return graphql.MarshalInt(res)
+}
+
+// nolint: vetshadow
+func (ec *executionContext) _CanteenCount_lunch(ctx context.Context, field graphql.CollectedField, obj *CanteenCount) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object: "CanteenCount",
+		Args:   nil,
+		Field:  field,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Lunch, nil
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return graphql.MarshalInt(res)
+}
+
+// nolint: vetshadow
+func (ec *executionContext) _CanteenCount_dinner(ctx context.Context, field graphql.CollectedField, obj *CanteenCount) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object: "CanteenCount",
+		Args:   nil,
+		Field:  field,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Dinner, nil
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return graphql.MarshalInt(res)
+}
+
+var countImplementors = []string{"Count"}
+
+// nolint: gocyclo, errcheck, gas, goconst
+func (ec *executionContext) _Count(ctx context.Context, sel ast.SelectionSet, obj *Count) graphql.Marshaler {
+	fields := graphql.CollectFields(ctx, sel, countImplementors)
+
+	out := graphql.NewOrderedMap(len(fields))
+	invalid := false
+	for i, field := range fields {
+		out.Keys[i] = field.Alias
+
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("Count")
+		case "breakfast":
+			out.Values[i] = ec._Count_breakfast(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalid = true
+			}
+		case "lunch":
+			out.Values[i] = ec._Count_lunch(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalid = true
+			}
+		case "dinner":
+			out.Values[i] = ec._Count_dinner(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalid = true
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+
+	if invalid {
+		return graphql.Null
+	}
+	return out
+}
+
+// nolint: vetshadow
+func (ec *executionContext) _Count_breakfast(ctx context.Context, field graphql.CollectedField, obj *Count) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object: "Count",
+		Args:   nil,
+		Field:  field,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Breakfast, nil
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return graphql.MarshalInt(res)
+}
+
+// nolint: vetshadow
+func (ec *executionContext) _Count_lunch(ctx context.Context, field graphql.CollectedField, obj *Count) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object: "Count",
+		Args:   nil,
+		Field:  field,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Lunch, nil
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return graphql.MarshalInt(res)
+}
+
+// nolint: vetshadow
+func (ec *executionContext) _Count_dinner(ctx context.Context, field graphql.CollectedField, obj *Count) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object: "Count",
+		Args:   nil,
+		Field:  field,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Dinner, nil
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return graphql.MarshalInt(res)
+}
+
+var dashboardResponseImplementors = []string{"DashboardResponse"}
+
+// nolint: gocyclo, errcheck, gas, goconst
+func (ec *executionContext) _DashboardResponse(ctx context.Context, sel ast.SelectionSet, obj *DashboardResponse) graphql.Marshaler {
+	fields := graphql.CollectFields(ctx, sel, dashboardResponseImplementors)
+
+	out := graphql.NewOrderedMap(len(fields))
+	invalid := false
+	for i, field := range fields {
+		out.Keys[i] = field.Alias
+
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("DashboardResponse")
+		case "orgInfo":
+			out.Values[i] = ec._DashboardResponse_orgInfo(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalid = true
+			}
+		case "systemInfo":
+			out.Values[i] = ec._DashboardResponse_systemInfo(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalid = true
+			}
+		case "ticketInfo":
+			out.Values[i] = ec._DashboardResponse_ticketInfo(ctx, field, obj)
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+
+	if invalid {
+		return graphql.Null
+	}
+	return out
+}
+
+// nolint: vetshadow
+func (ec *executionContext) _DashboardResponse_orgInfo(ctx context.Context, field graphql.CollectedField, obj *DashboardResponse) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object: "DashboardResponse",
+		Args:   nil,
+		Field:  field,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.OrgInfo, nil
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]OrgDashboard)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+
+	arr1 := make(graphql.Array, len(res))
+	var wg sync.WaitGroup
+
+	isLen1 := len(res) == 1
+	if !isLen1 {
+		wg.Add(len(res))
+	}
+
+	for idx1 := range res {
+		idx1 := idx1
+		rctx := &graphql.ResolverContext{
+			Index:  &idx1,
+			Result: &res[idx1],
+		}
+		ctx := graphql.WithResolverContext(ctx, rctx)
+		f := func(idx1 int) {
+			if !isLen1 {
+				defer wg.Done()
+			}
+			arr1[idx1] = func() graphql.Marshaler {
+
+				return ec._OrgDashboard(ctx, field.Selections, &res[idx1])
+			}()
+		}
+		if isLen1 {
+			f(idx1)
+		} else {
+			go f(idx1)
+		}
+
+	}
+	wg.Wait()
+	return arr1
+}
+
+// nolint: vetshadow
+func (ec *executionContext) _DashboardResponse_systemInfo(ctx context.Context, field graphql.CollectedField, obj *DashboardResponse) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object: "DashboardResponse",
+		Args:   nil,
+		Field:  field,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.SystemInfo, nil
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(SystemInfo)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+
+	return ec._SystemInfo(ctx, field.Selections, &res)
+}
+
+// nolint: vetshadow
+func (ec *executionContext) _DashboardResponse_ticketInfo(ctx context.Context, field graphql.CollectedField, obj *DashboardResponse) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object: "DashboardResponse",
+		Args:   nil,
+		Field:  field,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.TicketInfo, nil
+	})
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.([]string)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+
+	arr1 := make(graphql.Array, len(res))
+
+	for idx1 := range res {
+		arr1[idx1] = func() graphql.Marshaler {
+			return graphql.MarshalString(res[idx1])
+		}()
+	}
+
+	return arr1
+}
+
+var dishesImplementors = []string{"Dishes"}
+
+// nolint: gocyclo, errcheck, gas, goconst
+func (ec *executionContext) _Dishes(ctx context.Context, sel ast.SelectionSet, obj *models.Dishes) graphql.Marshaler {
+	fields := graphql.CollectFields(ctx, sel, dishesImplementors)
 
 	var wg sync.WaitGroup
 	out := graphql.NewOrderedMap(len(fields))
@@ -3038,53 +4405,48 @@ func (ec *executionContext) _Book(ctx context.Context, sel ast.SelectionSet, obj
 
 		switch field.Name {
 		case "__typename":
-			out.Values[i] = graphql.MarshalString("Book")
+			out.Values[i] = graphql.MarshalString("Dishes")
 		case "id":
 			wg.Add(1)
 			go func(i int, field graphql.CollectedField) {
-				out.Values[i] = ec._Book_id(ctx, field, obj)
+				out.Values[i] = ec._Dishes_id(ctx, field, obj)
 				if out.Values[i] == graphql.Null {
 					invalid = true
 				}
 				wg.Done()
 			}(i, field)
 		case "name":
-			out.Values[i] = ec._Book_name(ctx, field, obj)
+			out.Values[i] = ec._Dishes_name(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				invalid = true
 			}
-		case "authors":
-			wg.Add(1)
-			go func(i int, field graphql.CollectedField) {
-				out.Values[i] = ec._Book_authors(ctx, field, obj)
-				if out.Values[i] == graphql.Null {
-					invalid = true
-				}
-				wg.Done()
-			}(i, field)
 		case "picture":
-			out.Values[i] = ec._Book_picture(ctx, field, obj)
+			out.Values[i] = ec._Dishes_picture(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				invalid = true
 			}
-		case "alias":
-			out.Values[i] = ec._Book_alias(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				invalid = true
-			}
-		case "users":
+		case "createdAt":
 			wg.Add(1)
 			go func(i int, field graphql.CollectedField) {
-				out.Values[i] = ec._Book_users(ctx, field, obj)
+				out.Values[i] = ec._Dishes_createdAt(ctx, field, obj)
 				if out.Values[i] == graphql.Null {
 					invalid = true
 				}
 				wg.Done()
 			}(i, field)
-		case "chapters":
+		case "updatedAt":
 			wg.Add(1)
 			go func(i int, field graphql.CollectedField) {
-				out.Values[i] = ec._Book_chapters(ctx, field, obj)
+				out.Values[i] = ec._Dishes_updatedAt(ctx, field, obj)
+				if out.Values[i] == graphql.Null {
+					invalid = true
+				}
+				wg.Done()
+			}(i, field)
+		case "deletedAt":
+			wg.Add(1)
+			go func(i int, field graphql.CollectedField) {
+				out.Values[i] = ec._Dishes_deletedAt(ctx, field, obj)
 				if out.Values[i] == graphql.Null {
 					invalid = true
 				}
@@ -3102,11 +4464,11 @@ func (ec *executionContext) _Book(ctx context.Context, sel ast.SelectionSet, obj
 }
 
 // nolint: vetshadow
-func (ec *executionContext) _Book_id(ctx context.Context, field graphql.CollectedField, obj *models.Book) graphql.Marshaler {
+func (ec *executionContext) _Dishes_id(ctx context.Context, field graphql.CollectedField, obj *models.Dishes) graphql.Marshaler {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
 	rctx := &graphql.ResolverContext{
-		Object: "Book",
+		Object: "Dishes",
 		Args:   nil,
 		Field:  field,
 	}
@@ -3114,7 +4476,7 @@ func (ec *executionContext) _Book_id(ctx context.Context, field graphql.Collecte
 	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
 	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Book().ID(rctx, obj)
+		return ec.resolvers.Dishes().ID(rctx, obj)
 	})
 	if resTmp == nil {
 		if !ec.HasError(rctx) {
@@ -3122,18 +4484,18 @@ func (ec *executionContext) _Book_id(ctx context.Context, field graphql.Collecte
 		}
 		return graphql.Null
 	}
-	res := resTmp.(int)
+	res := resTmp.(string)
 	rctx.Result = res
 	ctx = ec.Tracer.StartFieldChildExecution(ctx)
-	return graphql.MarshalInt(res)
+	return graphql.MarshalID(res)
 }
 
 // nolint: vetshadow
-func (ec *executionContext) _Book_name(ctx context.Context, field graphql.CollectedField, obj *models.Book) graphql.Marshaler {
+func (ec *executionContext) _Dishes_name(ctx context.Context, field graphql.CollectedField, obj *models.Dishes) graphql.Marshaler {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
 	rctx := &graphql.ResolverContext{
-		Object: "Book",
+		Object: "Dishes",
 		Args:   nil,
 		Field:  field,
 	}
@@ -3156,39 +4518,11 @@ func (ec *executionContext) _Book_name(ctx context.Context, field graphql.Collec
 }
 
 // nolint: vetshadow
-func (ec *executionContext) _Book_authors(ctx context.Context, field graphql.CollectedField, obj *models.Book) graphql.Marshaler {
+func (ec *executionContext) _Dishes_picture(ctx context.Context, field graphql.CollectedField, obj *models.Dishes) graphql.Marshaler {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
 	rctx := &graphql.ResolverContext{
-		Object: "Book",
-		Args:   nil,
-		Field:  field,
-	}
-	ctx = graphql.WithResolverContext(ctx, rctx)
-	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
-	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Book().Authors(rctx, obj)
-	})
-	if resTmp == nil {
-		if !ec.HasError(rctx) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(QueryAuthorResponse)
-	rctx.Result = res
-	ctx = ec.Tracer.StartFieldChildExecution(ctx)
-
-	return ec._QueryAuthorResponse(ctx, field.Selections, &res)
-}
-
-// nolint: vetshadow
-func (ec *executionContext) _Book_picture(ctx context.Context, field graphql.CollectedField, obj *models.Book) graphql.Marshaler {
-	ctx = ec.Tracer.StartFieldExecution(ctx, field)
-	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
-	rctx := &graphql.ResolverContext{
-		Object: "Book",
+		Object: "Dishes",
 		Args:   nil,
 		Field:  field,
 	}
@@ -3211,11 +4545,11 @@ func (ec *executionContext) _Book_picture(ctx context.Context, field graphql.Col
 }
 
 // nolint: vetshadow
-func (ec *executionContext) _Book_alias(ctx context.Context, field graphql.CollectedField, obj *models.Book) graphql.Marshaler {
+func (ec *executionContext) _Dishes_createdAt(ctx context.Context, field graphql.CollectedField, obj *models.Dishes) graphql.Marshaler {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
 	rctx := &graphql.ResolverContext{
-		Object: "Book",
+		Object: "Dishes",
 		Args:   nil,
 		Field:  field,
 	}
@@ -3223,7 +4557,7 @@ func (ec *executionContext) _Book_alias(ctx context.Context, field graphql.Colle
 	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
 	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.Alias, nil
+		return ec.resolvers.Dishes().CreatedAt(rctx, obj)
 	})
 	if resTmp == nil {
 		if !ec.HasError(rctx) {
@@ -3238,11 +4572,11 @@ func (ec *executionContext) _Book_alias(ctx context.Context, field graphql.Colle
 }
 
 // nolint: vetshadow
-func (ec *executionContext) _Book_users(ctx context.Context, field graphql.CollectedField, obj *models.Book) graphql.Marshaler {
+func (ec *executionContext) _Dishes_updatedAt(ctx context.Context, field graphql.CollectedField, obj *models.Dishes) graphql.Marshaler {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
 	rctx := &graphql.ResolverContext{
-		Object: "Book",
+		Object: "Dishes",
 		Args:   nil,
 		Field:  field,
 	}
@@ -3250,236 +4584,7 @@ func (ec *executionContext) _Book_users(ctx context.Context, field graphql.Colle
 	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
 	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Book().Users(rctx, obj)
-	})
-	if resTmp == nil {
-		if !ec.HasError(rctx) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(QueryUserResponse)
-	rctx.Result = res
-	ctx = ec.Tracer.StartFieldChildExecution(ctx)
-
-	return ec._QueryUserResponse(ctx, field.Selections, &res)
-}
-
-// nolint: vetshadow
-func (ec *executionContext) _Book_chapters(ctx context.Context, field graphql.CollectedField, obj *models.Book) graphql.Marshaler {
-	ctx = ec.Tracer.StartFieldExecution(ctx, field)
-	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
-	rawArgs := field.ArgumentMap(ec.Variables)
-	args, err := field_Book_chapters_args(rawArgs)
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	rctx := &graphql.ResolverContext{
-		Object: "Book",
-		Args:   args,
-		Field:  field,
-	}
-	ctx = graphql.WithResolverContext(ctx, rctx)
-	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
-	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Book().Chapters(rctx, obj, args["filter"].(*ChapterFilterInput), args["pagination"].(*Pagination))
-	})
-	if resTmp == nil {
-		if !ec.HasError(rctx) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(QueryChapterResponse)
-	rctx.Result = res
-	ctx = ec.Tracer.StartFieldChildExecution(ctx)
-
-	return ec._QueryChapterResponse(ctx, field.Selections, &res)
-}
-
-var chapterImplementors = []string{"Chapter"}
-
-// nolint: gocyclo, errcheck, gas, goconst
-func (ec *executionContext) _Chapter(ctx context.Context, sel ast.SelectionSet, obj *models.Chapter) graphql.Marshaler {
-	fields := graphql.CollectFields(ctx, sel, chapterImplementors)
-
-	var wg sync.WaitGroup
-	out := graphql.NewOrderedMap(len(fields))
-	invalid := false
-	for i, field := range fields {
-		out.Keys[i] = field.Alias
-
-		switch field.Name {
-		case "__typename":
-			out.Values[i] = graphql.MarshalString("Chapter")
-		case "id":
-			wg.Add(1)
-			go func(i int, field graphql.CollectedField) {
-				out.Values[i] = ec._Chapter_id(ctx, field, obj)
-				if out.Values[i] == graphql.Null {
-					invalid = true
-				}
-				wg.Done()
-			}(i, field)
-		case "index":
-			out.Values[i] = ec._Chapter_index(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				invalid = true
-			}
-		case "name":
-			out.Values[i] = ec._Chapter_name(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				invalid = true
-			}
-		case "content":
-			out.Values[i] = ec._Chapter_content(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				invalid = true
-			}
-		case "phrases":
-			wg.Add(1)
-			go func(i int, field graphql.CollectedField) {
-				out.Values[i] = ec._Chapter_phrases(ctx, field, obj)
-				if out.Values[i] == graphql.Null {
-					invalid = true
-				}
-				wg.Done()
-			}(i, field)
-		case "cet4Words":
-			wg.Add(1)
-			go func(i int, field graphql.CollectedField) {
-				out.Values[i] = ec._Chapter_cet4Words(ctx, field, obj)
-				if out.Values[i] == graphql.Null {
-					invalid = true
-				}
-				wg.Done()
-			}(i, field)
-		case "cet6Words":
-			wg.Add(1)
-			go func(i int, field graphql.CollectedField) {
-				out.Values[i] = ec._Chapter_cet6Words(ctx, field, obj)
-				if out.Values[i] == graphql.Null {
-					invalid = true
-				}
-				wg.Done()
-			}(i, field)
-		case "kyWords":
-			wg.Add(1)
-			go func(i int, field graphql.CollectedField) {
-				out.Values[i] = ec._Chapter_kyWords(ctx, field, obj)
-				if out.Values[i] == graphql.Null {
-					invalid = true
-				}
-				wg.Done()
-			}(i, field)
-		case "toefiWords":
-			wg.Add(1)
-			go func(i int, field graphql.CollectedField) {
-				out.Values[i] = ec._Chapter_toefiWords(ctx, field, obj)
-				if out.Values[i] == graphql.Null {
-					invalid = true
-				}
-				wg.Done()
-			}(i, field)
-		case "ieltsWords":
-			wg.Add(1)
-			go func(i int, field graphql.CollectedField) {
-				out.Values[i] = ec._Chapter_ieltsWords(ctx, field, obj)
-				if out.Values[i] == graphql.Null {
-					invalid = true
-				}
-				wg.Done()
-			}(i, field)
-		case "greWords":
-			wg.Add(1)
-			go func(i int, field graphql.CollectedField) {
-				out.Values[i] = ec._Chapter_greWords(ctx, field, obj)
-				if out.Values[i] == graphql.Null {
-					invalid = true
-				}
-				wg.Done()
-			}(i, field)
-		default:
-			panic("unknown field " + strconv.Quote(field.Name))
-		}
-	}
-	wg.Wait()
-	if invalid {
-		return graphql.Null
-	}
-	return out
-}
-
-// nolint: vetshadow
-func (ec *executionContext) _Chapter_id(ctx context.Context, field graphql.CollectedField, obj *models.Chapter) graphql.Marshaler {
-	ctx = ec.Tracer.StartFieldExecution(ctx, field)
-	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
-	rctx := &graphql.ResolverContext{
-		Object: "Chapter",
-		Args:   nil,
-		Field:  field,
-	}
-	ctx = graphql.WithResolverContext(ctx, rctx)
-	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
-	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Chapter().ID(rctx, obj)
-	})
-	if resTmp == nil {
-		if !ec.HasError(rctx) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(int)
-	rctx.Result = res
-	ctx = ec.Tracer.StartFieldChildExecution(ctx)
-	return graphql.MarshalInt(res)
-}
-
-// nolint: vetshadow
-func (ec *executionContext) _Chapter_index(ctx context.Context, field graphql.CollectedField, obj *models.Chapter) graphql.Marshaler {
-	ctx = ec.Tracer.StartFieldExecution(ctx, field)
-	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
-	rctx := &graphql.ResolverContext{
-		Object: "Chapter",
-		Args:   nil,
-		Field:  field,
-	}
-	ctx = graphql.WithResolverContext(ctx, rctx)
-	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
-	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.Index, nil
-	})
-	if resTmp == nil {
-		if !ec.HasError(rctx) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(int)
-	rctx.Result = res
-	ctx = ec.Tracer.StartFieldChildExecution(ctx)
-	return graphql.MarshalInt(res)
-}
-
-// nolint: vetshadow
-func (ec *executionContext) _Chapter_name(ctx context.Context, field graphql.CollectedField, obj *models.Chapter) graphql.Marshaler {
-	ctx = ec.Tracer.StartFieldExecution(ctx, field)
-	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
-	rctx := &graphql.ResolverContext{
-		Object: "Chapter",
-		Args:   nil,
-		Field:  field,
-	}
-	ctx = graphql.WithResolverContext(ctx, rctx)
-	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
-	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.Name, nil
+		return ec.resolvers.Dishes().UpdatedAt(rctx, obj)
 	})
 	if resTmp == nil {
 		if !ec.HasError(rctx) {
@@ -3494,11 +4599,11 @@ func (ec *executionContext) _Chapter_name(ctx context.Context, field graphql.Col
 }
 
 // nolint: vetshadow
-func (ec *executionContext) _Chapter_content(ctx context.Context, field graphql.CollectedField, obj *models.Chapter) graphql.Marshaler {
+func (ec *executionContext) _Dishes_deletedAt(ctx context.Context, field graphql.CollectedField, obj *models.Dishes) graphql.Marshaler {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
 	rctx := &graphql.ResolverContext{
-		Object: "Chapter",
+		Object: "Dishes",
 		Args:   nil,
 		Field:  field,
 	}
@@ -3506,681 +4611,7 @@ func (ec *executionContext) _Chapter_content(ctx context.Context, field graphql.
 	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
 	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.Content, nil
-	})
-	if resTmp == nil {
-		if !ec.HasError(rctx) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(string)
-	rctx.Result = res
-	ctx = ec.Tracer.StartFieldChildExecution(ctx)
-	return graphql.MarshalString(res)
-}
-
-// nolint: vetshadow
-func (ec *executionContext) _Chapter_phrases(ctx context.Context, field graphql.CollectedField, obj *models.Chapter) graphql.Marshaler {
-	ctx = ec.Tracer.StartFieldExecution(ctx, field)
-	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
-	rctx := &graphql.ResolverContext{
-		Object: "Chapter",
-		Args:   nil,
-		Field:  field,
-	}
-	ctx = graphql.WithResolverContext(ctx, rctx)
-	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
-	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Chapter().Phrases(rctx, obj)
-	})
-	if resTmp == nil {
-		if !ec.HasError(rctx) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(QueryDictionaryResponse)
-	rctx.Result = res
-	ctx = ec.Tracer.StartFieldChildExecution(ctx)
-
-	return ec._QueryDictionaryResponse(ctx, field.Selections, &res)
-}
-
-// nolint: vetshadow
-func (ec *executionContext) _Chapter_cet4Words(ctx context.Context, field graphql.CollectedField, obj *models.Chapter) graphql.Marshaler {
-	ctx = ec.Tracer.StartFieldExecution(ctx, field)
-	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
-	rctx := &graphql.ResolverContext{
-		Object: "Chapter",
-		Args:   nil,
-		Field:  field,
-	}
-	ctx = graphql.WithResolverContext(ctx, rctx)
-	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
-	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Chapter().Cet4Words(rctx, obj)
-	})
-	if resTmp == nil {
-		if !ec.HasError(rctx) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(QueryDictionaryResponse)
-	rctx.Result = res
-	ctx = ec.Tracer.StartFieldChildExecution(ctx)
-
-	return ec._QueryDictionaryResponse(ctx, field.Selections, &res)
-}
-
-// nolint: vetshadow
-func (ec *executionContext) _Chapter_cet6Words(ctx context.Context, field graphql.CollectedField, obj *models.Chapter) graphql.Marshaler {
-	ctx = ec.Tracer.StartFieldExecution(ctx, field)
-	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
-	rctx := &graphql.ResolverContext{
-		Object: "Chapter",
-		Args:   nil,
-		Field:  field,
-	}
-	ctx = graphql.WithResolverContext(ctx, rctx)
-	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
-	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Chapter().Cet6Words(rctx, obj)
-	})
-	if resTmp == nil {
-		if !ec.HasError(rctx) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(QueryDictionaryResponse)
-	rctx.Result = res
-	ctx = ec.Tracer.StartFieldChildExecution(ctx)
-
-	return ec._QueryDictionaryResponse(ctx, field.Selections, &res)
-}
-
-// nolint: vetshadow
-func (ec *executionContext) _Chapter_kyWords(ctx context.Context, field graphql.CollectedField, obj *models.Chapter) graphql.Marshaler {
-	ctx = ec.Tracer.StartFieldExecution(ctx, field)
-	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
-	rctx := &graphql.ResolverContext{
-		Object: "Chapter",
-		Args:   nil,
-		Field:  field,
-	}
-	ctx = graphql.WithResolverContext(ctx, rctx)
-	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
-	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Chapter().KyWords(rctx, obj)
-	})
-	if resTmp == nil {
-		if !ec.HasError(rctx) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(QueryDictionaryResponse)
-	rctx.Result = res
-	ctx = ec.Tracer.StartFieldChildExecution(ctx)
-
-	return ec._QueryDictionaryResponse(ctx, field.Selections, &res)
-}
-
-// nolint: vetshadow
-func (ec *executionContext) _Chapter_toefiWords(ctx context.Context, field graphql.CollectedField, obj *models.Chapter) graphql.Marshaler {
-	ctx = ec.Tracer.StartFieldExecution(ctx, field)
-	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
-	rctx := &graphql.ResolverContext{
-		Object: "Chapter",
-		Args:   nil,
-		Field:  field,
-	}
-	ctx = graphql.WithResolverContext(ctx, rctx)
-	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
-	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Chapter().ToefiWords(rctx, obj)
-	})
-	if resTmp == nil {
-		if !ec.HasError(rctx) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(QueryDictionaryResponse)
-	rctx.Result = res
-	ctx = ec.Tracer.StartFieldChildExecution(ctx)
-
-	return ec._QueryDictionaryResponse(ctx, field.Selections, &res)
-}
-
-// nolint: vetshadow
-func (ec *executionContext) _Chapter_ieltsWords(ctx context.Context, field graphql.CollectedField, obj *models.Chapter) graphql.Marshaler {
-	ctx = ec.Tracer.StartFieldExecution(ctx, field)
-	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
-	rctx := &graphql.ResolverContext{
-		Object: "Chapter",
-		Args:   nil,
-		Field:  field,
-	}
-	ctx = graphql.WithResolverContext(ctx, rctx)
-	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
-	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Chapter().IeltsWords(rctx, obj)
-	})
-	if resTmp == nil {
-		if !ec.HasError(rctx) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(QueryDictionaryResponse)
-	rctx.Result = res
-	ctx = ec.Tracer.StartFieldChildExecution(ctx)
-
-	return ec._QueryDictionaryResponse(ctx, field.Selections, &res)
-}
-
-// nolint: vetshadow
-func (ec *executionContext) _Chapter_greWords(ctx context.Context, field graphql.CollectedField, obj *models.Chapter) graphql.Marshaler {
-	ctx = ec.Tracer.StartFieldExecution(ctx, field)
-	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
-	rctx := &graphql.ResolverContext{
-		Object: "Chapter",
-		Args:   nil,
-		Field:  field,
-	}
-	ctx = graphql.WithResolverContext(ctx, rctx)
-	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
-	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Chapter().GreWords(rctx, obj)
-	})
-	if resTmp == nil {
-		if !ec.HasError(rctx) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(QueryDictionaryResponse)
-	rctx.Result = res
-	ctx = ec.Tracer.StartFieldChildExecution(ctx)
-
-	return ec._QueryDictionaryResponse(ctx, field.Selections, &res)
-}
-
-var dictionaryImplementors = []string{"Dictionary"}
-
-// nolint: gocyclo, errcheck, gas, goconst
-func (ec *executionContext) _Dictionary(ctx context.Context, sel ast.SelectionSet, obj *models.Dictionary) graphql.Marshaler {
-	fields := graphql.CollectFields(ctx, sel, dictionaryImplementors)
-
-	var wg sync.WaitGroup
-	out := graphql.NewOrderedMap(len(fields))
-	invalid := false
-	for i, field := range fields {
-		out.Keys[i] = field.Alias
-
-		switch field.Name {
-		case "__typename":
-			out.Values[i] = graphql.MarshalString("Dictionary")
-		case "id":
-			wg.Add(1)
-			go func(i int, field graphql.CollectedField) {
-				out.Values[i] = ec._Dictionary_id(ctx, field, obj)
-				if out.Values[i] == graphql.Null {
-					invalid = true
-				}
-				wg.Done()
-			}(i, field)
-		case "word":
-			out.Values[i] = ec._Dictionary_word(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				invalid = true
-			}
-		case "phonetic":
-			out.Values[i] = ec._Dictionary_phonetic(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				invalid = true
-			}
-		case "definition":
-			out.Values[i] = ec._Dictionary_definition(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				invalid = true
-			}
-		case "translation":
-			out.Values[i] = ec._Dictionary_translation(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				invalid = true
-			}
-		case "pos":
-			out.Values[i] = ec._Dictionary_pos(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				invalid = true
-			}
-		case "collins":
-			out.Values[i] = ec._Dictionary_collins(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				invalid = true
-			}
-		case "oxford":
-			out.Values[i] = ec._Dictionary_oxford(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				invalid = true
-			}
-		case "tag":
-			out.Values[i] = ec._Dictionary_tag(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				invalid = true
-			}
-		case "bnc":
-			out.Values[i] = ec._Dictionary_bnc(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				invalid = true
-			}
-		case "frq":
-			out.Values[i] = ec._Dictionary_frq(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				invalid = true
-			}
-		case "exchange":
-			out.Values[i] = ec._Dictionary_exchange(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				invalid = true
-			}
-		case "detail":
-			out.Values[i] = ec._Dictionary_detail(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				invalid = true
-			}
-		case "audio":
-			out.Values[i] = ec._Dictionary_audio(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				invalid = true
-			}
-		default:
-			panic("unknown field " + strconv.Quote(field.Name))
-		}
-	}
-	wg.Wait()
-	if invalid {
-		return graphql.Null
-	}
-	return out
-}
-
-// nolint: vetshadow
-func (ec *executionContext) _Dictionary_id(ctx context.Context, field graphql.CollectedField, obj *models.Dictionary) graphql.Marshaler {
-	ctx = ec.Tracer.StartFieldExecution(ctx, field)
-	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
-	rctx := &graphql.ResolverContext{
-		Object: "Dictionary",
-		Args:   nil,
-		Field:  field,
-	}
-	ctx = graphql.WithResolverContext(ctx, rctx)
-	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
-	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Dictionary().ID(rctx, obj)
-	})
-	if resTmp == nil {
-		if !ec.HasError(rctx) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(int)
-	rctx.Result = res
-	ctx = ec.Tracer.StartFieldChildExecution(ctx)
-	return graphql.MarshalInt(res)
-}
-
-// nolint: vetshadow
-func (ec *executionContext) _Dictionary_word(ctx context.Context, field graphql.CollectedField, obj *models.Dictionary) graphql.Marshaler {
-	ctx = ec.Tracer.StartFieldExecution(ctx, field)
-	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
-	rctx := &graphql.ResolverContext{
-		Object: "Dictionary",
-		Args:   nil,
-		Field:  field,
-	}
-	ctx = graphql.WithResolverContext(ctx, rctx)
-	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
-	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.Word, nil
-	})
-	if resTmp == nil {
-		if !ec.HasError(rctx) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(string)
-	rctx.Result = res
-	ctx = ec.Tracer.StartFieldChildExecution(ctx)
-	return graphql.MarshalString(res)
-}
-
-// nolint: vetshadow
-func (ec *executionContext) _Dictionary_phonetic(ctx context.Context, field graphql.CollectedField, obj *models.Dictionary) graphql.Marshaler {
-	ctx = ec.Tracer.StartFieldExecution(ctx, field)
-	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
-	rctx := &graphql.ResolverContext{
-		Object: "Dictionary",
-		Args:   nil,
-		Field:  field,
-	}
-	ctx = graphql.WithResolverContext(ctx, rctx)
-	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
-	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.Phonetic, nil
-	})
-	if resTmp == nil {
-		if !ec.HasError(rctx) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(string)
-	rctx.Result = res
-	ctx = ec.Tracer.StartFieldChildExecution(ctx)
-	return graphql.MarshalString(res)
-}
-
-// nolint: vetshadow
-func (ec *executionContext) _Dictionary_definition(ctx context.Context, field graphql.CollectedField, obj *models.Dictionary) graphql.Marshaler {
-	ctx = ec.Tracer.StartFieldExecution(ctx, field)
-	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
-	rctx := &graphql.ResolverContext{
-		Object: "Dictionary",
-		Args:   nil,
-		Field:  field,
-	}
-	ctx = graphql.WithResolverContext(ctx, rctx)
-	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
-	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.Definition, nil
-	})
-	if resTmp == nil {
-		if !ec.HasError(rctx) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(string)
-	rctx.Result = res
-	ctx = ec.Tracer.StartFieldChildExecution(ctx)
-	return graphql.MarshalString(res)
-}
-
-// nolint: vetshadow
-func (ec *executionContext) _Dictionary_translation(ctx context.Context, field graphql.CollectedField, obj *models.Dictionary) graphql.Marshaler {
-	ctx = ec.Tracer.StartFieldExecution(ctx, field)
-	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
-	rctx := &graphql.ResolverContext{
-		Object: "Dictionary",
-		Args:   nil,
-		Field:  field,
-	}
-	ctx = graphql.WithResolverContext(ctx, rctx)
-	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
-	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.Translation, nil
-	})
-	if resTmp == nil {
-		if !ec.HasError(rctx) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(string)
-	rctx.Result = res
-	ctx = ec.Tracer.StartFieldChildExecution(ctx)
-	return graphql.MarshalString(res)
-}
-
-// nolint: vetshadow
-func (ec *executionContext) _Dictionary_pos(ctx context.Context, field graphql.CollectedField, obj *models.Dictionary) graphql.Marshaler {
-	ctx = ec.Tracer.StartFieldExecution(ctx, field)
-	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
-	rctx := &graphql.ResolverContext{
-		Object: "Dictionary",
-		Args:   nil,
-		Field:  field,
-	}
-	ctx = graphql.WithResolverContext(ctx, rctx)
-	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
-	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.Pos, nil
-	})
-	if resTmp == nil {
-		if !ec.HasError(rctx) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(string)
-	rctx.Result = res
-	ctx = ec.Tracer.StartFieldChildExecution(ctx)
-	return graphql.MarshalString(res)
-}
-
-// nolint: vetshadow
-func (ec *executionContext) _Dictionary_collins(ctx context.Context, field graphql.CollectedField, obj *models.Dictionary) graphql.Marshaler {
-	ctx = ec.Tracer.StartFieldExecution(ctx, field)
-	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
-	rctx := &graphql.ResolverContext{
-		Object: "Dictionary",
-		Args:   nil,
-		Field:  field,
-	}
-	ctx = graphql.WithResolverContext(ctx, rctx)
-	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
-	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.Collins, nil
-	})
-	if resTmp == nil {
-		if !ec.HasError(rctx) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(string)
-	rctx.Result = res
-	ctx = ec.Tracer.StartFieldChildExecution(ctx)
-	return graphql.MarshalString(res)
-}
-
-// nolint: vetshadow
-func (ec *executionContext) _Dictionary_oxford(ctx context.Context, field graphql.CollectedField, obj *models.Dictionary) graphql.Marshaler {
-	ctx = ec.Tracer.StartFieldExecution(ctx, field)
-	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
-	rctx := &graphql.ResolverContext{
-		Object: "Dictionary",
-		Args:   nil,
-		Field:  field,
-	}
-	ctx = graphql.WithResolverContext(ctx, rctx)
-	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
-	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.Oxford, nil
-	})
-	if resTmp == nil {
-		if !ec.HasError(rctx) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(string)
-	rctx.Result = res
-	ctx = ec.Tracer.StartFieldChildExecution(ctx)
-	return graphql.MarshalString(res)
-}
-
-// nolint: vetshadow
-func (ec *executionContext) _Dictionary_tag(ctx context.Context, field graphql.CollectedField, obj *models.Dictionary) graphql.Marshaler {
-	ctx = ec.Tracer.StartFieldExecution(ctx, field)
-	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
-	rctx := &graphql.ResolverContext{
-		Object: "Dictionary",
-		Args:   nil,
-		Field:  field,
-	}
-	ctx = graphql.WithResolverContext(ctx, rctx)
-	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
-	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.Tag, nil
-	})
-	if resTmp == nil {
-		if !ec.HasError(rctx) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(string)
-	rctx.Result = res
-	ctx = ec.Tracer.StartFieldChildExecution(ctx)
-	return graphql.MarshalString(res)
-}
-
-// nolint: vetshadow
-func (ec *executionContext) _Dictionary_bnc(ctx context.Context, field graphql.CollectedField, obj *models.Dictionary) graphql.Marshaler {
-	ctx = ec.Tracer.StartFieldExecution(ctx, field)
-	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
-	rctx := &graphql.ResolverContext{
-		Object: "Dictionary",
-		Args:   nil,
-		Field:  field,
-	}
-	ctx = graphql.WithResolverContext(ctx, rctx)
-	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
-	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.Bnc, nil
-	})
-	if resTmp == nil {
-		if !ec.HasError(rctx) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(string)
-	rctx.Result = res
-	ctx = ec.Tracer.StartFieldChildExecution(ctx)
-	return graphql.MarshalString(res)
-}
-
-// nolint: vetshadow
-func (ec *executionContext) _Dictionary_frq(ctx context.Context, field graphql.CollectedField, obj *models.Dictionary) graphql.Marshaler {
-	ctx = ec.Tracer.StartFieldExecution(ctx, field)
-	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
-	rctx := &graphql.ResolverContext{
-		Object: "Dictionary",
-		Args:   nil,
-		Field:  field,
-	}
-	ctx = graphql.WithResolverContext(ctx, rctx)
-	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
-	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.Frq, nil
-	})
-	if resTmp == nil {
-		if !ec.HasError(rctx) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(string)
-	rctx.Result = res
-	ctx = ec.Tracer.StartFieldChildExecution(ctx)
-	return graphql.MarshalString(res)
-}
-
-// nolint: vetshadow
-func (ec *executionContext) _Dictionary_exchange(ctx context.Context, field graphql.CollectedField, obj *models.Dictionary) graphql.Marshaler {
-	ctx = ec.Tracer.StartFieldExecution(ctx, field)
-	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
-	rctx := &graphql.ResolverContext{
-		Object: "Dictionary",
-		Args:   nil,
-		Field:  field,
-	}
-	ctx = graphql.WithResolverContext(ctx, rctx)
-	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
-	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.Exchange, nil
-	})
-	if resTmp == nil {
-		if !ec.HasError(rctx) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(string)
-	rctx.Result = res
-	ctx = ec.Tracer.StartFieldChildExecution(ctx)
-	return graphql.MarshalString(res)
-}
-
-// nolint: vetshadow
-func (ec *executionContext) _Dictionary_detail(ctx context.Context, field graphql.CollectedField, obj *models.Dictionary) graphql.Marshaler {
-	ctx = ec.Tracer.StartFieldExecution(ctx, field)
-	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
-	rctx := &graphql.ResolverContext{
-		Object: "Dictionary",
-		Args:   nil,
-		Field:  field,
-	}
-	ctx = graphql.WithResolverContext(ctx, rctx)
-	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
-	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.Detail, nil
-	})
-	if resTmp == nil {
-		if !ec.HasError(rctx) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(string)
-	rctx.Result = res
-	ctx = ec.Tracer.StartFieldChildExecution(ctx)
-	return graphql.MarshalString(res)
-}
-
-// nolint: vetshadow
-func (ec *executionContext) _Dictionary_audio(ctx context.Context, field graphql.CollectedField, obj *models.Dictionary) graphql.Marshaler {
-	ctx = ec.Tracer.StartFieldExecution(ctx, field)
-	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
-	rctx := &graphql.ResolverContext{
-		Object: "Dictionary",
-		Args:   nil,
-		Field:  field,
-	}
-	ctx = graphql.WithResolverContext(ctx, rctx)
-	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
-	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.Audio, nil
+		return ec.resolvers.Dishes().DeletedAt(rctx, obj)
 	})
 	if resTmp == nil {
 		if !ec.HasError(rctx) {
@@ -4232,33 +4663,51 @@ func (ec *executionContext) _Group(ctx context.Context, sel ast.SelectionSet, ob
 				}
 				wg.Done()
 			}(i, field)
+		case "adminId":
+			wg.Add(1)
+			go func(i int, field graphql.CollectedField) {
+				out.Values[i] = ec._Group_adminId(ctx, field, obj)
+				if out.Values[i] == graphql.Null {
+					invalid = true
+				}
+				wg.Done()
+			}(i, field)
+		case "adminInfo":
+			wg.Add(1)
+			go func(i int, field graphql.CollectedField) {
+				out.Values[i] = ec._Group_adminInfo(ctx, field, obj)
+				if out.Values[i] == graphql.Null {
+					invalid = true
+				}
+				wg.Done()
+			}(i, field)
 		case "levels":
 			out.Values[i] = ec._Group_levels(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				invalid = true
 			}
-		case "created_at":
+		case "createdAt":
 			wg.Add(1)
 			go func(i int, field graphql.CollectedField) {
-				out.Values[i] = ec._Group_created_at(ctx, field, obj)
+				out.Values[i] = ec._Group_createdAt(ctx, field, obj)
 				if out.Values[i] == graphql.Null {
 					invalid = true
 				}
 				wg.Done()
 			}(i, field)
-		case "updated_at":
+		case "updatedAt":
 			wg.Add(1)
 			go func(i int, field graphql.CollectedField) {
-				out.Values[i] = ec._Group_updated_at(ctx, field, obj)
+				out.Values[i] = ec._Group_updatedAt(ctx, field, obj)
 				if out.Values[i] == graphql.Null {
 					invalid = true
 				}
 				wg.Done()
 			}(i, field)
-		case "deleted_at":
+		case "deletedAt":
 			wg.Add(1)
 			go func(i int, field graphql.CollectedField) {
-				out.Values[i] = ec._Group_deleted_at(ctx, field, obj)
+				out.Values[i] = ec._Group_deletedAt(ctx, field, obj)
 				if out.Values[i] == graphql.Null {
 					invalid = true
 				}
@@ -4268,6 +4717,15 @@ func (ec *executionContext) _Group(ctx context.Context, sel ast.SelectionSet, ob
 			wg.Add(1)
 			go func(i int, field graphql.CollectedField) {
 				out.Values[i] = ec._Group_users(ctx, field, obj)
+				if out.Values[i] == graphql.Null {
+					invalid = true
+				}
+				wg.Done()
+			}(i, field)
+		case "canteens":
+			wg.Add(1)
+			go func(i int, field graphql.CollectedField) {
+				out.Values[i] = ec._Group_canteens(ctx, field, obj)
 				if out.Values[i] == graphql.Null {
 					invalid = true
 				}
@@ -4366,6 +4824,61 @@ func (ec *executionContext) _Group_parent(ctx context.Context, field graphql.Col
 }
 
 // nolint: vetshadow
+func (ec *executionContext) _Group_adminId(ctx context.Context, field graphql.CollectedField, obj *models.Group) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object: "Group",
+		Args:   nil,
+		Field:  field,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Group().AdminID(rctx, obj)
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return graphql.MarshalInt(res)
+}
+
+// nolint: vetshadow
+func (ec *executionContext) _Group_adminInfo(ctx context.Context, field graphql.CollectedField, obj *models.Group) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object: "Group",
+		Args:   nil,
+		Field:  field,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Group().AdminInfo(rctx, obj)
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(models.User)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+
+	return ec._User(ctx, field.Selections, &res)
+}
+
+// nolint: vetshadow
 func (ec *executionContext) _Group_levels(ctx context.Context, field graphql.CollectedField, obj *models.Group) graphql.Marshaler {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
@@ -4393,7 +4906,7 @@ func (ec *executionContext) _Group_levels(ctx context.Context, field graphql.Col
 }
 
 // nolint: vetshadow
-func (ec *executionContext) _Group_created_at(ctx context.Context, field graphql.CollectedField, obj *models.Group) graphql.Marshaler {
+func (ec *executionContext) _Group_createdAt(ctx context.Context, field graphql.CollectedField, obj *models.Group) graphql.Marshaler {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
 	rctx := &graphql.ResolverContext{
@@ -4420,7 +4933,7 @@ func (ec *executionContext) _Group_created_at(ctx context.Context, field graphql
 }
 
 // nolint: vetshadow
-func (ec *executionContext) _Group_updated_at(ctx context.Context, field graphql.CollectedField, obj *models.Group) graphql.Marshaler {
+func (ec *executionContext) _Group_updatedAt(ctx context.Context, field graphql.CollectedField, obj *models.Group) graphql.Marshaler {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
 	rctx := &graphql.ResolverContext{
@@ -4447,7 +4960,7 @@ func (ec *executionContext) _Group_updated_at(ctx context.Context, field graphql
 }
 
 // nolint: vetshadow
-func (ec *executionContext) _Group_deleted_at(ctx context.Context, field graphql.CollectedField, obj *models.Group) graphql.Marshaler {
+func (ec *executionContext) _Group_deletedAt(ctx context.Context, field graphql.CollectedField, obj *models.Group) graphql.Marshaler {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
 	rctx := &graphql.ResolverContext{
@@ -4507,6 +5020,171 @@ func (ec *executionContext) _Group_users(ctx context.Context, field graphql.Coll
 	return ec._QueryUserResponse(ctx, field.Selections, &res)
 }
 
+// nolint: vetshadow
+func (ec *executionContext) _Group_canteens(ctx context.Context, field graphql.CollectedField, obj *models.Group) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := field_Group_canteens_args(rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	rctx := &graphql.ResolverContext{
+		Object: "Group",
+		Args:   args,
+		Field:  field,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Group().Canteens(rctx, obj, args["filter"].(*CanteenFilterInput), args["pagination"].(*Pagination))
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(QueryCanteenResponse)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+
+	return ec._QueryCanteenResponse(ctx, field.Selections, &res)
+}
+
+var loginResponseImplementors = []string{"LoginResponse"}
+
+// nolint: gocyclo, errcheck, gas, goconst
+func (ec *executionContext) _LoginResponse(ctx context.Context, sel ast.SelectionSet, obj *LoginResponse) graphql.Marshaler {
+	fields := graphql.CollectFields(ctx, sel, loginResponseImplementors)
+
+	out := graphql.NewOrderedMap(len(fields))
+	invalid := false
+	for i, field := range fields {
+		out.Keys[i] = field.Alias
+
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("LoginResponse")
+		case "token":
+			out.Values[i] = ec._LoginResponse_token(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalid = true
+			}
+		case "permissions":
+			out.Values[i] = ec._LoginResponse_permissions(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalid = true
+			}
+		case "user":
+			out.Values[i] = ec._LoginResponse_user(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalid = true
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+
+	if invalid {
+		return graphql.Null
+	}
+	return out
+}
+
+// nolint: vetshadow
+func (ec *executionContext) _LoginResponse_token(ctx context.Context, field graphql.CollectedField, obj *LoginResponse) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object: "LoginResponse",
+		Args:   nil,
+		Field:  field,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Token, nil
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return graphql.MarshalString(res)
+}
+
+// nolint: vetshadow
+func (ec *executionContext) _LoginResponse_permissions(ctx context.Context, field graphql.CollectedField, obj *LoginResponse) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object: "LoginResponse",
+		Args:   nil,
+		Field:  field,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Permissions, nil
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]string)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+
+	arr1 := make(graphql.Array, len(res))
+
+	for idx1 := range res {
+		arr1[idx1] = func() graphql.Marshaler {
+			return graphql.MarshalString(res[idx1])
+		}()
+	}
+
+	return arr1
+}
+
+// nolint: vetshadow
+func (ec *executionContext) _LoginResponse_user(ctx context.Context, field graphql.CollectedField, obj *LoginResponse) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object: "LoginResponse",
+		Args:   nil,
+		Field:  field,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.User, nil
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(models.User)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+
+	return ec._User(ctx, field.Selections, &res)
+}
+
 var mutationImplementors = []string{"Mutation"}
 
 // nolint: gocyclo, errcheck, gas, goconst
@@ -4530,6 +5208,11 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			if out.Values[i] == graphql.Null {
 				invalid = true
 			}
+		case "logout":
+			out.Values[i] = ec._Mutation_logout(ctx, field)
+			if out.Values[i] == graphql.Null {
+				invalid = true
+			}
 		case "createUser":
 			out.Values[i] = ec._Mutation_createUser(ctx, field)
 			if out.Values[i] == graphql.Null {
@@ -4542,6 +5225,11 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			}
 		case "deleteUser":
 			out.Values[i] = ec._Mutation_deleteUser(ctx, field)
+			if out.Values[i] == graphql.Null {
+				invalid = true
+			}
+		case "resetPassword":
+			out.Values[i] = ec._Mutation_resetPassword(ctx, field)
 			if out.Values[i] == graphql.Null {
 				invalid = true
 			}
@@ -4595,108 +5283,63 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			if out.Values[i] == graphql.Null {
 				invalid = true
 			}
-		case "createBook":
-			out.Values[i] = ec._Mutation_createBook(ctx, field)
+		case "createDishes":
+			out.Values[i] = ec._Mutation_createDishes(ctx, field)
 			if out.Values[i] == graphql.Null {
 				invalid = true
 			}
-		case "updateBook":
-			out.Values[i] = ec._Mutation_updateBook(ctx, field)
+		case "updateDishes":
+			out.Values[i] = ec._Mutation_updateDishes(ctx, field)
 			if out.Values[i] == graphql.Null {
 				invalid = true
 			}
-		case "deleteBook":
-			out.Values[i] = ec._Mutation_deleteBook(ctx, field)
+		case "deleteDishes":
+			out.Values[i] = ec._Mutation_deleteDishes(ctx, field)
 			if out.Values[i] == graphql.Null {
 				invalid = true
 			}
-		case "addBookChapters":
-			out.Values[i] = ec._Mutation_addBookChapters(ctx, field)
+		case "createCanteens":
+			out.Values[i] = ec._Mutation_createCanteens(ctx, field)
 			if out.Values[i] == graphql.Null {
 				invalid = true
 			}
-		case "removeBookChapters":
-			out.Values[i] = ec._Mutation_removeBookChapters(ctx, field)
+		case "updateCanteens":
+			out.Values[i] = ec._Mutation_updateCanteens(ctx, field)
 			if out.Values[i] == graphql.Null {
 				invalid = true
 			}
-		case "createAuthor":
-			out.Values[i] = ec._Mutation_createAuthor(ctx, field)
+		case "deleteCanteens":
+			out.Values[i] = ec._Mutation_deleteCanteens(ctx, field)
 			if out.Values[i] == graphql.Null {
 				invalid = true
 			}
-		case "updateAuthor":
-			out.Values[i] = ec._Mutation_updateAuthor(ctx, field)
+		case "generateTickets":
+			out.Values[i] = ec._Mutation_generateTickets(ctx, field)
 			if out.Values[i] == graphql.Null {
 				invalid = true
 			}
-		case "deleteAuthor":
-			out.Values[i] = ec._Mutation_deleteAuthor(ctx, field)
+		case "transferTickets":
+			out.Values[i] = ec._Mutation_transferTickets(ctx, field)
 			if out.Values[i] == graphql.Null {
 				invalid = true
 			}
-		case "createAuthorAndBookRelationship":
-			out.Values[i] = ec._Mutation_createAuthorAndBookRelationship(ctx, field)
+		case "recyclingTickets":
+			out.Values[i] = ec._Mutation_recyclingTickets(ctx, field)
 			if out.Values[i] == graphql.Null {
 				invalid = true
 			}
-		case "removeAuthorAndBookRelationship":
-			out.Values[i] = ec._Mutation_removeAuthorAndBookRelationship(ctx, field)
+		case "createQrcode":
+			out.Values[i] = ec._Mutation_createQrcode(ctx, field)
 			if out.Values[i] == graphql.Null {
 				invalid = true
 			}
-		case "createChapter":
-			out.Values[i] = ec._Mutation_createChapter(ctx, field)
+		case "cancelBooking":
+			out.Values[i] = ec._Mutation_cancelBooking(ctx, field)
 			if out.Values[i] == graphql.Null {
 				invalid = true
 			}
-		case "updateChapter":
-			out.Values[i] = ec._Mutation_updateChapter(ctx, field)
-			if out.Values[i] == graphql.Null {
-				invalid = true
-			}
-		case "deleteChapter":
-			out.Values[i] = ec._Mutation_deleteChapter(ctx, field)
-			if out.Values[i] == graphql.Null {
-				invalid = true
-			}
-		case "createChapterAndDictionaryRelationship":
-			out.Values[i] = ec._Mutation_createChapterAndDictionaryRelationship(ctx, field)
-			if out.Values[i] == graphql.Null {
-				invalid = true
-			}
-		case "removeChapterAndDictionaryRelationship":
-			out.Values[i] = ec._Mutation_removeChapterAndDictionaryRelationship(ctx, field)
-			if out.Values[i] == graphql.Null {
-				invalid = true
-			}
-		case "createDictionary":
-			out.Values[i] = ec._Mutation_createDictionary(ctx, field)
-			if out.Values[i] == graphql.Null {
-				invalid = true
-			}
-		case "updateDictionary":
-			out.Values[i] = ec._Mutation_updateDictionary(ctx, field)
-			if out.Values[i] == graphql.Null {
-				invalid = true
-			}
-		case "deleteDictionary":
-			out.Values[i] = ec._Mutation_deleteDictionary(ctx, field)
-			if out.Values[i] == graphql.Null {
-				invalid = true
-			}
-		case "createPhrase":
-			out.Values[i] = ec._Mutation_createPhrase(ctx, field)
-			if out.Values[i] == graphql.Null {
-				invalid = true
-			}
-		case "updatePhrase":
-			out.Values[i] = ec._Mutation_updatePhrase(ctx, field)
-			if out.Values[i] == graphql.Null {
-				invalid = true
-			}
-		case "deletePhrase":
-			out.Values[i] = ec._Mutation_deletePhrase(ctx, field)
+		case "booking":
+			out.Values[i] = ec._Mutation_booking(ctx, field)
 			if out.Values[i] == graphql.Null {
 				invalid = true
 			}
@@ -4738,10 +5381,44 @@ func (ec *executionContext) _Mutation_login(ctx context.Context, field graphql.C
 		}
 		return graphql.Null
 	}
-	res := resTmp.(string)
+	res := resTmp.(LoginResponse)
 	rctx.Result = res
 	ctx = ec.Tracer.StartFieldChildExecution(ctx)
-	return graphql.MarshalString(res)
+
+	return ec._LoginResponse(ctx, field.Selections, &res)
+}
+
+// nolint: vetshadow
+func (ec *executionContext) _Mutation_logout(ctx context.Context, field graphql.CollectedField) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := field_Mutation_logout_args(rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	rctx := &graphql.ResolverContext{
+		Object: "Mutation",
+		Args:   args,
+		Field:  field,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, nil, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().Logout(rctx, args["input"].(LogoutInput))
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return graphql.MarshalBoolean(res)
 }
 
 // nolint: vetshadow
@@ -4843,6 +5520,39 @@ func (ec *executionContext) _Mutation_deleteUser(ctx context.Context, field grap
 	rctx.Result = res
 	ctx = ec.Tracer.StartFieldChildExecution(ctx)
 	return graphql.MarshalBoolean(res)
+}
+
+// nolint: vetshadow
+func (ec *executionContext) _Mutation_resetPassword(ctx context.Context, field graphql.CollectedField) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := field_Mutation_resetPassword_args(rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	rctx := &graphql.ResolverContext{
+		Object: "Mutation",
+		Args:   args,
+		Field:  field,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, nil, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().ResetPassword(rctx, args["input"].(ResetPasword))
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return graphql.MarshalString(res)
 }
 
 // nolint: vetshadow
@@ -5180,11 +5890,11 @@ func (ec *executionContext) _Mutation_createRoleAndPermissionRelationship(ctx co
 }
 
 // nolint: vetshadow
-func (ec *executionContext) _Mutation_createBook(ctx context.Context, field graphql.CollectedField) graphql.Marshaler {
+func (ec *executionContext) _Mutation_createDishes(ctx context.Context, field graphql.CollectedField) graphql.Marshaler {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
 	rawArgs := field.ArgumentMap(ec.Variables)
-	args, err := field_Mutation_createBook_args(rawArgs)
+	args, err := field_Mutation_createDishes_args(rawArgs)
 	if err != nil {
 		ec.Error(ctx, err)
 		return graphql.Null
@@ -5198,7 +5908,7 @@ func (ec *executionContext) _Mutation_createBook(ctx context.Context, field grap
 	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
 	resTmp := ec.FieldMiddleware(ctx, nil, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().CreateBook(rctx, args["input"].(NewBook))
+		return ec.resolvers.Mutation().CreateDishes(rctx, args["input"].(NewDishes))
 	})
 	if resTmp == nil {
 		if !ec.HasError(rctx) {
@@ -5206,19 +5916,19 @@ func (ec *executionContext) _Mutation_createBook(ctx context.Context, field grap
 		}
 		return graphql.Null
 	}
-	res := resTmp.(models.Book)
+	res := resTmp.(models.Dishes)
 	rctx.Result = res
 	ctx = ec.Tracer.StartFieldChildExecution(ctx)
 
-	return ec._Book(ctx, field.Selections, &res)
+	return ec._Dishes(ctx, field.Selections, &res)
 }
 
 // nolint: vetshadow
-func (ec *executionContext) _Mutation_updateBook(ctx context.Context, field graphql.CollectedField) graphql.Marshaler {
+func (ec *executionContext) _Mutation_updateDishes(ctx context.Context, field graphql.CollectedField) graphql.Marshaler {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
 	rawArgs := field.ArgumentMap(ec.Variables)
-	args, err := field_Mutation_updateBook_args(rawArgs)
+	args, err := field_Mutation_updateDishes_args(rawArgs)
 	if err != nil {
 		ec.Error(ctx, err)
 		return graphql.Null
@@ -5232,7 +5942,7 @@ func (ec *executionContext) _Mutation_updateBook(ctx context.Context, field grap
 	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
 	resTmp := ec.FieldMiddleware(ctx, nil, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().UpdateBook(rctx, args["input"].(UpdateBookInput))
+		return ec.resolvers.Mutation().UpdateDishes(rctx, args["input"].(UpdateDishesInput))
 	})
 	if resTmp == nil {
 		if !ec.HasError(rctx) {
@@ -5240,19 +5950,19 @@ func (ec *executionContext) _Mutation_updateBook(ctx context.Context, field grap
 		}
 		return graphql.Null
 	}
-	res := resTmp.(models.Book)
+	res := resTmp.(models.Dishes)
 	rctx.Result = res
 	ctx = ec.Tracer.StartFieldChildExecution(ctx)
 
-	return ec._Book(ctx, field.Selections, &res)
+	return ec._Dishes(ctx, field.Selections, &res)
 }
 
 // nolint: vetshadow
-func (ec *executionContext) _Mutation_deleteBook(ctx context.Context, field graphql.CollectedField) graphql.Marshaler {
+func (ec *executionContext) _Mutation_deleteDishes(ctx context.Context, field graphql.CollectedField) graphql.Marshaler {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
 	rawArgs := field.ArgumentMap(ec.Variables)
-	args, err := field_Mutation_deleteBook_args(rawArgs)
+	args, err := field_Mutation_deleteDishes_args(rawArgs)
 	if err != nil {
 		ec.Error(ctx, err)
 		return graphql.Null
@@ -5266,7 +5976,7 @@ func (ec *executionContext) _Mutation_deleteBook(ctx context.Context, field grap
 	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
 	resTmp := ec.FieldMiddleware(ctx, nil, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().DeleteBook(rctx, args["input"].(DeleteIDInput))
+		return ec.resolvers.Mutation().DeleteDishes(rctx, args["input"].(DeleteIDInput))
 	})
 	if resTmp == nil {
 		if !ec.HasError(rctx) {
@@ -5281,11 +5991,11 @@ func (ec *executionContext) _Mutation_deleteBook(ctx context.Context, field grap
 }
 
 // nolint: vetshadow
-func (ec *executionContext) _Mutation_addBookChapters(ctx context.Context, field graphql.CollectedField) graphql.Marshaler {
+func (ec *executionContext) _Mutation_createCanteens(ctx context.Context, field graphql.CollectedField) graphql.Marshaler {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
 	rawArgs := field.ArgumentMap(ec.Variables)
-	args, err := field_Mutation_addBookChapters_args(rawArgs)
+	args, err := field_Mutation_createCanteens_args(rawArgs)
 	if err != nil {
 		ec.Error(ctx, err)
 		return graphql.Null
@@ -5299,7 +6009,75 @@ func (ec *executionContext) _Mutation_addBookChapters(ctx context.Context, field
 	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
 	resTmp := ec.FieldMiddleware(ctx, nil, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().AddBookChapters(rctx, args["input"].(BookAndChapterRelationshipInput))
+		return ec.resolvers.Mutation().CreateCanteens(rctx, args["input"].(NewCanteen))
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(models.Canteen)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+
+	return ec._Canteen(ctx, field.Selections, &res)
+}
+
+// nolint: vetshadow
+func (ec *executionContext) _Mutation_updateCanteens(ctx context.Context, field graphql.CollectedField) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := field_Mutation_updateCanteens_args(rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	rctx := &graphql.ResolverContext{
+		Object: "Mutation",
+		Args:   args,
+		Field:  field,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, nil, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().UpdateCanteens(rctx, args["input"].(UpdateCanteenInput))
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(models.Canteen)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+
+	return ec._Canteen(ctx, field.Selections, &res)
+}
+
+// nolint: vetshadow
+func (ec *executionContext) _Mutation_deleteCanteens(ctx context.Context, field graphql.CollectedField) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := field_Mutation_deleteCanteens_args(rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	rctx := &graphql.ResolverContext{
+		Object: "Mutation",
+		Args:   args,
+		Field:  field,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, nil, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().DeleteCanteens(rctx, args["input"].(DeleteIDInput))
 	})
 	if resTmp == nil {
 		if !ec.HasError(rctx) {
@@ -5314,11 +6092,11 @@ func (ec *executionContext) _Mutation_addBookChapters(ctx context.Context, field
 }
 
 // nolint: vetshadow
-func (ec *executionContext) _Mutation_removeBookChapters(ctx context.Context, field graphql.CollectedField) graphql.Marshaler {
+func (ec *executionContext) _Mutation_generateTickets(ctx context.Context, field graphql.CollectedField) graphql.Marshaler {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
 	rawArgs := field.ArgumentMap(ec.Variables)
-	args, err := field_Mutation_removeBookChapters_args(rawArgs)
+	args, err := field_Mutation_generateTickets_args(rawArgs)
 	if err != nil {
 		ec.Error(ctx, err)
 		return graphql.Null
@@ -5332,7 +6110,75 @@ func (ec *executionContext) _Mutation_removeBookChapters(ctx context.Context, fi
 	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
 	resTmp := ec.FieldMiddleware(ctx, nil, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().RemoveBookChapters(rctx, args["input"].(BookAndChapterRelationshipInput))
+		return ec.resolvers.Mutation().GenerateTickets(rctx, args["input"].(GenarateTicketInput))
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(QueryTicketResponse)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+
+	return ec._QueryTicketResponse(ctx, field.Selections, &res)
+}
+
+// nolint: vetshadow
+func (ec *executionContext) _Mutation_transferTickets(ctx context.Context, field graphql.CollectedField) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := field_Mutation_transferTickets_args(rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	rctx := &graphql.ResolverContext{
+		Object: "Mutation",
+		Args:   args,
+		Field:  field,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, nil, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().TransferTickets(rctx, args["input"].(TransferTicketInput))
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(TransferResponse)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+
+	return ec._TransferResponse(ctx, field.Selections, &res)
+}
+
+// nolint: vetshadow
+func (ec *executionContext) _Mutation_recyclingTickets(ctx context.Context, field graphql.CollectedField) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := field_Mutation_recyclingTickets_args(rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	rctx := &graphql.ResolverContext{
+		Object: "Mutation",
+		Args:   args,
+		Field:  field,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, nil, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().RecyclingTickets(rctx, args["input"].(RecyclingTicketsInput))
 	})
 	if resTmp == nil {
 		if !ec.HasError(rctx) {
@@ -5347,11 +6193,11 @@ func (ec *executionContext) _Mutation_removeBookChapters(ctx context.Context, fi
 }
 
 // nolint: vetshadow
-func (ec *executionContext) _Mutation_createAuthor(ctx context.Context, field graphql.CollectedField) graphql.Marshaler {
+func (ec *executionContext) _Mutation_createQrcode(ctx context.Context, field graphql.CollectedField) graphql.Marshaler {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
 	rawArgs := field.ArgumentMap(ec.Variables)
-	args, err := field_Mutation_createAuthor_args(rawArgs)
+	args, err := field_Mutation_createQrcode_args(rawArgs)
 	if err != nil {
 		ec.Error(ctx, err)
 		return graphql.Null
@@ -5365,7 +6211,7 @@ func (ec *executionContext) _Mutation_createAuthor(ctx context.Context, field gr
 	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
 	resTmp := ec.FieldMiddleware(ctx, nil, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().CreateAuthor(rctx, args["input"].(NewAuthor))
+		return ec.resolvers.Mutation().CreateQrcode(rctx, args["input"].(CanteenQrcodeInput))
 	})
 	if resTmp == nil {
 		if !ec.HasError(rctx) {
@@ -5373,19 +6219,18 @@ func (ec *executionContext) _Mutation_createAuthor(ctx context.Context, field gr
 		}
 		return graphql.Null
 	}
-	res := resTmp.(models.Author)
+	res := resTmp.(string)
 	rctx.Result = res
 	ctx = ec.Tracer.StartFieldChildExecution(ctx)
-
-	return ec._Author(ctx, field.Selections, &res)
+	return graphql.MarshalString(res)
 }
 
 // nolint: vetshadow
-func (ec *executionContext) _Mutation_updateAuthor(ctx context.Context, field graphql.CollectedField) graphql.Marshaler {
+func (ec *executionContext) _Mutation_cancelBooking(ctx context.Context, field graphql.CollectedField) graphql.Marshaler {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
 	rawArgs := field.ArgumentMap(ec.Variables)
-	args, err := field_Mutation_updateAuthor_args(rawArgs)
+	args, err := field_Mutation_cancelBooking_args(rawArgs)
 	if err != nil {
 		ec.Error(ctx, err)
 		return graphql.Null
@@ -5399,41 +6244,7 @@ func (ec *executionContext) _Mutation_updateAuthor(ctx context.Context, field gr
 	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
 	resTmp := ec.FieldMiddleware(ctx, nil, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().UpdateAuthor(rctx, args["input"].(UpdateAuthorInput))
-	})
-	if resTmp == nil {
-		if !ec.HasError(rctx) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(models.Author)
-	rctx.Result = res
-	ctx = ec.Tracer.StartFieldChildExecution(ctx)
-
-	return ec._Author(ctx, field.Selections, &res)
-}
-
-// nolint: vetshadow
-func (ec *executionContext) _Mutation_deleteAuthor(ctx context.Context, field graphql.CollectedField) graphql.Marshaler {
-	ctx = ec.Tracer.StartFieldExecution(ctx, field)
-	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
-	rawArgs := field.ArgumentMap(ec.Variables)
-	args, err := field_Mutation_deleteAuthor_args(rawArgs)
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	rctx := &graphql.ResolverContext{
-		Object: "Mutation",
-		Args:   args,
-		Field:  field,
-	}
-	ctx = graphql.WithResolverContext(ctx, rctx)
-	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
-	resTmp := ec.FieldMiddleware(ctx, nil, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().DeleteAuthor(rctx, args["input"].(DeleteIDInput))
+		return ec.resolvers.Mutation().CancelBooking(rctx, args["input"].(CancelBookingInput))
 	})
 	if resTmp == nil {
 		if !ec.HasError(rctx) {
@@ -5448,11 +6259,11 @@ func (ec *executionContext) _Mutation_deleteAuthor(ctx context.Context, field gr
 }
 
 // nolint: vetshadow
-func (ec *executionContext) _Mutation_createAuthorAndBookRelationship(ctx context.Context, field graphql.CollectedField) graphql.Marshaler {
+func (ec *executionContext) _Mutation_booking(ctx context.Context, field graphql.CollectedField) graphql.Marshaler {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
 	rawArgs := field.ArgumentMap(ec.Variables)
-	args, err := field_Mutation_createAuthorAndBookRelationship_args(rawArgs)
+	args, err := field_Mutation_booking_args(rawArgs)
 	if err != nil {
 		ec.Error(ctx, err)
 		return graphql.Null
@@ -5466,7 +6277,7 @@ func (ec *executionContext) _Mutation_createAuthorAndBookRelationship(ctx contex
 	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
 	resTmp := ec.FieldMiddleware(ctx, nil, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().CreateAuthorAndBookRelationship(rctx, args["input"].(AuthorAndBookRelationshipInput))
+		return ec.resolvers.Mutation().Booking(rctx, args["input"].(BookingInput))
 	})
 	if resTmp == nil {
 		if !ec.HasError(rctx) {
@@ -5480,59 +6291,60 @@ func (ec *executionContext) _Mutation_createAuthorAndBookRelationship(ctx contex
 	return graphql.MarshalBoolean(res)
 }
 
-// nolint: vetshadow
-func (ec *executionContext) _Mutation_removeAuthorAndBookRelationship(ctx context.Context, field graphql.CollectedField) graphql.Marshaler {
-	ctx = ec.Tracer.StartFieldExecution(ctx, field)
-	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
-	rawArgs := field.ArgumentMap(ec.Variables)
-	args, err := field_Mutation_removeAuthorAndBookRelationship_args(rawArgs)
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	rctx := &graphql.ResolverContext{
-		Object: "Mutation",
-		Args:   args,
-		Field:  field,
-	}
-	ctx = graphql.WithResolverContext(ctx, rctx)
-	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
-	resTmp := ec.FieldMiddleware(ctx, nil, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().RemoveAuthorAndBookRelationship(rctx, args["input"].(AuthorAndBookRelationshipInput))
-	})
-	if resTmp == nil {
-		if !ec.HasError(rctx) {
-			ec.Errorf(ctx, "must not be null")
+var orgDashboardImplementors = []string{"OrgDashboard"}
+
+// nolint: gocyclo, errcheck, gas, goconst
+func (ec *executionContext) _OrgDashboard(ctx context.Context, sel ast.SelectionSet, obj *OrgDashboard) graphql.Marshaler {
+	fields := graphql.CollectFields(ctx, sel, orgDashboardImplementors)
+
+	out := graphql.NewOrderedMap(len(fields))
+	invalid := false
+	for i, field := range fields {
+		out.Keys[i] = field.Alias
+
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("OrgDashboard")
+		case "name":
+			out.Values[i] = ec._OrgDashboard_name(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalid = true
+			}
+		case "userCount":
+			out.Values[i] = ec._OrgDashboard_userCount(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalid = true
+			}
+		case "canteenCount":
+			out.Values[i] = ec._OrgDashboard_canteenCount(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalid = true
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
 		}
+	}
+
+	if invalid {
 		return graphql.Null
 	}
-	res := resTmp.(bool)
-	rctx.Result = res
-	ctx = ec.Tracer.StartFieldChildExecution(ctx)
-	return graphql.MarshalBoolean(res)
+	return out
 }
 
 // nolint: vetshadow
-func (ec *executionContext) _Mutation_createChapter(ctx context.Context, field graphql.CollectedField) graphql.Marshaler {
+func (ec *executionContext) _OrgDashboard_name(ctx context.Context, field graphql.CollectedField, obj *OrgDashboard) graphql.Marshaler {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
-	rawArgs := field.ArgumentMap(ec.Variables)
-	args, err := field_Mutation_createChapter_args(rawArgs)
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
 	rctx := &graphql.ResolverContext{
-		Object: "Mutation",
-		Args:   args,
+		Object: "OrgDashboard",
+		Args:   nil,
 		Field:  field,
 	}
 	ctx = graphql.WithResolverContext(ctx, rctx)
 	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
-	resTmp := ec.FieldMiddleware(ctx, nil, func(rctx context.Context) (interface{}, error) {
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().CreateChapter(rctx, args["input"].(NewChapter))
+		return obj.Name, nil
 	})
 	if resTmp == nil {
 		if !ec.HasError(rctx) {
@@ -5540,33 +6352,26 @@ func (ec *executionContext) _Mutation_createChapter(ctx context.Context, field g
 		}
 		return graphql.Null
 	}
-	res := resTmp.(models.Chapter)
+	res := resTmp.(string)
 	rctx.Result = res
 	ctx = ec.Tracer.StartFieldChildExecution(ctx)
-
-	return ec._Chapter(ctx, field.Selections, &res)
+	return graphql.MarshalString(res)
 }
 
 // nolint: vetshadow
-func (ec *executionContext) _Mutation_updateChapter(ctx context.Context, field graphql.CollectedField) graphql.Marshaler {
+func (ec *executionContext) _OrgDashboard_userCount(ctx context.Context, field graphql.CollectedField, obj *OrgDashboard) graphql.Marshaler {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
-	rawArgs := field.ArgumentMap(ec.Variables)
-	args, err := field_Mutation_updateChapter_args(rawArgs)
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
 	rctx := &graphql.ResolverContext{
-		Object: "Mutation",
-		Args:   args,
+		Object: "OrgDashboard",
+		Args:   nil,
 		Field:  field,
 	}
 	ctx = graphql.WithResolverContext(ctx, rctx)
 	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
-	resTmp := ec.FieldMiddleware(ctx, nil, func(rctx context.Context) (interface{}, error) {
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().UpdateChapter(rctx, args["input"].(UpdateChapterInput))
+		return obj.UserCount, nil
 	})
 	if resTmp == nil {
 		if !ec.HasError(rctx) {
@@ -5574,33 +6379,26 @@ func (ec *executionContext) _Mutation_updateChapter(ctx context.Context, field g
 		}
 		return graphql.Null
 	}
-	res := resTmp.(models.Chapter)
+	res := resTmp.(int)
 	rctx.Result = res
 	ctx = ec.Tracer.StartFieldChildExecution(ctx)
-
-	return ec._Chapter(ctx, field.Selections, &res)
+	return graphql.MarshalInt(res)
 }
 
 // nolint: vetshadow
-func (ec *executionContext) _Mutation_deleteChapter(ctx context.Context, field graphql.CollectedField) graphql.Marshaler {
+func (ec *executionContext) _OrgDashboard_canteenCount(ctx context.Context, field graphql.CollectedField, obj *OrgDashboard) graphql.Marshaler {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
-	rawArgs := field.ArgumentMap(ec.Variables)
-	args, err := field_Mutation_deleteChapter_args(rawArgs)
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
 	rctx := &graphql.ResolverContext{
-		Object: "Mutation",
-		Args:   args,
+		Object: "OrgDashboard",
+		Args:   nil,
 		Field:  field,
 	}
 	ctx = graphql.WithResolverContext(ctx, rctx)
 	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
-	resTmp := ec.FieldMiddleware(ctx, nil, func(rctx context.Context) (interface{}, error) {
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().DeleteChapter(rctx, args["input"].(DeleteIDInput))
+		return obj.CanteenCount, nil
 	})
 	if resTmp == nil {
 		if !ec.HasError(rctx) {
@@ -5608,278 +6406,10 @@ func (ec *executionContext) _Mutation_deleteChapter(ctx context.Context, field g
 		}
 		return graphql.Null
 	}
-	res := resTmp.(bool)
+	res := resTmp.(int)
 	rctx.Result = res
 	ctx = ec.Tracer.StartFieldChildExecution(ctx)
-	return graphql.MarshalBoolean(res)
-}
-
-// nolint: vetshadow
-func (ec *executionContext) _Mutation_createChapterAndDictionaryRelationship(ctx context.Context, field graphql.CollectedField) graphql.Marshaler {
-	ctx = ec.Tracer.StartFieldExecution(ctx, field)
-	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
-	rawArgs := field.ArgumentMap(ec.Variables)
-	args, err := field_Mutation_createChapterAndDictionaryRelationship_args(rawArgs)
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	rctx := &graphql.ResolverContext{
-		Object: "Mutation",
-		Args:   args,
-		Field:  field,
-	}
-	ctx = graphql.WithResolverContext(ctx, rctx)
-	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
-	resTmp := ec.FieldMiddleware(ctx, nil, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().CreateChapterAndDictionaryRelationship(rctx, args["input"].(ChapterAndDictionaryRelationshipInput))
-	})
-	if resTmp == nil {
-		if !ec.HasError(rctx) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(bool)
-	rctx.Result = res
-	ctx = ec.Tracer.StartFieldChildExecution(ctx)
-	return graphql.MarshalBoolean(res)
-}
-
-// nolint: vetshadow
-func (ec *executionContext) _Mutation_removeChapterAndDictionaryRelationship(ctx context.Context, field graphql.CollectedField) graphql.Marshaler {
-	ctx = ec.Tracer.StartFieldExecution(ctx, field)
-	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
-	rawArgs := field.ArgumentMap(ec.Variables)
-	args, err := field_Mutation_removeChapterAndDictionaryRelationship_args(rawArgs)
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	rctx := &graphql.ResolverContext{
-		Object: "Mutation",
-		Args:   args,
-		Field:  field,
-	}
-	ctx = graphql.WithResolverContext(ctx, rctx)
-	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
-	resTmp := ec.FieldMiddleware(ctx, nil, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().RemoveChapterAndDictionaryRelationship(rctx, args["input"].(ChapterAndDictionaryRelationshipInput))
-	})
-	if resTmp == nil {
-		if !ec.HasError(rctx) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(bool)
-	rctx.Result = res
-	ctx = ec.Tracer.StartFieldChildExecution(ctx)
-	return graphql.MarshalBoolean(res)
-}
-
-// nolint: vetshadow
-func (ec *executionContext) _Mutation_createDictionary(ctx context.Context, field graphql.CollectedField) graphql.Marshaler {
-	ctx = ec.Tracer.StartFieldExecution(ctx, field)
-	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
-	rawArgs := field.ArgumentMap(ec.Variables)
-	args, err := field_Mutation_createDictionary_args(rawArgs)
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	rctx := &graphql.ResolverContext{
-		Object: "Mutation",
-		Args:   args,
-		Field:  field,
-	}
-	ctx = graphql.WithResolverContext(ctx, rctx)
-	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
-	resTmp := ec.FieldMiddleware(ctx, nil, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().CreateDictionary(rctx, args["input"].(NewDictionary))
-	})
-	if resTmp == nil {
-		if !ec.HasError(rctx) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(models.Dictionary)
-	rctx.Result = res
-	ctx = ec.Tracer.StartFieldChildExecution(ctx)
-
-	return ec._Dictionary(ctx, field.Selections, &res)
-}
-
-// nolint: vetshadow
-func (ec *executionContext) _Mutation_updateDictionary(ctx context.Context, field graphql.CollectedField) graphql.Marshaler {
-	ctx = ec.Tracer.StartFieldExecution(ctx, field)
-	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
-	rawArgs := field.ArgumentMap(ec.Variables)
-	args, err := field_Mutation_updateDictionary_args(rawArgs)
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	rctx := &graphql.ResolverContext{
-		Object: "Mutation",
-		Args:   args,
-		Field:  field,
-	}
-	ctx = graphql.WithResolverContext(ctx, rctx)
-	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
-	resTmp := ec.FieldMiddleware(ctx, nil, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().UpdateDictionary(rctx, args["input"].(UpdateDictionaryInput))
-	})
-	if resTmp == nil {
-		if !ec.HasError(rctx) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(models.Dictionary)
-	rctx.Result = res
-	ctx = ec.Tracer.StartFieldChildExecution(ctx)
-
-	return ec._Dictionary(ctx, field.Selections, &res)
-}
-
-// nolint: vetshadow
-func (ec *executionContext) _Mutation_deleteDictionary(ctx context.Context, field graphql.CollectedField) graphql.Marshaler {
-	ctx = ec.Tracer.StartFieldExecution(ctx, field)
-	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
-	rawArgs := field.ArgumentMap(ec.Variables)
-	args, err := field_Mutation_deleteDictionary_args(rawArgs)
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	rctx := &graphql.ResolverContext{
-		Object: "Mutation",
-		Args:   args,
-		Field:  field,
-	}
-	ctx = graphql.WithResolverContext(ctx, rctx)
-	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
-	resTmp := ec.FieldMiddleware(ctx, nil, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().DeleteDictionary(rctx, args["input"].(DeleteIDInput))
-	})
-	if resTmp == nil {
-		if !ec.HasError(rctx) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(bool)
-	rctx.Result = res
-	ctx = ec.Tracer.StartFieldChildExecution(ctx)
-	return graphql.MarshalBoolean(res)
-}
-
-// nolint: vetshadow
-func (ec *executionContext) _Mutation_createPhrase(ctx context.Context, field graphql.CollectedField) graphql.Marshaler {
-	ctx = ec.Tracer.StartFieldExecution(ctx, field)
-	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
-	rawArgs := field.ArgumentMap(ec.Variables)
-	args, err := field_Mutation_createPhrase_args(rawArgs)
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	rctx := &graphql.ResolverContext{
-		Object: "Mutation",
-		Args:   args,
-		Field:  field,
-	}
-	ctx = graphql.WithResolverContext(ctx, rctx)
-	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
-	resTmp := ec.FieldMiddleware(ctx, nil, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().CreatePhrase(rctx, args["input"].(NewPhrase))
-	})
-	if resTmp == nil {
-		if !ec.HasError(rctx) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(models.Phrase)
-	rctx.Result = res
-	ctx = ec.Tracer.StartFieldChildExecution(ctx)
-
-	return ec._Phrase(ctx, field.Selections, &res)
-}
-
-// nolint: vetshadow
-func (ec *executionContext) _Mutation_updatePhrase(ctx context.Context, field graphql.CollectedField) graphql.Marshaler {
-	ctx = ec.Tracer.StartFieldExecution(ctx, field)
-	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
-	rawArgs := field.ArgumentMap(ec.Variables)
-	args, err := field_Mutation_updatePhrase_args(rawArgs)
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	rctx := &graphql.ResolverContext{
-		Object: "Mutation",
-		Args:   args,
-		Field:  field,
-	}
-	ctx = graphql.WithResolverContext(ctx, rctx)
-	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
-	resTmp := ec.FieldMiddleware(ctx, nil, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().UpdatePhrase(rctx, args["input"].(UpdatePhraseInput))
-	})
-	if resTmp == nil {
-		if !ec.HasError(rctx) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(models.Phrase)
-	rctx.Result = res
-	ctx = ec.Tracer.StartFieldChildExecution(ctx)
-
-	return ec._Phrase(ctx, field.Selections, &res)
-}
-
-// nolint: vetshadow
-func (ec *executionContext) _Mutation_deletePhrase(ctx context.Context, field graphql.CollectedField) graphql.Marshaler {
-	ctx = ec.Tracer.StartFieldExecution(ctx, field)
-	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
-	rawArgs := field.ArgumentMap(ec.Variables)
-	args, err := field_Mutation_deletePhrase_args(rawArgs)
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	rctx := &graphql.ResolverContext{
-		Object: "Mutation",
-		Args:   args,
-		Field:  field,
-	}
-	ctx = graphql.WithResolverContext(ctx, rctx)
-	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
-	resTmp := ec.FieldMiddleware(ctx, nil, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().DeletePhrase(rctx, args["input"].(DeleteIDInput))
-	})
-	if resTmp == nil {
-		if !ec.HasError(rctx) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(bool)
-	rctx.Result = res
-	ctx = ec.Tracer.StartFieldChildExecution(ctx)
-	return graphql.MarshalBoolean(res)
+	return graphql.MarshalInt(res)
 }
 
 var permissionImplementors = []string{"Permission"}
@@ -5918,6 +6448,21 @@ func (ec *executionContext) _Permission(ctx context.Context, sel ast.SelectionSe
 			}
 		case "checked":
 			out.Values[i] = ec._Permission_checked(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalid = true
+			}
+		case "createdAt":
+			out.Values[i] = ec._Permission_createdAt(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalid = true
+			}
+		case "updatedAt":
+			out.Values[i] = ec._Permission_updatedAt(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalid = true
+			}
+		case "deletedAt":
+			out.Values[i] = ec._Permission_deletedAt(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				invalid = true
 			}
@@ -6067,61 +6612,12 @@ func (ec *executionContext) _Permission_checked(ctx context.Context, field graph
 	return graphql.MarshalBoolean(res)
 }
 
-var phraseImplementors = []string{"Phrase"}
-
-// nolint: gocyclo, errcheck, gas, goconst
-func (ec *executionContext) _Phrase(ctx context.Context, sel ast.SelectionSet, obj *models.Phrase) graphql.Marshaler {
-	fields := graphql.CollectFields(ctx, sel, phraseImplementors)
-
-	var wg sync.WaitGroup
-	out := graphql.NewOrderedMap(len(fields))
-	invalid := false
-	for i, field := range fields {
-		out.Keys[i] = field.Alias
-
-		switch field.Name {
-		case "__typename":
-			out.Values[i] = graphql.MarshalString("Phrase")
-		case "id":
-			wg.Add(1)
-			go func(i int, field graphql.CollectedField) {
-				out.Values[i] = ec._Phrase_id(ctx, field, obj)
-				if out.Values[i] == graphql.Null {
-					invalid = true
-				}
-				wg.Done()
-			}(i, field)
-		case "content":
-			out.Values[i] = ec._Phrase_content(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				invalid = true
-			}
-		case "translation":
-			wg.Add(1)
-			go func(i int, field graphql.CollectedField) {
-				out.Values[i] = ec._Phrase_translation(ctx, field, obj)
-				if out.Values[i] == graphql.Null {
-					invalid = true
-				}
-				wg.Done()
-			}(i, field)
-		default:
-			panic("unknown field " + strconv.Quote(field.Name))
-		}
-	}
-	wg.Wait()
-	if invalid {
-		return graphql.Null
-	}
-	return out
-}
-
 // nolint: vetshadow
-func (ec *executionContext) _Phrase_id(ctx context.Context, field graphql.CollectedField, obj *models.Phrase) graphql.Marshaler {
+func (ec *executionContext) _Permission_createdAt(ctx context.Context, field graphql.CollectedField, obj *Permission) graphql.Marshaler {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
 	rctx := &graphql.ResolverContext{
-		Object: "Phrase",
+		Object: "Permission",
 		Args:   nil,
 		Field:  field,
 	}
@@ -6129,34 +6625,7 @@ func (ec *executionContext) _Phrase_id(ctx context.Context, field graphql.Collec
 	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
 	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Phrase().ID(rctx, obj)
-	})
-	if resTmp == nil {
-		if !ec.HasError(rctx) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(int)
-	rctx.Result = res
-	ctx = ec.Tracer.StartFieldChildExecution(ctx)
-	return graphql.MarshalInt(res)
-}
-
-// nolint: vetshadow
-func (ec *executionContext) _Phrase_content(ctx context.Context, field graphql.CollectedField, obj *models.Phrase) graphql.Marshaler {
-	ctx = ec.Tracer.StartFieldExecution(ctx, field)
-	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
-	rctx := &graphql.ResolverContext{
-		Object: "Phrase",
-		Args:   nil,
-		Field:  field,
-	}
-	ctx = graphql.WithResolverContext(ctx, rctx)
-	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
-	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.Content, nil
+		return obj.CreatedAt, nil
 	})
 	if resTmp == nil {
 		if !ec.HasError(rctx) {
@@ -6171,11 +6640,11 @@ func (ec *executionContext) _Phrase_content(ctx context.Context, field graphql.C
 }
 
 // nolint: vetshadow
-func (ec *executionContext) _Phrase_translation(ctx context.Context, field graphql.CollectedField, obj *models.Phrase) graphql.Marshaler {
+func (ec *executionContext) _Permission_updatedAt(ctx context.Context, field graphql.CollectedField, obj *Permission) graphql.Marshaler {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
 	rctx := &graphql.ResolverContext{
-		Object: "Phrase",
+		Object: "Permission",
 		Args:   nil,
 		Field:  field,
 	}
@@ -6183,7 +6652,34 @@ func (ec *executionContext) _Phrase_translation(ctx context.Context, field graph
 	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
 	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Phrase().Translation(rctx, obj)
+		return obj.UpdatedAt, nil
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return graphql.MarshalString(res)
+}
+
+// nolint: vetshadow
+func (ec *executionContext) _Permission_deletedAt(ctx context.Context, field graphql.CollectedField, obj *Permission) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object: "Permission",
+		Args:   nil,
+		Field:  field,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.DeletedAt, nil
 	})
 	if resTmp == nil {
 		if !ec.HasError(rctx) {
@@ -6216,15 +6712,6 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Query")
-		case "dictionaries":
-			wg.Add(1)
-			go func(i int, field graphql.CollectedField) {
-				out.Values[i] = ec._Query_dictionaries(ctx, field)
-				if out.Values[i] == graphql.Null {
-					invalid = true
-				}
-				wg.Done()
-			}(i, field)
 		case "groups":
 			wg.Add(1)
 			go func(i int, field graphql.CollectedField) {
@@ -6252,6 +6739,15 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 				}
 				wg.Done()
 			}(i, field)
+		case "checkUserNotInRole":
+			wg.Add(1)
+			go func(i int, field graphql.CollectedField) {
+				out.Values[i] = ec._Query_checkUserNotInRole(ctx, field)
+				if out.Values[i] == graphql.Null {
+					invalid = true
+				}
+				wg.Done()
+			}(i, field)
 		case "permissions":
 			wg.Add(1)
 			go func(i int, field graphql.CollectedField) {
@@ -6261,46 +6757,55 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 				}
 				wg.Done()
 			}(i, field)
-		case "books":
+		case "tickets":
 			wg.Add(1)
 			go func(i int, field graphql.CollectedField) {
-				out.Values[i] = ec._Query_books(ctx, field)
+				out.Values[i] = ec._Query_tickets(ctx, field)
 				if out.Values[i] == graphql.Null {
 					invalid = true
 				}
 				wg.Done()
 			}(i, field)
-		case "chapters":
+		case "ticketRecords":
 			wg.Add(1)
 			go func(i int, field graphql.CollectedField) {
-				out.Values[i] = ec._Query_chapters(ctx, field)
+				out.Values[i] = ec._Query_ticketRecords(ctx, field)
 				if out.Values[i] == graphql.Null {
 					invalid = true
 				}
 				wg.Done()
 			}(i, field)
-		case "authors":
+		case "dishes":
 			wg.Add(1)
 			go func(i int, field graphql.CollectedField) {
-				out.Values[i] = ec._Query_authors(ctx, field)
+				out.Values[i] = ec._Query_dishes(ctx, field)
 				if out.Values[i] == graphql.Null {
 					invalid = true
 				}
 				wg.Done()
 			}(i, field)
-		case "phrases":
+		case "canteens":
 			wg.Add(1)
 			go func(i int, field graphql.CollectedField) {
-				out.Values[i] = ec._Query_phrases(ctx, field)
+				out.Values[i] = ec._Query_canteens(ctx, field)
 				if out.Values[i] == graphql.Null {
 					invalid = true
 				}
 				wg.Done()
 			}(i, field)
-		case "analysis":
+		case "booking":
 			wg.Add(1)
 			go func(i int, field graphql.CollectedField) {
-				out.Values[i] = ec._Query_analysis(ctx, field)
+				out.Values[i] = ec._Query_booking(ctx, field)
+				if out.Values[i] == graphql.Null {
+					invalid = true
+				}
+				wg.Done()
+			}(i, field)
+		case "dashboard":
+			wg.Add(1)
+			go func(i int, field graphql.CollectedField) {
+				out.Values[i] = ec._Query_dashboard(ctx, field)
 				if out.Values[i] == graphql.Null {
 					invalid = true
 				}
@@ -6328,40 +6833,6 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 		return graphql.Null
 	}
 	return out
-}
-
-// nolint: vetshadow
-func (ec *executionContext) _Query_dictionaries(ctx context.Context, field graphql.CollectedField) graphql.Marshaler {
-	ctx = ec.Tracer.StartFieldExecution(ctx, field)
-	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
-	rawArgs := field.ArgumentMap(ec.Variables)
-	args, err := field_Query_dictionaries_args(rawArgs)
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	rctx := &graphql.ResolverContext{
-		Object: "Query",
-		Args:   args,
-		Field:  field,
-	}
-	ctx = graphql.WithResolverContext(ctx, rctx)
-	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
-	resTmp := ec.FieldMiddleware(ctx, nil, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().Dictionaries(rctx, args["filter"].(*DictionaryFilterInput), args["pagination"].(*Pagination))
-	})
-	if resTmp == nil {
-		if !ec.HasError(rctx) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(QueryDictionaryResponse)
-	rctx.Result = res
-	ctx = ec.Tracer.StartFieldChildExecution(ctx)
-
-	return ec._QueryDictionaryResponse(ctx, field.Selections, &res)
 }
 
 // nolint: vetshadow
@@ -6467,6 +6938,48 @@ func (ec *executionContext) _Query_roles(ctx context.Context, field graphql.Coll
 }
 
 // nolint: vetshadow
+func (ec *executionContext) _Query_checkUserNotInRole(ctx context.Context, field graphql.CollectedField) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := field_Query_checkUserNotInRole_args(rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	rctx := &graphql.ResolverContext{
+		Object: "Query",
+		Args:   args,
+		Field:  field,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, nil, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().CheckUserNotInRole(rctx, args["filter"].(*RoleAndUserFilterInput))
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]int)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+
+	arr1 := make(graphql.Array, len(res))
+
+	for idx1 := range res {
+		arr1[idx1] = func() graphql.Marshaler {
+			return graphql.MarshalInt(res[idx1])
+		}()
+	}
+
+	return arr1
+}
+
+// nolint: vetshadow
 func (ec *executionContext) _Query_permissions(ctx context.Context, field graphql.CollectedField) graphql.Marshaler {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
@@ -6501,11 +7014,11 @@ func (ec *executionContext) _Query_permissions(ctx context.Context, field graphq
 }
 
 // nolint: vetshadow
-func (ec *executionContext) _Query_books(ctx context.Context, field graphql.CollectedField) graphql.Marshaler {
+func (ec *executionContext) _Query_tickets(ctx context.Context, field graphql.CollectedField) graphql.Marshaler {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
 	rawArgs := field.ArgumentMap(ec.Variables)
-	args, err := field_Query_books_args(rawArgs)
+	args, err := field_Query_tickets_args(rawArgs)
 	if err != nil {
 		ec.Error(ctx, err)
 		return graphql.Null
@@ -6519,7 +7032,7 @@ func (ec *executionContext) _Query_books(ctx context.Context, field graphql.Coll
 	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
 	resTmp := ec.FieldMiddleware(ctx, nil, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().Books(rctx, args["filter"].(*BookFilterInput), args["pagination"].(*Pagination))
+		return ec.resolvers.Query().Tickets(rctx, args["filter"].(*TicketFilterInput), args["pagination"].(*Pagination))
 	})
 	if resTmp == nil {
 		if !ec.HasError(rctx) {
@@ -6527,19 +7040,19 @@ func (ec *executionContext) _Query_books(ctx context.Context, field graphql.Coll
 		}
 		return graphql.Null
 	}
-	res := resTmp.(QueryBookResponse)
+	res := resTmp.(QueryTicketResponse)
 	rctx.Result = res
 	ctx = ec.Tracer.StartFieldChildExecution(ctx)
 
-	return ec._QueryBookResponse(ctx, field.Selections, &res)
+	return ec._QueryTicketResponse(ctx, field.Selections, &res)
 }
 
 // nolint: vetshadow
-func (ec *executionContext) _Query_chapters(ctx context.Context, field graphql.CollectedField) graphql.Marshaler {
+func (ec *executionContext) _Query_ticketRecords(ctx context.Context, field graphql.CollectedField) graphql.Marshaler {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
 	rawArgs := field.ArgumentMap(ec.Variables)
-	args, err := field_Query_chapters_args(rawArgs)
+	args, err := field_Query_ticketRecords_args(rawArgs)
 	if err != nil {
 		ec.Error(ctx, err)
 		return graphql.Null
@@ -6553,7 +7066,7 @@ func (ec *executionContext) _Query_chapters(ctx context.Context, field graphql.C
 	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
 	resTmp := ec.FieldMiddleware(ctx, nil, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().Chapters(rctx, args["filter"].(*ChapterFilterInput))
+		return ec.resolvers.Query().TicketRecords(rctx, args["filter"].(*TicketRecordFilterInput), args["pagination"].(*Pagination))
 	})
 	if resTmp == nil {
 		if !ec.HasError(rctx) {
@@ -6561,51 +7074,19 @@ func (ec *executionContext) _Query_chapters(ctx context.Context, field graphql.C
 		}
 		return graphql.Null
 	}
-	res := resTmp.([]models.Chapter)
+	res := resTmp.(QueryTicketRecordResponse)
 	rctx.Result = res
 	ctx = ec.Tracer.StartFieldChildExecution(ctx)
 
-	arr1 := make(graphql.Array, len(res))
-	var wg sync.WaitGroup
-
-	isLen1 := len(res) == 1
-	if !isLen1 {
-		wg.Add(len(res))
-	}
-
-	for idx1 := range res {
-		idx1 := idx1
-		rctx := &graphql.ResolverContext{
-			Index:  &idx1,
-			Result: &res[idx1],
-		}
-		ctx := graphql.WithResolverContext(ctx, rctx)
-		f := func(idx1 int) {
-			if !isLen1 {
-				defer wg.Done()
-			}
-			arr1[idx1] = func() graphql.Marshaler {
-
-				return ec._Chapter(ctx, field.Selections, &res[idx1])
-			}()
-		}
-		if isLen1 {
-			f(idx1)
-		} else {
-			go f(idx1)
-		}
-
-	}
-	wg.Wait()
-	return arr1
+	return ec._QueryTicketRecordResponse(ctx, field.Selections, &res)
 }
 
 // nolint: vetshadow
-func (ec *executionContext) _Query_authors(ctx context.Context, field graphql.CollectedField) graphql.Marshaler {
+func (ec *executionContext) _Query_dishes(ctx context.Context, field graphql.CollectedField) graphql.Marshaler {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
 	rawArgs := field.ArgumentMap(ec.Variables)
-	args, err := field_Query_authors_args(rawArgs)
+	args, err := field_Query_dishes_args(rawArgs)
 	if err != nil {
 		ec.Error(ctx, err)
 		return graphql.Null
@@ -6619,7 +7100,7 @@ func (ec *executionContext) _Query_authors(ctx context.Context, field graphql.Co
 	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
 	resTmp := ec.FieldMiddleware(ctx, nil, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().Authors(rctx, args["filter"].(*AuthorFilterInput), args["pagination"].(*Pagination))
+		return ec.resolvers.Query().Dishes(rctx, args["filter"].(*DishesFilterInput), args["pagination"].(*Pagination))
 	})
 	if resTmp == nil {
 		if !ec.HasError(rctx) {
@@ -6627,19 +7108,19 @@ func (ec *executionContext) _Query_authors(ctx context.Context, field graphql.Co
 		}
 		return graphql.Null
 	}
-	res := resTmp.(QueryAuthorResponse)
+	res := resTmp.(QueryDishesResponse)
 	rctx.Result = res
 	ctx = ec.Tracer.StartFieldChildExecution(ctx)
 
-	return ec._QueryAuthorResponse(ctx, field.Selections, &res)
+	return ec._QueryDishesResponse(ctx, field.Selections, &res)
 }
 
 // nolint: vetshadow
-func (ec *executionContext) _Query_phrases(ctx context.Context, field graphql.CollectedField) graphql.Marshaler {
+func (ec *executionContext) _Query_canteens(ctx context.Context, field graphql.CollectedField) graphql.Marshaler {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
 	rawArgs := field.ArgumentMap(ec.Variables)
-	args, err := field_Query_phrases_args(rawArgs)
+	args, err := field_Query_canteens_args(rawArgs)
 	if err != nil {
 		ec.Error(ctx, err)
 		return graphql.Null
@@ -6653,7 +7134,7 @@ func (ec *executionContext) _Query_phrases(ctx context.Context, field graphql.Co
 	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
 	resTmp := ec.FieldMiddleware(ctx, nil, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().Phrases(rctx, args["filter"].(*PhraseFilterInput), args["pagination"].(*Pagination))
+		return ec.resolvers.Query().Canteens(rctx, args["filter"].(*CanteenFilterInput), args["pagination"].(*Pagination))
 	})
 	if resTmp == nil {
 		if !ec.HasError(rctx) {
@@ -6661,19 +7142,19 @@ func (ec *executionContext) _Query_phrases(ctx context.Context, field graphql.Co
 		}
 		return graphql.Null
 	}
-	res := resTmp.(QueryPhraseResponse)
+	res := resTmp.(QueryCanteenResponse)
 	rctx.Result = res
 	ctx = ec.Tracer.StartFieldChildExecution(ctx)
 
-	return ec._QueryPhraseResponse(ctx, field.Selections, &res)
+	return ec._QueryCanteenResponse(ctx, field.Selections, &res)
 }
 
 // nolint: vetshadow
-func (ec *executionContext) _Query_analysis(ctx context.Context, field graphql.CollectedField) graphql.Marshaler {
+func (ec *executionContext) _Query_booking(ctx context.Context, field graphql.CollectedField) graphql.Marshaler {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
 	rawArgs := field.ArgumentMap(ec.Variables)
-	args, err := field_Query_analysis_args(rawArgs)
+	args, err := field_Query_booking_args(rawArgs)
 	if err != nil {
 		ec.Error(ctx, err)
 		return graphql.Null
@@ -6687,7 +7168,7 @@ func (ec *executionContext) _Query_analysis(ctx context.Context, field graphql.C
 	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
 	resTmp := ec.FieldMiddleware(ctx, nil, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().Analysis(rctx, args["input"].(ChapterAnalysisInput))
+		return ec.resolvers.Query().Booking(rctx, args["filter"].(*BookingFilterInput))
 	})
 	if resTmp == nil {
 		if !ec.HasError(rctx) {
@@ -6695,11 +7176,39 @@ func (ec *executionContext) _Query_analysis(ctx context.Context, field graphql.C
 		}
 		return graphql.Null
 	}
-	res := resTmp.(QueryDictionaryResponse)
+	res := resTmp.(QueryBookingResponse)
 	rctx.Result = res
 	ctx = ec.Tracer.StartFieldChildExecution(ctx)
 
-	return ec._QueryDictionaryResponse(ctx, field.Selections, &res)
+	return ec._QueryBookingResponse(ctx, field.Selections, &res)
+}
+
+// nolint: vetshadow
+func (ec *executionContext) _Query_dashboard(ctx context.Context, field graphql.CollectedField) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object: "Query",
+		Args:   nil,
+		Field:  field,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, nil, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().Dashboard(rctx)
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(DashboardResponse)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+
+	return ec._DashboardResponse(ctx, field.Selections, &res)
 }
 
 // nolint: vetshadow
@@ -6793,11 +7302,11 @@ func (ec *executionContext) _Query___schema(ctx context.Context, field graphql.C
 	return ec.___Schema(ctx, field.Selections, res)
 }
 
-var queryAuthorResponseImplementors = []string{"QueryAuthorResponse"}
+var queryBookingResponseImplementors = []string{"QueryBookingResponse"}
 
 // nolint: gocyclo, errcheck, gas, goconst
-func (ec *executionContext) _QueryAuthorResponse(ctx context.Context, sel ast.SelectionSet, obj *QueryAuthorResponse) graphql.Marshaler {
-	fields := graphql.CollectFields(ctx, sel, queryAuthorResponseImplementors)
+func (ec *executionContext) _QueryBookingResponse(ctx context.Context, sel ast.SelectionSet, obj *QueryBookingResponse) graphql.Marshaler {
+	fields := graphql.CollectFields(ctx, sel, queryBookingResponseImplementors)
 
 	out := graphql.NewOrderedMap(len(fields))
 	invalid := false
@@ -6806,15 +7315,15 @@ func (ec *executionContext) _QueryAuthorResponse(ctx context.Context, sel ast.Se
 
 		switch field.Name {
 		case "__typename":
-			out.Values[i] = graphql.MarshalString("QueryAuthorResponse")
+			out.Values[i] = graphql.MarshalString("QueryBookingResponse")
 		case "totalCount":
-			out.Values[i] = ec._QueryAuthorResponse_totalCount(ctx, field, obj)
+			out.Values[i] = ec._QueryBookingResponse_totalCount(ctx, field, obj)
 		case "skip":
-			out.Values[i] = ec._QueryAuthorResponse_skip(ctx, field, obj)
+			out.Values[i] = ec._QueryBookingResponse_skip(ctx, field, obj)
 		case "take":
-			out.Values[i] = ec._QueryAuthorResponse_take(ctx, field, obj)
+			out.Values[i] = ec._QueryBookingResponse_take(ctx, field, obj)
 		case "rows":
-			out.Values[i] = ec._QueryAuthorResponse_rows(ctx, field, obj)
+			out.Values[i] = ec._QueryBookingResponse_rows(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				invalid = true
 			}
@@ -6830,11 +7339,11 @@ func (ec *executionContext) _QueryAuthorResponse(ctx context.Context, sel ast.Se
 }
 
 // nolint: vetshadow
-func (ec *executionContext) _QueryAuthorResponse_totalCount(ctx context.Context, field graphql.CollectedField, obj *QueryAuthorResponse) graphql.Marshaler {
+func (ec *executionContext) _QueryBookingResponse_totalCount(ctx context.Context, field graphql.CollectedField, obj *QueryBookingResponse) graphql.Marshaler {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
 	rctx := &graphql.ResolverContext{
-		Object: "QueryAuthorResponse",
+		Object: "QueryBookingResponse",
 		Args:   nil,
 		Field:  field,
 	}
@@ -6858,11 +7367,11 @@ func (ec *executionContext) _QueryAuthorResponse_totalCount(ctx context.Context,
 }
 
 // nolint: vetshadow
-func (ec *executionContext) _QueryAuthorResponse_skip(ctx context.Context, field graphql.CollectedField, obj *QueryAuthorResponse) graphql.Marshaler {
+func (ec *executionContext) _QueryBookingResponse_skip(ctx context.Context, field graphql.CollectedField, obj *QueryBookingResponse) graphql.Marshaler {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
 	rctx := &graphql.ResolverContext{
-		Object: "QueryAuthorResponse",
+		Object: "QueryBookingResponse",
 		Args:   nil,
 		Field:  field,
 	}
@@ -6886,11 +7395,11 @@ func (ec *executionContext) _QueryAuthorResponse_skip(ctx context.Context, field
 }
 
 // nolint: vetshadow
-func (ec *executionContext) _QueryAuthorResponse_take(ctx context.Context, field graphql.CollectedField, obj *QueryAuthorResponse) graphql.Marshaler {
+func (ec *executionContext) _QueryBookingResponse_take(ctx context.Context, field graphql.CollectedField, obj *QueryBookingResponse) graphql.Marshaler {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
 	rctx := &graphql.ResolverContext{
-		Object: "QueryAuthorResponse",
+		Object: "QueryBookingResponse",
 		Args:   nil,
 		Field:  field,
 	}
@@ -6914,11 +7423,11 @@ func (ec *executionContext) _QueryAuthorResponse_take(ctx context.Context, field
 }
 
 // nolint: vetshadow
-func (ec *executionContext) _QueryAuthorResponse_rows(ctx context.Context, field graphql.CollectedField, obj *QueryAuthorResponse) graphql.Marshaler {
+func (ec *executionContext) _QueryBookingResponse_rows(ctx context.Context, field graphql.CollectedField, obj *QueryBookingResponse) graphql.Marshaler {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
 	rctx := &graphql.ResolverContext{
-		Object: "QueryAuthorResponse",
+		Object: "QueryBookingResponse",
 		Args:   nil,
 		Field:  field,
 	}
@@ -6934,7 +7443,7 @@ func (ec *executionContext) _QueryAuthorResponse_rows(ctx context.Context, field
 		}
 		return graphql.Null
 	}
-	res := resTmp.([]models.Author)
+	res := resTmp.([]models.Booking)
 	rctx.Result = res
 	ctx = ec.Tracer.StartFieldChildExecution(ctx)
 
@@ -6959,7 +7468,7 @@ func (ec *executionContext) _QueryAuthorResponse_rows(ctx context.Context, field
 			}
 			arr1[idx1] = func() graphql.Marshaler {
 
-				return ec._Author(ctx, field.Selections, &res[idx1])
+				return ec._Booking(ctx, field.Selections, &res[idx1])
 			}()
 		}
 		if isLen1 {
@@ -6973,11 +7482,11 @@ func (ec *executionContext) _QueryAuthorResponse_rows(ctx context.Context, field
 	return arr1
 }
 
-var queryBookResponseImplementors = []string{"QueryBookResponse"}
+var queryCanteenResponseImplementors = []string{"QueryCanteenResponse"}
 
 // nolint: gocyclo, errcheck, gas, goconst
-func (ec *executionContext) _QueryBookResponse(ctx context.Context, sel ast.SelectionSet, obj *QueryBookResponse) graphql.Marshaler {
-	fields := graphql.CollectFields(ctx, sel, queryBookResponseImplementors)
+func (ec *executionContext) _QueryCanteenResponse(ctx context.Context, sel ast.SelectionSet, obj *QueryCanteenResponse) graphql.Marshaler {
+	fields := graphql.CollectFields(ctx, sel, queryCanteenResponseImplementors)
 
 	out := graphql.NewOrderedMap(len(fields))
 	invalid := false
@@ -6986,15 +7495,15 @@ func (ec *executionContext) _QueryBookResponse(ctx context.Context, sel ast.Sele
 
 		switch field.Name {
 		case "__typename":
-			out.Values[i] = graphql.MarshalString("QueryBookResponse")
+			out.Values[i] = graphql.MarshalString("QueryCanteenResponse")
 		case "totalCount":
-			out.Values[i] = ec._QueryBookResponse_totalCount(ctx, field, obj)
+			out.Values[i] = ec._QueryCanteenResponse_totalCount(ctx, field, obj)
 		case "skip":
-			out.Values[i] = ec._QueryBookResponse_skip(ctx, field, obj)
+			out.Values[i] = ec._QueryCanteenResponse_skip(ctx, field, obj)
 		case "take":
-			out.Values[i] = ec._QueryBookResponse_take(ctx, field, obj)
+			out.Values[i] = ec._QueryCanteenResponse_take(ctx, field, obj)
 		case "rows":
-			out.Values[i] = ec._QueryBookResponse_rows(ctx, field, obj)
+			out.Values[i] = ec._QueryCanteenResponse_rows(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				invalid = true
 			}
@@ -7010,11 +7519,11 @@ func (ec *executionContext) _QueryBookResponse(ctx context.Context, sel ast.Sele
 }
 
 // nolint: vetshadow
-func (ec *executionContext) _QueryBookResponse_totalCount(ctx context.Context, field graphql.CollectedField, obj *QueryBookResponse) graphql.Marshaler {
+func (ec *executionContext) _QueryCanteenResponse_totalCount(ctx context.Context, field graphql.CollectedField, obj *QueryCanteenResponse) graphql.Marshaler {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
 	rctx := &graphql.ResolverContext{
-		Object: "QueryBookResponse",
+		Object: "QueryCanteenResponse",
 		Args:   nil,
 		Field:  field,
 	}
@@ -7038,11 +7547,11 @@ func (ec *executionContext) _QueryBookResponse_totalCount(ctx context.Context, f
 }
 
 // nolint: vetshadow
-func (ec *executionContext) _QueryBookResponse_skip(ctx context.Context, field graphql.CollectedField, obj *QueryBookResponse) graphql.Marshaler {
+func (ec *executionContext) _QueryCanteenResponse_skip(ctx context.Context, field graphql.CollectedField, obj *QueryCanteenResponse) graphql.Marshaler {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
 	rctx := &graphql.ResolverContext{
-		Object: "QueryBookResponse",
+		Object: "QueryCanteenResponse",
 		Args:   nil,
 		Field:  field,
 	}
@@ -7066,11 +7575,11 @@ func (ec *executionContext) _QueryBookResponse_skip(ctx context.Context, field g
 }
 
 // nolint: vetshadow
-func (ec *executionContext) _QueryBookResponse_take(ctx context.Context, field graphql.CollectedField, obj *QueryBookResponse) graphql.Marshaler {
+func (ec *executionContext) _QueryCanteenResponse_take(ctx context.Context, field graphql.CollectedField, obj *QueryCanteenResponse) graphql.Marshaler {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
 	rctx := &graphql.ResolverContext{
-		Object: "QueryBookResponse",
+		Object: "QueryCanteenResponse",
 		Args:   nil,
 		Field:  field,
 	}
@@ -7094,11 +7603,11 @@ func (ec *executionContext) _QueryBookResponse_take(ctx context.Context, field g
 }
 
 // nolint: vetshadow
-func (ec *executionContext) _QueryBookResponse_rows(ctx context.Context, field graphql.CollectedField, obj *QueryBookResponse) graphql.Marshaler {
+func (ec *executionContext) _QueryCanteenResponse_rows(ctx context.Context, field graphql.CollectedField, obj *QueryCanteenResponse) graphql.Marshaler {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
 	rctx := &graphql.ResolverContext{
-		Object: "QueryBookResponse",
+		Object: "QueryCanteenResponse",
 		Args:   nil,
 		Field:  field,
 	}
@@ -7114,7 +7623,7 @@ func (ec *executionContext) _QueryBookResponse_rows(ctx context.Context, field g
 		}
 		return graphql.Null
 	}
-	res := resTmp.([]models.Book)
+	res := resTmp.([]models.Canteen)
 	rctx.Result = res
 	ctx = ec.Tracer.StartFieldChildExecution(ctx)
 
@@ -7139,7 +7648,7 @@ func (ec *executionContext) _QueryBookResponse_rows(ctx context.Context, field g
 			}
 			arr1[idx1] = func() graphql.Marshaler {
 
-				return ec._Book(ctx, field.Selections, &res[idx1])
+				return ec._Canteen(ctx, field.Selections, &res[idx1])
 			}()
 		}
 		if isLen1 {
@@ -7153,11 +7662,11 @@ func (ec *executionContext) _QueryBookResponse_rows(ctx context.Context, field g
 	return arr1
 }
 
-var queryChapterResponseImplementors = []string{"QueryChapterResponse"}
+var queryDishesResponseImplementors = []string{"QueryDishesResponse"}
 
 // nolint: gocyclo, errcheck, gas, goconst
-func (ec *executionContext) _QueryChapterResponse(ctx context.Context, sel ast.SelectionSet, obj *QueryChapterResponse) graphql.Marshaler {
-	fields := graphql.CollectFields(ctx, sel, queryChapterResponseImplementors)
+func (ec *executionContext) _QueryDishesResponse(ctx context.Context, sel ast.SelectionSet, obj *QueryDishesResponse) graphql.Marshaler {
+	fields := graphql.CollectFields(ctx, sel, queryDishesResponseImplementors)
 
 	out := graphql.NewOrderedMap(len(fields))
 	invalid := false
@@ -7166,15 +7675,15 @@ func (ec *executionContext) _QueryChapterResponse(ctx context.Context, sel ast.S
 
 		switch field.Name {
 		case "__typename":
-			out.Values[i] = graphql.MarshalString("QueryChapterResponse")
+			out.Values[i] = graphql.MarshalString("QueryDishesResponse")
 		case "totalCount":
-			out.Values[i] = ec._QueryChapterResponse_totalCount(ctx, field, obj)
+			out.Values[i] = ec._QueryDishesResponse_totalCount(ctx, field, obj)
 		case "skip":
-			out.Values[i] = ec._QueryChapterResponse_skip(ctx, field, obj)
+			out.Values[i] = ec._QueryDishesResponse_skip(ctx, field, obj)
 		case "take":
-			out.Values[i] = ec._QueryChapterResponse_take(ctx, field, obj)
+			out.Values[i] = ec._QueryDishesResponse_take(ctx, field, obj)
 		case "rows":
-			out.Values[i] = ec._QueryChapterResponse_rows(ctx, field, obj)
+			out.Values[i] = ec._QueryDishesResponse_rows(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				invalid = true
 			}
@@ -7190,11 +7699,11 @@ func (ec *executionContext) _QueryChapterResponse(ctx context.Context, sel ast.S
 }
 
 // nolint: vetshadow
-func (ec *executionContext) _QueryChapterResponse_totalCount(ctx context.Context, field graphql.CollectedField, obj *QueryChapterResponse) graphql.Marshaler {
+func (ec *executionContext) _QueryDishesResponse_totalCount(ctx context.Context, field graphql.CollectedField, obj *QueryDishesResponse) graphql.Marshaler {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
 	rctx := &graphql.ResolverContext{
-		Object: "QueryChapterResponse",
+		Object: "QueryDishesResponse",
 		Args:   nil,
 		Field:  field,
 	}
@@ -7218,11 +7727,11 @@ func (ec *executionContext) _QueryChapterResponse_totalCount(ctx context.Context
 }
 
 // nolint: vetshadow
-func (ec *executionContext) _QueryChapterResponse_skip(ctx context.Context, field graphql.CollectedField, obj *QueryChapterResponse) graphql.Marshaler {
+func (ec *executionContext) _QueryDishesResponse_skip(ctx context.Context, field graphql.CollectedField, obj *QueryDishesResponse) graphql.Marshaler {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
 	rctx := &graphql.ResolverContext{
-		Object: "QueryChapterResponse",
+		Object: "QueryDishesResponse",
 		Args:   nil,
 		Field:  field,
 	}
@@ -7246,11 +7755,11 @@ func (ec *executionContext) _QueryChapterResponse_skip(ctx context.Context, fiel
 }
 
 // nolint: vetshadow
-func (ec *executionContext) _QueryChapterResponse_take(ctx context.Context, field graphql.CollectedField, obj *QueryChapterResponse) graphql.Marshaler {
+func (ec *executionContext) _QueryDishesResponse_take(ctx context.Context, field graphql.CollectedField, obj *QueryDishesResponse) graphql.Marshaler {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
 	rctx := &graphql.ResolverContext{
-		Object: "QueryChapterResponse",
+		Object: "QueryDishesResponse",
 		Args:   nil,
 		Field:  field,
 	}
@@ -7274,11 +7783,11 @@ func (ec *executionContext) _QueryChapterResponse_take(ctx context.Context, fiel
 }
 
 // nolint: vetshadow
-func (ec *executionContext) _QueryChapterResponse_rows(ctx context.Context, field graphql.CollectedField, obj *QueryChapterResponse) graphql.Marshaler {
+func (ec *executionContext) _QueryDishesResponse_rows(ctx context.Context, field graphql.CollectedField, obj *QueryDishesResponse) graphql.Marshaler {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
 	rctx := &graphql.ResolverContext{
-		Object: "QueryChapterResponse",
+		Object: "QueryDishesResponse",
 		Args:   nil,
 		Field:  field,
 	}
@@ -7294,7 +7803,7 @@ func (ec *executionContext) _QueryChapterResponse_rows(ctx context.Context, fiel
 		}
 		return graphql.Null
 	}
-	res := resTmp.([]models.Chapter)
+	res := resTmp.([]models.Dishes)
 	rctx.Result = res
 	ctx = ec.Tracer.StartFieldChildExecution(ctx)
 
@@ -7319,187 +7828,7 @@ func (ec *executionContext) _QueryChapterResponse_rows(ctx context.Context, fiel
 			}
 			arr1[idx1] = func() graphql.Marshaler {
 
-				return ec._Chapter(ctx, field.Selections, &res[idx1])
-			}()
-		}
-		if isLen1 {
-			f(idx1)
-		} else {
-			go f(idx1)
-		}
-
-	}
-	wg.Wait()
-	return arr1
-}
-
-var queryDictionaryResponseImplementors = []string{"QueryDictionaryResponse"}
-
-// nolint: gocyclo, errcheck, gas, goconst
-func (ec *executionContext) _QueryDictionaryResponse(ctx context.Context, sel ast.SelectionSet, obj *QueryDictionaryResponse) graphql.Marshaler {
-	fields := graphql.CollectFields(ctx, sel, queryDictionaryResponseImplementors)
-
-	out := graphql.NewOrderedMap(len(fields))
-	invalid := false
-	for i, field := range fields {
-		out.Keys[i] = field.Alias
-
-		switch field.Name {
-		case "__typename":
-			out.Values[i] = graphql.MarshalString("QueryDictionaryResponse")
-		case "totalCount":
-			out.Values[i] = ec._QueryDictionaryResponse_totalCount(ctx, field, obj)
-		case "skip":
-			out.Values[i] = ec._QueryDictionaryResponse_skip(ctx, field, obj)
-		case "take":
-			out.Values[i] = ec._QueryDictionaryResponse_take(ctx, field, obj)
-		case "rows":
-			out.Values[i] = ec._QueryDictionaryResponse_rows(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				invalid = true
-			}
-		default:
-			panic("unknown field " + strconv.Quote(field.Name))
-		}
-	}
-
-	if invalid {
-		return graphql.Null
-	}
-	return out
-}
-
-// nolint: vetshadow
-func (ec *executionContext) _QueryDictionaryResponse_totalCount(ctx context.Context, field graphql.CollectedField, obj *QueryDictionaryResponse) graphql.Marshaler {
-	ctx = ec.Tracer.StartFieldExecution(ctx, field)
-	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
-	rctx := &graphql.ResolverContext{
-		Object: "QueryDictionaryResponse",
-		Args:   nil,
-		Field:  field,
-	}
-	ctx = graphql.WithResolverContext(ctx, rctx)
-	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
-	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.TotalCount, nil
-	})
-	if resTmp == nil {
-		return graphql.Null
-	}
-	res := resTmp.(*int)
-	rctx.Result = res
-	ctx = ec.Tracer.StartFieldChildExecution(ctx)
-
-	if res == nil {
-		return graphql.Null
-	}
-	return graphql.MarshalInt(*res)
-}
-
-// nolint: vetshadow
-func (ec *executionContext) _QueryDictionaryResponse_skip(ctx context.Context, field graphql.CollectedField, obj *QueryDictionaryResponse) graphql.Marshaler {
-	ctx = ec.Tracer.StartFieldExecution(ctx, field)
-	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
-	rctx := &graphql.ResolverContext{
-		Object: "QueryDictionaryResponse",
-		Args:   nil,
-		Field:  field,
-	}
-	ctx = graphql.WithResolverContext(ctx, rctx)
-	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
-	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.Skip, nil
-	})
-	if resTmp == nil {
-		return graphql.Null
-	}
-	res := resTmp.(*int)
-	rctx.Result = res
-	ctx = ec.Tracer.StartFieldChildExecution(ctx)
-
-	if res == nil {
-		return graphql.Null
-	}
-	return graphql.MarshalInt(*res)
-}
-
-// nolint: vetshadow
-func (ec *executionContext) _QueryDictionaryResponse_take(ctx context.Context, field graphql.CollectedField, obj *QueryDictionaryResponse) graphql.Marshaler {
-	ctx = ec.Tracer.StartFieldExecution(ctx, field)
-	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
-	rctx := &graphql.ResolverContext{
-		Object: "QueryDictionaryResponse",
-		Args:   nil,
-		Field:  field,
-	}
-	ctx = graphql.WithResolverContext(ctx, rctx)
-	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
-	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.Take, nil
-	})
-	if resTmp == nil {
-		return graphql.Null
-	}
-	res := resTmp.(*int)
-	rctx.Result = res
-	ctx = ec.Tracer.StartFieldChildExecution(ctx)
-
-	if res == nil {
-		return graphql.Null
-	}
-	return graphql.MarshalInt(*res)
-}
-
-// nolint: vetshadow
-func (ec *executionContext) _QueryDictionaryResponse_rows(ctx context.Context, field graphql.CollectedField, obj *QueryDictionaryResponse) graphql.Marshaler {
-	ctx = ec.Tracer.StartFieldExecution(ctx, field)
-	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
-	rctx := &graphql.ResolverContext{
-		Object: "QueryDictionaryResponse",
-		Args:   nil,
-		Field:  field,
-	}
-	ctx = graphql.WithResolverContext(ctx, rctx)
-	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
-	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.Rows, nil
-	})
-	if resTmp == nil {
-		if !ec.HasError(rctx) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.([]models.Dictionary)
-	rctx.Result = res
-	ctx = ec.Tracer.StartFieldChildExecution(ctx)
-
-	arr1 := make(graphql.Array, len(res))
-	var wg sync.WaitGroup
-
-	isLen1 := len(res) == 1
-	if !isLen1 {
-		wg.Add(len(res))
-	}
-
-	for idx1 := range res {
-		idx1 := idx1
-		rctx := &graphql.ResolverContext{
-			Index:  &idx1,
-			Result: &res[idx1],
-		}
-		ctx := graphql.WithResolverContext(ctx, rctx)
-		f := func(idx1 int) {
-			if !isLen1 {
-				defer wg.Done()
-			}
-			arr1[idx1] = func() graphql.Marshaler {
-
-				return ec._Dictionary(ctx, field.Selections, &res[idx1])
+				return ec._Dishes(ctx, field.Selections, &res[idx1])
 			}()
 		}
 		if isLen1 {
@@ -7873,186 +8202,6 @@ func (ec *executionContext) _QueryPermissionResponse_rows(ctx context.Context, f
 	return arr1
 }
 
-var queryPhraseResponseImplementors = []string{"QueryPhraseResponse"}
-
-// nolint: gocyclo, errcheck, gas, goconst
-func (ec *executionContext) _QueryPhraseResponse(ctx context.Context, sel ast.SelectionSet, obj *QueryPhraseResponse) graphql.Marshaler {
-	fields := graphql.CollectFields(ctx, sel, queryPhraseResponseImplementors)
-
-	out := graphql.NewOrderedMap(len(fields))
-	invalid := false
-	for i, field := range fields {
-		out.Keys[i] = field.Alias
-
-		switch field.Name {
-		case "__typename":
-			out.Values[i] = graphql.MarshalString("QueryPhraseResponse")
-		case "totalCount":
-			out.Values[i] = ec._QueryPhraseResponse_totalCount(ctx, field, obj)
-		case "skip":
-			out.Values[i] = ec._QueryPhraseResponse_skip(ctx, field, obj)
-		case "take":
-			out.Values[i] = ec._QueryPhraseResponse_take(ctx, field, obj)
-		case "rows":
-			out.Values[i] = ec._QueryPhraseResponse_rows(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				invalid = true
-			}
-		default:
-			panic("unknown field " + strconv.Quote(field.Name))
-		}
-	}
-
-	if invalid {
-		return graphql.Null
-	}
-	return out
-}
-
-// nolint: vetshadow
-func (ec *executionContext) _QueryPhraseResponse_totalCount(ctx context.Context, field graphql.CollectedField, obj *QueryPhraseResponse) graphql.Marshaler {
-	ctx = ec.Tracer.StartFieldExecution(ctx, field)
-	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
-	rctx := &graphql.ResolverContext{
-		Object: "QueryPhraseResponse",
-		Args:   nil,
-		Field:  field,
-	}
-	ctx = graphql.WithResolverContext(ctx, rctx)
-	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
-	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.TotalCount, nil
-	})
-	if resTmp == nil {
-		return graphql.Null
-	}
-	res := resTmp.(*int)
-	rctx.Result = res
-	ctx = ec.Tracer.StartFieldChildExecution(ctx)
-
-	if res == nil {
-		return graphql.Null
-	}
-	return graphql.MarshalInt(*res)
-}
-
-// nolint: vetshadow
-func (ec *executionContext) _QueryPhraseResponse_skip(ctx context.Context, field graphql.CollectedField, obj *QueryPhraseResponse) graphql.Marshaler {
-	ctx = ec.Tracer.StartFieldExecution(ctx, field)
-	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
-	rctx := &graphql.ResolverContext{
-		Object: "QueryPhraseResponse",
-		Args:   nil,
-		Field:  field,
-	}
-	ctx = graphql.WithResolverContext(ctx, rctx)
-	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
-	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.Skip, nil
-	})
-	if resTmp == nil {
-		return graphql.Null
-	}
-	res := resTmp.(*int)
-	rctx.Result = res
-	ctx = ec.Tracer.StartFieldChildExecution(ctx)
-
-	if res == nil {
-		return graphql.Null
-	}
-	return graphql.MarshalInt(*res)
-}
-
-// nolint: vetshadow
-func (ec *executionContext) _QueryPhraseResponse_take(ctx context.Context, field graphql.CollectedField, obj *QueryPhraseResponse) graphql.Marshaler {
-	ctx = ec.Tracer.StartFieldExecution(ctx, field)
-	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
-	rctx := &graphql.ResolverContext{
-		Object: "QueryPhraseResponse",
-		Args:   nil,
-		Field:  field,
-	}
-	ctx = graphql.WithResolverContext(ctx, rctx)
-	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
-	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.Take, nil
-	})
-	if resTmp == nil {
-		return graphql.Null
-	}
-	res := resTmp.(*int)
-	rctx.Result = res
-	ctx = ec.Tracer.StartFieldChildExecution(ctx)
-
-	if res == nil {
-		return graphql.Null
-	}
-	return graphql.MarshalInt(*res)
-}
-
-// nolint: vetshadow
-func (ec *executionContext) _QueryPhraseResponse_rows(ctx context.Context, field graphql.CollectedField, obj *QueryPhraseResponse) graphql.Marshaler {
-	ctx = ec.Tracer.StartFieldExecution(ctx, field)
-	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
-	rctx := &graphql.ResolverContext{
-		Object: "QueryPhraseResponse",
-		Args:   nil,
-		Field:  field,
-	}
-	ctx = graphql.WithResolverContext(ctx, rctx)
-	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
-	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.Rows, nil
-	})
-	if resTmp == nil {
-		if !ec.HasError(rctx) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.([]models.Phrase)
-	rctx.Result = res
-	ctx = ec.Tracer.StartFieldChildExecution(ctx)
-
-	arr1 := make(graphql.Array, len(res))
-	var wg sync.WaitGroup
-
-	isLen1 := len(res) == 1
-	if !isLen1 {
-		wg.Add(len(res))
-	}
-
-	for idx1 := range res {
-		idx1 := idx1
-		rctx := &graphql.ResolverContext{
-			Index:  &idx1,
-			Result: &res[idx1],
-		}
-		ctx := graphql.WithResolverContext(ctx, rctx)
-		f := func(idx1 int) {
-			if !isLen1 {
-				defer wg.Done()
-			}
-			arr1[idx1] = func() graphql.Marshaler {
-
-				return ec._Phrase(ctx, field.Selections, &res[idx1])
-			}()
-		}
-		if isLen1 {
-			f(idx1)
-		} else {
-			go f(idx1)
-		}
-
-	}
-	wg.Wait()
-	return arr1
-}
-
 var queryRoleResponseImplementors = []string{"QueryRoleResponse"}
 
 // nolint: gocyclo, errcheck, gas, goconst
@@ -8220,6 +8369,397 @@ func (ec *executionContext) _QueryRoleResponse_rows(ctx context.Context, field g
 			arr1[idx1] = func() graphql.Marshaler {
 
 				return ec._Role(ctx, field.Selections, &res[idx1])
+			}()
+		}
+		if isLen1 {
+			f(idx1)
+		} else {
+			go f(idx1)
+		}
+
+	}
+	wg.Wait()
+	return arr1
+}
+
+var queryTicketRecordResponseImplementors = []string{"QueryTicketRecordResponse"}
+
+// nolint: gocyclo, errcheck, gas, goconst
+func (ec *executionContext) _QueryTicketRecordResponse(ctx context.Context, sel ast.SelectionSet, obj *QueryTicketRecordResponse) graphql.Marshaler {
+	fields := graphql.CollectFields(ctx, sel, queryTicketRecordResponseImplementors)
+
+	out := graphql.NewOrderedMap(len(fields))
+	invalid := false
+	for i, field := range fields {
+		out.Keys[i] = field.Alias
+
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("QueryTicketRecordResponse")
+		case "totalCount":
+			out.Values[i] = ec._QueryTicketRecordResponse_totalCount(ctx, field, obj)
+		case "skip":
+			out.Values[i] = ec._QueryTicketRecordResponse_skip(ctx, field, obj)
+		case "take":
+			out.Values[i] = ec._QueryTicketRecordResponse_take(ctx, field, obj)
+		case "rows":
+			out.Values[i] = ec._QueryTicketRecordResponse_rows(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalid = true
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+
+	if invalid {
+		return graphql.Null
+	}
+	return out
+}
+
+// nolint: vetshadow
+func (ec *executionContext) _QueryTicketRecordResponse_totalCount(ctx context.Context, field graphql.CollectedField, obj *QueryTicketRecordResponse) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object: "QueryTicketRecordResponse",
+		Args:   nil,
+		Field:  field,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.TotalCount, nil
+	})
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*int)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+
+	if res == nil {
+		return graphql.Null
+	}
+	return graphql.MarshalInt(*res)
+}
+
+// nolint: vetshadow
+func (ec *executionContext) _QueryTicketRecordResponse_skip(ctx context.Context, field graphql.CollectedField, obj *QueryTicketRecordResponse) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object: "QueryTicketRecordResponse",
+		Args:   nil,
+		Field:  field,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Skip, nil
+	})
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*int)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+
+	if res == nil {
+		return graphql.Null
+	}
+	return graphql.MarshalInt(*res)
+}
+
+// nolint: vetshadow
+func (ec *executionContext) _QueryTicketRecordResponse_take(ctx context.Context, field graphql.CollectedField, obj *QueryTicketRecordResponse) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object: "QueryTicketRecordResponse",
+		Args:   nil,
+		Field:  field,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Take, nil
+	})
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*int)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+
+	if res == nil {
+		return graphql.Null
+	}
+	return graphql.MarshalInt(*res)
+}
+
+// nolint: vetshadow
+func (ec *executionContext) _QueryTicketRecordResponse_rows(ctx context.Context, field graphql.CollectedField, obj *QueryTicketRecordResponse) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object: "QueryTicketRecordResponse",
+		Args:   nil,
+		Field:  field,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Rows, nil
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]models.TicketRecord)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+
+	arr1 := make(graphql.Array, len(res))
+	var wg sync.WaitGroup
+
+	isLen1 := len(res) == 1
+	if !isLen1 {
+		wg.Add(len(res))
+	}
+
+	for idx1 := range res {
+		idx1 := idx1
+		rctx := &graphql.ResolverContext{
+			Index:  &idx1,
+			Result: &res[idx1],
+		}
+		ctx := graphql.WithResolverContext(ctx, rctx)
+		f := func(idx1 int) {
+			if !isLen1 {
+				defer wg.Done()
+			}
+			arr1[idx1] = func() graphql.Marshaler {
+
+				return ec._TicketRecord(ctx, field.Selections, &res[idx1])
+			}()
+		}
+		if isLen1 {
+			f(idx1)
+		} else {
+			go f(idx1)
+		}
+
+	}
+	wg.Wait()
+	return arr1
+}
+
+var queryTicketResponseImplementors = []string{"QueryTicketResponse"}
+
+// nolint: gocyclo, errcheck, gas, goconst
+func (ec *executionContext) _QueryTicketResponse(ctx context.Context, sel ast.SelectionSet, obj *QueryTicketResponse) graphql.Marshaler {
+	fields := graphql.CollectFields(ctx, sel, queryTicketResponseImplementors)
+
+	out := graphql.NewOrderedMap(len(fields))
+	invalid := false
+	for i, field := range fields {
+		out.Keys[i] = field.Alias
+
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("QueryTicketResponse")
+		case "totalCount":
+			out.Values[i] = ec._QueryTicketResponse_totalCount(ctx, field, obj)
+		case "skip":
+			out.Values[i] = ec._QueryTicketResponse_skip(ctx, field, obj)
+		case "take":
+			out.Values[i] = ec._QueryTicketResponse_take(ctx, field, obj)
+		case "count":
+			out.Values[i] = ec._QueryTicketResponse_count(ctx, field, obj)
+		case "rows":
+			out.Values[i] = ec._QueryTicketResponse_rows(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalid = true
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+
+	if invalid {
+		return graphql.Null
+	}
+	return out
+}
+
+// nolint: vetshadow
+func (ec *executionContext) _QueryTicketResponse_totalCount(ctx context.Context, field graphql.CollectedField, obj *QueryTicketResponse) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object: "QueryTicketResponse",
+		Args:   nil,
+		Field:  field,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.TotalCount, nil
+	})
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*int)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+
+	if res == nil {
+		return graphql.Null
+	}
+	return graphql.MarshalInt(*res)
+}
+
+// nolint: vetshadow
+func (ec *executionContext) _QueryTicketResponse_skip(ctx context.Context, field graphql.CollectedField, obj *QueryTicketResponse) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object: "QueryTicketResponse",
+		Args:   nil,
+		Field:  field,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Skip, nil
+	})
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*int)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+
+	if res == nil {
+		return graphql.Null
+	}
+	return graphql.MarshalInt(*res)
+}
+
+// nolint: vetshadow
+func (ec *executionContext) _QueryTicketResponse_take(ctx context.Context, field graphql.CollectedField, obj *QueryTicketResponse) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object: "QueryTicketResponse",
+		Args:   nil,
+		Field:  field,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Take, nil
+	})
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*int)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+
+	if res == nil {
+		return graphql.Null
+	}
+	return graphql.MarshalInt(*res)
+}
+
+// nolint: vetshadow
+func (ec *executionContext) _QueryTicketResponse_count(ctx context.Context, field graphql.CollectedField, obj *QueryTicketResponse) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object: "QueryTicketResponse",
+		Args:   nil,
+		Field:  field,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Count, nil
+	})
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*Count)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+
+	if res == nil {
+		return graphql.Null
+	}
+
+	return ec._Count(ctx, field.Selections, res)
+}
+
+// nolint: vetshadow
+func (ec *executionContext) _QueryTicketResponse_rows(ctx context.Context, field graphql.CollectedField, obj *QueryTicketResponse) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object: "QueryTicketResponse",
+		Args:   nil,
+		Field:  field,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Rows, nil
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]models.Ticket)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+
+	arr1 := make(graphql.Array, len(res))
+	var wg sync.WaitGroup
+
+	isLen1 := len(res) == 1
+	if !isLen1 {
+		wg.Add(len(res))
+	}
+
+	for idx1 := range res {
+		idx1 := idx1
+		rctx := &graphql.ResolverContext{
+			Index:  &idx1,
+			Result: &res[idx1],
+		}
+		ctx := graphql.WithResolverContext(ctx, rctx)
+		f := func(idx1 int) {
+			if !isLen1 {
+				defer wg.Done()
+			}
+			arr1[idx1] = func() graphql.Marshaler {
+
+				return ec._Ticket(ctx, field.Selections, &res[idx1])
 			}()
 		}
 		if isLen1 {
@@ -8442,28 +8982,28 @@ func (ec *executionContext) _Role(ctx context.Context, sel ast.SelectionSet, obj
 			if out.Values[i] == graphql.Null {
 				invalid = true
 			}
-		case "created_at":
+		case "createdAt":
 			wg.Add(1)
 			go func(i int, field graphql.CollectedField) {
-				out.Values[i] = ec._Role_created_at(ctx, field, obj)
+				out.Values[i] = ec._Role_createdAt(ctx, field, obj)
 				if out.Values[i] == graphql.Null {
 					invalid = true
 				}
 				wg.Done()
 			}(i, field)
-		case "updated_at":
+		case "updatedAt":
 			wg.Add(1)
 			go func(i int, field graphql.CollectedField) {
-				out.Values[i] = ec._Role_updated_at(ctx, field, obj)
+				out.Values[i] = ec._Role_updatedAt(ctx, field, obj)
 				if out.Values[i] == graphql.Null {
 					invalid = true
 				}
 				wg.Done()
 			}(i, field)
-		case "deleted_at":
+		case "deletedAt":
 			wg.Add(1)
 			go func(i int, field graphql.CollectedField) {
-				out.Values[i] = ec._Role_deleted_at(ctx, field, obj)
+				out.Values[i] = ec._Role_deletedAt(ctx, field, obj)
 				if out.Values[i] == graphql.Null {
 					invalid = true
 				}
@@ -8544,7 +9084,7 @@ func (ec *executionContext) _Role_name(ctx context.Context, field graphql.Collec
 }
 
 // nolint: vetshadow
-func (ec *executionContext) _Role_created_at(ctx context.Context, field graphql.CollectedField, obj *models.Role) graphql.Marshaler {
+func (ec *executionContext) _Role_createdAt(ctx context.Context, field graphql.CollectedField, obj *models.Role) graphql.Marshaler {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
 	rctx := &graphql.ResolverContext{
@@ -8571,7 +9111,7 @@ func (ec *executionContext) _Role_created_at(ctx context.Context, field graphql.
 }
 
 // nolint: vetshadow
-func (ec *executionContext) _Role_updated_at(ctx context.Context, field graphql.CollectedField, obj *models.Role) graphql.Marshaler {
+func (ec *executionContext) _Role_updatedAt(ctx context.Context, field graphql.CollectedField, obj *models.Role) graphql.Marshaler {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
 	rctx := &graphql.ResolverContext{
@@ -8598,7 +9138,7 @@ func (ec *executionContext) _Role_updated_at(ctx context.Context, field graphql.
 }
 
 // nolint: vetshadow
-func (ec *executionContext) _Role_deleted_at(ctx context.Context, field graphql.CollectedField, obj *models.Role) graphql.Marshaler {
+func (ec *executionContext) _Role_deletedAt(ctx context.Context, field graphql.CollectedField, obj *models.Role) graphql.Marshaler {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
 	rctx := &graphql.ResolverContext{
@@ -8708,6 +9248,786 @@ func (ec *executionContext) _Subscription_messageAdded(ctx context.Context, fiel
 	}
 }
 
+var systemInfoImplementors = []string{"SystemInfo"}
+
+// nolint: gocyclo, errcheck, gas, goconst
+func (ec *executionContext) _SystemInfo(ctx context.Context, sel ast.SelectionSet, obj *SystemInfo) graphql.Marshaler {
+	fields := graphql.CollectFields(ctx, sel, systemInfoImplementors)
+
+	out := graphql.NewOrderedMap(len(fields))
+	invalid := false
+	for i, field := range fields {
+		out.Keys[i] = field.Alias
+
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("SystemInfo")
+		case "currentLoginCount":
+			out.Values[i] = ec._SystemInfo_currentLoginCount(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalid = true
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+
+	if invalid {
+		return graphql.Null
+	}
+	return out
+}
+
+// nolint: vetshadow
+func (ec *executionContext) _SystemInfo_currentLoginCount(ctx context.Context, field graphql.CollectedField, obj *SystemInfo) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object: "SystemInfo",
+		Args:   nil,
+		Field:  field,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.CurrentLoginCount, nil
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return graphql.MarshalInt(res)
+}
+
+var ticketImplementors = []string{"Ticket"}
+
+// nolint: gocyclo, errcheck, gas, goconst
+func (ec *executionContext) _Ticket(ctx context.Context, sel ast.SelectionSet, obj *models.Ticket) graphql.Marshaler {
+	fields := graphql.CollectFields(ctx, sel, ticketImplementors)
+
+	var wg sync.WaitGroup
+	out := graphql.NewOrderedMap(len(fields))
+	invalid := false
+	for i, field := range fields {
+		out.Keys[i] = field.Alias
+
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("Ticket")
+		case "id":
+			wg.Add(1)
+			go func(i int, field graphql.CollectedField) {
+				out.Values[i] = ec._Ticket_id(ctx, field, obj)
+				if out.Values[i] == graphql.Null {
+					invalid = true
+				}
+				wg.Done()
+			}(i, field)
+		case "UUID":
+			out.Values[i] = ec._Ticket_UUID(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalid = true
+			}
+		case "userId":
+			wg.Add(1)
+			go func(i int, field graphql.CollectedField) {
+				out.Values[i] = ec._Ticket_userId(ctx, field, obj)
+				if out.Values[i] == graphql.Null {
+					invalid = true
+				}
+				wg.Done()
+			}(i, field)
+		case "type":
+			out.Values[i] = ec._Ticket_type(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalid = true
+			}
+		case "price":
+			out.Values[i] = ec._Ticket_price(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalid = true
+			}
+		case "createdAt":
+			wg.Add(1)
+			go func(i int, field graphql.CollectedField) {
+				out.Values[i] = ec._Ticket_createdAt(ctx, field, obj)
+				if out.Values[i] == graphql.Null {
+					invalid = true
+				}
+				wg.Done()
+			}(i, field)
+		case "updatedAt":
+			wg.Add(1)
+			go func(i int, field graphql.CollectedField) {
+				out.Values[i] = ec._Ticket_updatedAt(ctx, field, obj)
+				if out.Values[i] == graphql.Null {
+					invalid = true
+				}
+				wg.Done()
+			}(i, field)
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	wg.Wait()
+	if invalid {
+		return graphql.Null
+	}
+	return out
+}
+
+// nolint: vetshadow
+func (ec *executionContext) _Ticket_id(ctx context.Context, field graphql.CollectedField, obj *models.Ticket) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object: "Ticket",
+		Args:   nil,
+		Field:  field,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Ticket().ID(rctx, obj)
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return graphql.MarshalID(res)
+}
+
+// nolint: vetshadow
+func (ec *executionContext) _Ticket_UUID(ctx context.Context, field graphql.CollectedField, obj *models.Ticket) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object: "Ticket",
+		Args:   nil,
+		Field:  field,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.UUID, nil
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return graphql.MarshalString(res)
+}
+
+// nolint: vetshadow
+func (ec *executionContext) _Ticket_userId(ctx context.Context, field graphql.CollectedField, obj *models.Ticket) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object: "Ticket",
+		Args:   nil,
+		Field:  field,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Ticket().UserID(rctx, obj)
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return graphql.MarshalInt(res)
+}
+
+// nolint: vetshadow
+func (ec *executionContext) _Ticket_type(ctx context.Context, field graphql.CollectedField, obj *models.Ticket) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object: "Ticket",
+		Args:   nil,
+		Field:  field,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Type, nil
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return graphql.MarshalInt(res)
+}
+
+// nolint: vetshadow
+func (ec *executionContext) _Ticket_price(ctx context.Context, field graphql.CollectedField, obj *models.Ticket) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object: "Ticket",
+		Args:   nil,
+		Field:  field,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Price, nil
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return graphql.MarshalInt(res)
+}
+
+// nolint: vetshadow
+func (ec *executionContext) _Ticket_createdAt(ctx context.Context, field graphql.CollectedField, obj *models.Ticket) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object: "Ticket",
+		Args:   nil,
+		Field:  field,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Ticket().CreatedAt(rctx, obj)
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return graphql.MarshalString(res)
+}
+
+// nolint: vetshadow
+func (ec *executionContext) _Ticket_updatedAt(ctx context.Context, field graphql.CollectedField, obj *models.Ticket) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object: "Ticket",
+		Args:   nil,
+		Field:  field,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Ticket().UpdatedAt(rctx, obj)
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return graphql.MarshalString(res)
+}
+
+var ticketRecordImplementors = []string{"TicketRecord"}
+
+// nolint: gocyclo, errcheck, gas, goconst
+func (ec *executionContext) _TicketRecord(ctx context.Context, sel ast.SelectionSet, obj *models.TicketRecord) graphql.Marshaler {
+	fields := graphql.CollectFields(ctx, sel, ticketRecordImplementors)
+
+	var wg sync.WaitGroup
+	out := graphql.NewOrderedMap(len(fields))
+	invalid := false
+	for i, field := range fields {
+		out.Keys[i] = field.Alias
+
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("TicketRecord")
+		case "id":
+			wg.Add(1)
+			go func(i int, field graphql.CollectedField) {
+				out.Values[i] = ec._TicketRecord_id(ctx, field, obj)
+				if out.Values[i] == graphql.Null {
+					invalid = true
+				}
+				wg.Done()
+			}(i, field)
+		case "operator":
+			wg.Add(1)
+			go func(i int, field graphql.CollectedField) {
+				out.Values[i] = ec._TicketRecord_operator(ctx, field, obj)
+				if out.Values[i] == graphql.Null {
+					invalid = true
+				}
+				wg.Done()
+			}(i, field)
+		case "owner":
+			wg.Add(1)
+			go func(i int, field graphql.CollectedField) {
+				out.Values[i] = ec._TicketRecord_owner(ctx, field, obj)
+				if out.Values[i] == graphql.Null {
+					invalid = true
+				}
+				wg.Done()
+			}(i, field)
+		case "number":
+			out.Values[i] = ec._TicketRecord_number(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalid = true
+			}
+		case "action":
+			out.Values[i] = ec._TicketRecord_action(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalid = true
+			}
+		case "description":
+			out.Values[i] = ec._TicketRecord_description(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalid = true
+			}
+		case "createdAt":
+			wg.Add(1)
+			go func(i int, field graphql.CollectedField) {
+				out.Values[i] = ec._TicketRecord_createdAt(ctx, field, obj)
+				if out.Values[i] == graphql.Null {
+					invalid = true
+				}
+				wg.Done()
+			}(i, field)
+		case "updatedAt":
+			wg.Add(1)
+			go func(i int, field graphql.CollectedField) {
+				out.Values[i] = ec._TicketRecord_updatedAt(ctx, field, obj)
+				if out.Values[i] == graphql.Null {
+					invalid = true
+				}
+				wg.Done()
+			}(i, field)
+		case "deletedAt":
+			wg.Add(1)
+			go func(i int, field graphql.CollectedField) {
+				out.Values[i] = ec._TicketRecord_deletedAt(ctx, field, obj)
+				if out.Values[i] == graphql.Null {
+					invalid = true
+				}
+				wg.Done()
+			}(i, field)
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	wg.Wait()
+	if invalid {
+		return graphql.Null
+	}
+	return out
+}
+
+// nolint: vetshadow
+func (ec *executionContext) _TicketRecord_id(ctx context.Context, field graphql.CollectedField, obj *models.TicketRecord) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object: "TicketRecord",
+		Args:   nil,
+		Field:  field,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.TicketRecord().ID(rctx, obj)
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return graphql.MarshalID(res)
+}
+
+// nolint: vetshadow
+func (ec *executionContext) _TicketRecord_operator(ctx context.Context, field graphql.CollectedField, obj *models.TicketRecord) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object: "TicketRecord",
+		Args:   nil,
+		Field:  field,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.TicketRecord().Operator(rctx, obj)
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return graphql.MarshalInt(res)
+}
+
+// nolint: vetshadow
+func (ec *executionContext) _TicketRecord_owner(ctx context.Context, field graphql.CollectedField, obj *models.TicketRecord) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object: "TicketRecord",
+		Args:   nil,
+		Field:  field,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.TicketRecord().Owner(rctx, obj)
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return graphql.MarshalInt(res)
+}
+
+// nolint: vetshadow
+func (ec *executionContext) _TicketRecord_number(ctx context.Context, field graphql.CollectedField, obj *models.TicketRecord) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object: "TicketRecord",
+		Args:   nil,
+		Field:  field,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Number, nil
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return graphql.MarshalInt(res)
+}
+
+// nolint: vetshadow
+func (ec *executionContext) _TicketRecord_action(ctx context.Context, field graphql.CollectedField, obj *models.TicketRecord) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object: "TicketRecord",
+		Args:   nil,
+		Field:  field,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Action, nil
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return graphql.MarshalString(res)
+}
+
+// nolint: vetshadow
+func (ec *executionContext) _TicketRecord_description(ctx context.Context, field graphql.CollectedField, obj *models.TicketRecord) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object: "TicketRecord",
+		Args:   nil,
+		Field:  field,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Description, nil
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return graphql.MarshalString(res)
+}
+
+// nolint: vetshadow
+func (ec *executionContext) _TicketRecord_createdAt(ctx context.Context, field graphql.CollectedField, obj *models.TicketRecord) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object: "TicketRecord",
+		Args:   nil,
+		Field:  field,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.TicketRecord().CreatedAt(rctx, obj)
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return graphql.MarshalString(res)
+}
+
+// nolint: vetshadow
+func (ec *executionContext) _TicketRecord_updatedAt(ctx context.Context, field graphql.CollectedField, obj *models.TicketRecord) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object: "TicketRecord",
+		Args:   nil,
+		Field:  field,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.TicketRecord().UpdatedAt(rctx, obj)
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return graphql.MarshalString(res)
+}
+
+// nolint: vetshadow
+func (ec *executionContext) _TicketRecord_deletedAt(ctx context.Context, field graphql.CollectedField, obj *models.TicketRecord) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object: "TicketRecord",
+		Args:   nil,
+		Field:  field,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.TicketRecord().DeletedAt(rctx, obj)
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return graphql.MarshalString(res)
+}
+
+var transferResponseImplementors = []string{"TransferResponse"}
+
+// nolint: gocyclo, errcheck, gas, goconst
+func (ec *executionContext) _TransferResponse(ctx context.Context, sel ast.SelectionSet, obj *TransferResponse) graphql.Marshaler {
+	fields := graphql.CollectFields(ctx, sel, transferResponseImplementors)
+
+	out := graphql.NewOrderedMap(len(fields))
+	invalid := false
+	for i, field := range fields {
+		out.Keys[i] = field.Alias
+
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("TransferResponse")
+		case "successCount":
+			out.Values[i] = ec._TransferResponse_successCount(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalid = true
+			}
+		case "errorCount":
+			out.Values[i] = ec._TransferResponse_errorCount(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalid = true
+			}
+		case "errorMsg":
+			out.Values[i] = ec._TransferResponse_errorMsg(ctx, field, obj)
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+
+	if invalid {
+		return graphql.Null
+	}
+	return out
+}
+
+// nolint: vetshadow
+func (ec *executionContext) _TransferResponse_successCount(ctx context.Context, field graphql.CollectedField, obj *TransferResponse) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object: "TransferResponse",
+		Args:   nil,
+		Field:  field,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.SuccessCount, nil
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return graphql.MarshalInt(res)
+}
+
+// nolint: vetshadow
+func (ec *executionContext) _TransferResponse_errorCount(ctx context.Context, field graphql.CollectedField, obj *TransferResponse) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object: "TransferResponse",
+		Args:   nil,
+		Field:  field,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ErrorCount, nil
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return graphql.MarshalInt(res)
+}
+
+// nolint: vetshadow
+func (ec *executionContext) _TransferResponse_errorMsg(ctx context.Context, field graphql.CollectedField, obj *TransferResponse) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object: "TransferResponse",
+		Args:   nil,
+		Field:  field,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ErrorMsg, nil
+	})
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+
+	if res == nil {
+		return graphql.Null
+	}
+	return graphql.MarshalString(*res)
+}
+
 var userImplementors = []string{"User"}
 
 // nolint: gocyclo, errcheck, gas, goconst
@@ -8772,28 +10092,28 @@ func (ec *executionContext) _User(ctx context.Context, sel ast.SelectionSet, obj
 			if out.Values[i] == graphql.Null {
 				invalid = true
 			}
-		case "created_at":
+		case "createdAt":
 			wg.Add(1)
 			go func(i int, field graphql.CollectedField) {
-				out.Values[i] = ec._User_created_at(ctx, field, obj)
+				out.Values[i] = ec._User_createdAt(ctx, field, obj)
 				if out.Values[i] == graphql.Null {
 					invalid = true
 				}
 				wg.Done()
 			}(i, field)
-		case "updated_at":
+		case "updatedAt":
 			wg.Add(1)
 			go func(i int, field graphql.CollectedField) {
-				out.Values[i] = ec._User_updated_at(ctx, field, obj)
+				out.Values[i] = ec._User_updatedAt(ctx, field, obj)
 				if out.Values[i] == graphql.Null {
 					invalid = true
 				}
 				wg.Done()
 			}(i, field)
-		case "deleted_at":
+		case "deletedAt":
 			wg.Add(1)
 			go func(i int, field graphql.CollectedField) {
-				out.Values[i] = ec._User_deleted_at(ctx, field, obj)
+				out.Values[i] = ec._User_deletedAt(ctx, field, obj)
 				if out.Values[i] == graphql.Null {
 					invalid = true
 				}
@@ -8812,6 +10132,15 @@ func (ec *executionContext) _User(ctx context.Context, sel ast.SelectionSet, obj
 			wg.Add(1)
 			go func(i int, field graphql.CollectedField) {
 				out.Values[i] = ec._User_roles(ctx, field, obj)
+				if out.Values[i] == graphql.Null {
+					invalid = true
+				}
+				wg.Done()
+			}(i, field)
+		case "tickets":
+			wg.Add(1)
+			go func(i int, field graphql.CollectedField) {
+				out.Values[i] = ec._User_tickets(ctx, field, obj)
 				if out.Values[i] == graphql.Null {
 					invalid = true
 				}
@@ -9072,7 +10401,7 @@ func (ec *executionContext) _User_state(ctx context.Context, field graphql.Colle
 }
 
 // nolint: vetshadow
-func (ec *executionContext) _User_created_at(ctx context.Context, field graphql.CollectedField, obj *models.User) graphql.Marshaler {
+func (ec *executionContext) _User_createdAt(ctx context.Context, field graphql.CollectedField, obj *models.User) graphql.Marshaler {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
 	rctx := &graphql.ResolverContext{
@@ -9099,7 +10428,7 @@ func (ec *executionContext) _User_created_at(ctx context.Context, field graphql.
 }
 
 // nolint: vetshadow
-func (ec *executionContext) _User_updated_at(ctx context.Context, field graphql.CollectedField, obj *models.User) graphql.Marshaler {
+func (ec *executionContext) _User_updatedAt(ctx context.Context, field graphql.CollectedField, obj *models.User) graphql.Marshaler {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
 	rctx := &graphql.ResolverContext{
@@ -9126,7 +10455,7 @@ func (ec *executionContext) _User_updated_at(ctx context.Context, field graphql.
 }
 
 // nolint: vetshadow
-func (ec *executionContext) _User_deleted_at(ctx context.Context, field graphql.CollectedField, obj *models.User) graphql.Marshaler {
+func (ec *executionContext) _User_deletedAt(ctx context.Context, field graphql.CollectedField, obj *models.User) graphql.Marshaler {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
 	rctx := &graphql.ResolverContext{
@@ -9218,6 +10547,40 @@ func (ec *executionContext) _User_roles(ctx context.Context, field graphql.Colle
 	ctx = ec.Tracer.StartFieldChildExecution(ctx)
 
 	return ec._QueryRoleResponse(ctx, field.Selections, &res)
+}
+
+// nolint: vetshadow
+func (ec *executionContext) _User_tickets(ctx context.Context, field graphql.CollectedField, obj *models.User) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := field_User_tickets_args(rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	rctx := &graphql.ResolverContext{
+		Object: "User",
+		Args:   args,
+		Field:  field,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.User().Tickets(rctx, obj, args["pagination"].(*Pagination), args["filter"].(*TicketFilterInput))
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(QueryTicketResponse)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+
+	return ec._QueryTicketResponse(ctx, field.Selections, &res)
 }
 
 var __DirectiveImplementors = []string{"__Directive"}
@@ -10665,53 +12028,29 @@ func (ec *executionContext) ___Type_ofType(ctx context.Context, field graphql.Co
 	return ec.___Type(ctx, field.Selections, res)
 }
 
-func UnmarshalAuthorAndBookRelationshipInput(v interface{}) (AuthorAndBookRelationshipInput, error) {
-	var it AuthorAndBookRelationshipInput
+func UnmarshalBookingFilterInput(v interface{}) (BookingFilterInput, error) {
+	var it BookingFilterInput
 	var asMap = v.(map[string]interface{})
 
 	for k, v := range asMap {
 		switch k {
-		case "bookIds":
+		case "userId":
 			var err error
-			var rawIf1 []interface{}
+			var ptr1 int
 			if v != nil {
-				if tmp1, ok := v.([]interface{}); ok {
-					rawIf1 = tmp1
-				} else {
-					rawIf1 = []interface{}{v}
-				}
+				ptr1, err = graphql.UnmarshalInt(v)
+				it.UserID = &ptr1
 			}
-			it.BookIds = make([]int, len(rawIf1))
-			for idx1 := range rawIf1 {
-				it.BookIds[idx1], err = graphql.UnmarshalInt(rawIf1[idx1])
-			}
+
 			if err != nil {
 				return it, err
 			}
-		case "authorId":
+		case "canteenId":
 			var err error
-			it.AuthorID, err = graphql.UnmarshalInt(v)
-			if err != nil {
-				return it, err
-			}
-		}
-	}
-
-	return it, nil
-}
-
-func UnmarshalAuthorFilterInput(v interface{}) (AuthorFilterInput, error) {
-	var it AuthorFilterInput
-	var asMap = v.(map[string]interface{})
-
-	for k, v := range asMap {
-		switch k {
-		case "name":
-			var err error
-			var ptr1 string
+			var ptr1 int
 			if v != nil {
-				ptr1, err = graphql.UnmarshalString(v)
-				it.Name = &ptr1
+				ptr1, err = graphql.UnmarshalInt(v)
+				it.CanteenID = &ptr1
 			}
 
 			if err != nil {
@@ -10723,32 +12062,44 @@ func UnmarshalAuthorFilterInput(v interface{}) (AuthorFilterInput, error) {
 	return it, nil
 }
 
-func UnmarshalBookAndChapterRelationshipInput(v interface{}) (BookAndChapterRelationshipInput, error) {
-	var it BookAndChapterRelationshipInput
+func UnmarshalBookingInput(v interface{}) (BookingInput, error) {
+	var it BookingInput
 	var asMap = v.(map[string]interface{})
 
 	for k, v := range asMap {
 		switch k {
-		case "chapterIds":
+		case "userId":
 			var err error
-			var rawIf1 []interface{}
-			if v != nil {
-				if tmp1, ok := v.([]interface{}); ok {
-					rawIf1 = tmp1
-				} else {
-					rawIf1 = []interface{}{v}
-				}
-			}
-			it.ChapterIds = make([]int, len(rawIf1))
-			for idx1 := range rawIf1 {
-				it.ChapterIds[idx1], err = graphql.UnmarshalInt(rawIf1[idx1])
-			}
+			it.UserID, err = graphql.UnmarshalInt(v)
 			if err != nil {
 				return it, err
 			}
-		case "bookId":
+		case "canteenId":
 			var err error
-			it.BookID, err = graphql.UnmarshalInt(v)
+			it.CanteenID, err = graphql.UnmarshalInt(v)
+			if err != nil {
+				return it, err
+			}
+		case "type":
+			var err error
+			err = (&it.Type).UnmarshalGQL(v)
+			if err != nil {
+				return it, err
+			}
+		case "date":
+			var err error
+			it.Date, err = graphql.UnmarshalString(v)
+			if err != nil {
+				return it, err
+			}
+		case "autoCurrentMonth":
+			var err error
+			var ptr1 bool
+			if v != nil {
+				ptr1, err = graphql.UnmarshalBoolean(v)
+				it.AutoCurrentMonth = &ptr1
+			}
+
 			if err != nil {
 				return it, err
 			}
@@ -10758,8 +12109,8 @@ func UnmarshalBookAndChapterRelationshipInput(v interface{}) (BookAndChapterRela
 	return it, nil
 }
 
-func UnmarshalBookFilterInput(v interface{}) (BookFilterInput, error) {
-	var it BookFilterInput
+func UnmarshalCanteenFilterInput(v interface{}) (CanteenFilterInput, error) {
+	var it CanteenFilterInput
 	var asMap = v.(map[string]interface{})
 
 	for k, v := range asMap {
@@ -10786,113 +12137,32 @@ func UnmarshalBookFilterInput(v interface{}) (BookFilterInput, error) {
 			if err != nil {
 				return it, err
 			}
-		case "author":
-			var err error
-			var ptr1 string
-			if v != nil {
-				ptr1, err = graphql.UnmarshalString(v)
-				it.Author = &ptr1
-			}
-
-			if err != nil {
-				return it, err
-			}
-		}
-	}
-
-	return it, nil
-}
-
-func UnmarshalChapterAnalysisInput(v interface{}) (ChapterAnalysisInput, error) {
-	var it ChapterAnalysisInput
-	var asMap = v.(map[string]interface{})
-
-	for k, v := range asMap {
-		switch k {
-		case "chapterId":
-			var err error
-			it.ChapterID, err = graphql.UnmarshalInt(v)
-			if err != nil {
-				return it, err
-			}
-		}
-	}
-
-	return it, nil
-}
-
-func UnmarshalChapterAndDictionaryRelationshipInput(v interface{}) (ChapterAndDictionaryRelationshipInput, error) {
-	var it ChapterAndDictionaryRelationshipInput
-	var asMap = v.(map[string]interface{})
-
-	for k, v := range asMap {
-		switch k {
-		case "chapterId":
-			var err error
-			it.ChapterID, err = graphql.UnmarshalInt(v)
-			if err != nil {
-				return it, err
-			}
-		case "dictId":
-			var err error
-			var rawIf1 []interface{}
-			if v != nil {
-				if tmp1, ok := v.([]interface{}); ok {
-					rawIf1 = tmp1
-				} else {
-					rawIf1 = []interface{}{v}
-				}
-			}
-			it.DictID = make([]int, len(rawIf1))
-			for idx1 := range rawIf1 {
-				it.DictID[idx1], err = graphql.UnmarshalInt(rawIf1[idx1])
-			}
-			if err != nil {
-				return it, err
-			}
-		case "level":
-			var err error
-			err = (&it.Level).UnmarshalGQL(v)
-			if err != nil {
-				return it, err
-			}
-		}
-	}
-
-	return it, nil
-}
-
-func UnmarshalChapterFilterInput(v interface{}) (ChapterFilterInput, error) {
-	var it ChapterFilterInput
-	var asMap = v.(map[string]interface{})
-
-	for k, v := range asMap {
-		switch k {
-		case "ids":
-			var err error
-			var rawIf1 []interface{}
-			if v != nil {
-				if tmp1, ok := v.([]interface{}); ok {
-					rawIf1 = tmp1
-				} else {
-					rawIf1 = []interface{}{v}
-				}
-			}
-			it.Ids = make([]int, len(rawIf1))
-			for idx1 := range rawIf1 {
-				it.Ids[idx1], err = graphql.UnmarshalInt(rawIf1[idx1])
-			}
-			if err != nil {
-				return it, err
-			}
-		case "index":
+		case "groupID":
 			var err error
 			var ptr1 int
 			if v != nil {
 				ptr1, err = graphql.UnmarshalInt(v)
-				it.Index = &ptr1
+				it.GroupID = &ptr1
 			}
 
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
+func UnmarshalCanteenQrcodeInput(v interface{}) (CanteenQrcodeInput, error) {
+	var it CanteenQrcodeInput
+	var asMap = v.(map[string]interface{})
+
+	for k, v := range asMap {
+		switch k {
+		case "id":
+			var err error
+			it.ID, err = graphql.UnmarshalInt(v)
 			if err != nil {
 				return it, err
 			}
@@ -10931,8 +12201,8 @@ func UnmarshalDeleteIDInput(v interface{}) (DeleteIDInput, error) {
 	return it, nil
 }
 
-func UnmarshalDictionaryFilterInput(v interface{}) (DictionaryFilterInput, error) {
-	var it DictionaryFilterInput
+func UnmarshalDishesFilterInput(v interface{}) (DishesFilterInput, error) {
+	var it DishesFilterInput
 	var asMap = v.(map[string]interface{})
 
 	for k, v := range asMap {
@@ -10948,36 +12218,50 @@ func UnmarshalDictionaryFilterInput(v interface{}) (DictionaryFilterInput, error
 			if err != nil {
 				return it, err
 			}
-		case "word":
+		case "name":
 			var err error
 			var ptr1 string
 			if v != nil {
 				ptr1, err = graphql.UnmarshalString(v)
-				it.Word = &ptr1
+				it.Name = &ptr1
 			}
 
 			if err != nil {
 				return it, err
 			}
-		case "translation":
-			var err error
-			var ptr1 string
-			if v != nil {
-				ptr1, err = graphql.UnmarshalString(v)
-				it.Translation = &ptr1
-			}
+		}
+	}
 
+	return it, nil
+}
+
+func UnmarshalGenarateTicketInput(v interface{}) (GenarateTicketInput, error) {
+	var it GenarateTicketInput
+	var asMap = v.(map[string]interface{})
+
+	for k, v := range asMap {
+		switch k {
+		case "number":
+			var err error
+			it.Number, err = graphql.UnmarshalInt(v)
 			if err != nil {
 				return it, err
 			}
-		case "tag":
+		case "userId":
 			var err error
-			var ptr1 string
-			if v != nil {
-				ptr1, err = graphql.UnmarshalString(v)
-				it.Tag = &ptr1
+			it.UserID, err = graphql.UnmarshalInt(v)
+			if err != nil {
+				return it, err
 			}
-
+		case "type":
+			var err error
+			it.Type, err = graphql.UnmarshalInt(v)
+			if err != nil {
+				return it, err
+			}
+		case "price":
+			var err error
+			it.Price, err = graphql.UnmarshalInt(v)
 			if err != nil {
 				return it, err
 			}
@@ -11045,15 +12329,15 @@ func UnmarshalLoginInput(v interface{}) (LoginInput, error) {
 	return it, nil
 }
 
-func UnmarshalNewAuthor(v interface{}) (NewAuthor, error) {
-	var it NewAuthor
+func UnmarshalLogoutInput(v interface{}) (LogoutInput, error) {
+	var it LogoutInput
 	var asMap = v.(map[string]interface{})
 
 	for k, v := range asMap {
 		switch k {
-		case "name":
+		case "username":
 			var err error
-			it.Name, err = graphql.UnmarshalString(v)
+			it.Username, err = graphql.UnmarshalString(v)
 			if err != nil {
 				return it, err
 			}
@@ -11063,50 +12347,8 @@ func UnmarshalNewAuthor(v interface{}) (NewAuthor, error) {
 	return it, nil
 }
 
-func UnmarshalNewBook(v interface{}) (NewBook, error) {
-	var it NewBook
-	var asMap = v.(map[string]interface{})
-
-	for k, v := range asMap {
-		switch k {
-		case "name":
-			var err error
-			it.Name, err = graphql.UnmarshalString(v)
-			if err != nil {
-				return it, err
-			}
-		case "authorId":
-			var err error
-			it.AuthorID, err = graphql.UnmarshalInt(v)
-			if err != nil {
-				return it, err
-			}
-		case "picture":
-			var err error
-			it.Picture, err = graphql.UnmarshalString(v)
-			if err != nil {
-				return it, err
-			}
-		case "alias":
-			var err error
-			it.Alias, err = graphql.UnmarshalString(v)
-			if err != nil {
-				return it, err
-			}
-		case "userId":
-			var err error
-			it.UserID, err = graphql.UnmarshalInt(v)
-			if err != nil {
-				return it, err
-			}
-		}
-	}
-
-	return it, nil
-}
-
-func UnmarshalNewChapter(v interface{}) (NewChapter, error) {
-	var it NewChapter
+func UnmarshalNewCanteen(v interface{}) (NewCanteen, error) {
+	var it NewCanteen
 	var asMap = v.(map[string]interface{})
 
 	for k, v := range asMap {
@@ -11122,49 +12364,90 @@ func UnmarshalNewChapter(v interface{}) (NewChapter, error) {
 			if err != nil {
 				return it, err
 			}
-		case "index":
-			var err error
-			var ptr1 int
-			if v != nil {
-				ptr1, err = graphql.UnmarshalInt(v)
-				it.Index = &ptr1
-			}
-
-			if err != nil {
-				return it, err
-			}
 		case "name":
 			var err error
 			it.Name, err = graphql.UnmarshalString(v)
 			if err != nil {
 				return it, err
 			}
-		case "content":
+		case "groupID":
 			var err error
-			it.Content, err = graphql.UnmarshalString(v)
+			it.GroupID, err = graphql.UnmarshalInt(v)
 			if err != nil {
 				return it, err
 			}
-		case "phraseIds":
+		case "breakfastTime":
 			var err error
-			var rawIf1 []interface{}
+			it.BreakfastTime, err = graphql.UnmarshalString(v)
+			if err != nil {
+				return it, err
+			}
+		case "breakfastPicture":
+			var err error
+			var ptr1 string
 			if v != nil {
-				if tmp1, ok := v.([]interface{}); ok {
-					rawIf1 = tmp1
-				} else {
-					rawIf1 = []interface{}{v}
-				}
+				ptr1, err = graphql.UnmarshalString(v)
+				it.BreakfastPicture = &ptr1
 			}
-			it.PhraseIds = make([]int, len(rawIf1))
-			for idx1 := range rawIf1 {
-				it.PhraseIds[idx1], err = graphql.UnmarshalInt(rawIf1[idx1])
-			}
+
 			if err != nil {
 				return it, err
 			}
-		case "bookId":
+		case "bookingBreakfastDeadline":
 			var err error
-			it.BookID, err = graphql.UnmarshalInt(v)
+			it.BookingBreakfastDeadline, err = graphql.UnmarshalString(v)
+			if err != nil {
+				return it, err
+			}
+		case "lunchTime":
+			var err error
+			it.LunchTime, err = graphql.UnmarshalString(v)
+			if err != nil {
+				return it, err
+			}
+		case "lunchPicture":
+			var err error
+			var ptr1 string
+			if v != nil {
+				ptr1, err = graphql.UnmarshalString(v)
+				it.LunchPicture = &ptr1
+			}
+
+			if err != nil {
+				return it, err
+			}
+		case "bookingLunchDeadline":
+			var err error
+			it.BookingLunchDeadline, err = graphql.UnmarshalString(v)
+			if err != nil {
+				return it, err
+			}
+		case "dinnerTime":
+			var err error
+			it.DinnerTime, err = graphql.UnmarshalString(v)
+			if err != nil {
+				return it, err
+			}
+		case "dinnerPicture":
+			var err error
+			var ptr1 string
+			if v != nil {
+				ptr1, err = graphql.UnmarshalString(v)
+				it.DinnerPicture = &ptr1
+			}
+
+			if err != nil {
+				return it, err
+			}
+		case "bookingDinnerDeadline":
+			var err error
+			it.BookingDinnerDeadline, err = graphql.UnmarshalString(v)
+			if err != nil {
+				return it, err
+			}
+		case "cancelTime":
+			var err error
+			it.CancelTime, err = graphql.UnmarshalInt(v)
 			if err != nil {
 				return it, err
 			}
@@ -11174,142 +12457,21 @@ func UnmarshalNewChapter(v interface{}) (NewChapter, error) {
 	return it, nil
 }
 
-func UnmarshalNewDictionary(v interface{}) (NewDictionary, error) {
-	var it NewDictionary
+func UnmarshalNewDishes(v interface{}) (NewDishes, error) {
+	var it NewDishes
 	var asMap = v.(map[string]interface{})
 
 	for k, v := range asMap {
 		switch k {
-		case "word":
+		case "Name":
 			var err error
-			it.Word, err = graphql.UnmarshalString(v)
+			it.Name, err = graphql.UnmarshalString(v)
 			if err != nil {
 				return it, err
 			}
-		case "translation":
+		case "Picture":
 			var err error
-			it.Translation, err = graphql.UnmarshalString(v)
-			if err != nil {
-				return it, err
-			}
-		case "phonetic":
-			var err error
-			var ptr1 string
-			if v != nil {
-				ptr1, err = graphql.UnmarshalString(v)
-				it.Phonetic = &ptr1
-			}
-
-			if err != nil {
-				return it, err
-			}
-		case "definition":
-			var err error
-			var ptr1 string
-			if v != nil {
-				ptr1, err = graphql.UnmarshalString(v)
-				it.Definition = &ptr1
-			}
-
-			if err != nil {
-				return it, err
-			}
-		case "pos":
-			var err error
-			var ptr1 string
-			if v != nil {
-				ptr1, err = graphql.UnmarshalString(v)
-				it.Pos = &ptr1
-			}
-
-			if err != nil {
-				return it, err
-			}
-		case "collins":
-			var err error
-			var ptr1 string
-			if v != nil {
-				ptr1, err = graphql.UnmarshalString(v)
-				it.Collins = &ptr1
-			}
-
-			if err != nil {
-				return it, err
-			}
-		case "oxford":
-			var err error
-			var ptr1 string
-			if v != nil {
-				ptr1, err = graphql.UnmarshalString(v)
-				it.Oxford = &ptr1
-			}
-
-			if err != nil {
-				return it, err
-			}
-		case "tag":
-			var err error
-			var ptr1 string
-			if v != nil {
-				ptr1, err = graphql.UnmarshalString(v)
-				it.Tag = &ptr1
-			}
-
-			if err != nil {
-				return it, err
-			}
-		case "bnc":
-			var err error
-			var ptr1 string
-			if v != nil {
-				ptr1, err = graphql.UnmarshalString(v)
-				it.Bnc = &ptr1
-			}
-
-			if err != nil {
-				return it, err
-			}
-		case "frq":
-			var err error
-			var ptr1 string
-			if v != nil {
-				ptr1, err = graphql.UnmarshalString(v)
-				it.Frq = &ptr1
-			}
-
-			if err != nil {
-				return it, err
-			}
-		case "exchange":
-			var err error
-			var ptr1 string
-			if v != nil {
-				ptr1, err = graphql.UnmarshalString(v)
-				it.Exchange = &ptr1
-			}
-
-			if err != nil {
-				return it, err
-			}
-		case "detail":
-			var err error
-			var ptr1 string
-			if v != nil {
-				ptr1, err = graphql.UnmarshalString(v)
-				it.Detail = &ptr1
-			}
-
-			if err != nil {
-				return it, err
-			}
-		case "audio":
-			var err error
-			var ptr1 string
-			if v != nil {
-				ptr1, err = graphql.UnmarshalString(v)
-				it.Audio = &ptr1
-			}
-
+			it.Picture, err = graphql.UnmarshalString(v)
 			if err != nil {
 				return it, err
 			}
@@ -11342,6 +12504,12 @@ func UnmarshalNewGroup(v interface{}) (NewGroup, error) {
 			if err != nil {
 				return it, err
 			}
+		case "admin":
+			var err error
+			it.Admin, err = graphql.UnmarshalInt(v)
+			if err != nil {
+				return it, err
+			}
 		case "parent":
 			var err error
 			it.Parent, err = graphql.UnmarshalInt(v)
@@ -11368,35 +12536,6 @@ func UnmarshalNewGroup(v interface{}) (NewGroup, error) {
 			for idx1 := range rawIf1 {
 				it.UserID[idx1], err = graphql.UnmarshalInt(rawIf1[idx1])
 			}
-			if err != nil {
-				return it, err
-			}
-		}
-	}
-
-	return it, nil
-}
-
-func UnmarshalNewPhrase(v interface{}) (NewPhrase, error) {
-	var it NewPhrase
-	var asMap = v.(map[string]interface{})
-
-	for k, v := range asMap {
-		switch k {
-		case "id":
-			var err error
-			var ptr1 int
-			if v != nil {
-				ptr1, err = graphql.UnmarshalInt(v)
-				it.ID = &ptr1
-			}
-
-			if err != nil {
-				return it, err
-			}
-		case "content":
-			var err error
-			it.Content, err = graphql.UnmarshalString(v)
 			if err != nil {
 				return it, err
 			}
@@ -11566,6 +12705,17 @@ func UnmarshalNewUser(v interface{}) (NewUser, error) {
 			if err != nil {
 				return it, err
 			}
+		case "groupId":
+			var err error
+			var ptr1 int
+			if v != nil {
+				ptr1, err = graphql.UnmarshalInt(v)
+				it.GroupID = &ptr1
+			}
+
+			if err != nil {
+				return it, err
+			}
 		}
 	}
 
@@ -11596,20 +12746,56 @@ func UnmarshalPagination(v interface{}) (Pagination, error) {
 	return it, nil
 }
 
-func UnmarshalPhraseFilterInput(v interface{}) (PhraseFilterInput, error) {
-	var it PhraseFilterInput
+func UnmarshalRecyclingTicketsInput(v interface{}) (RecyclingTicketsInput, error) {
+	var it RecyclingTicketsInput
 	var asMap = v.(map[string]interface{})
 
 	for k, v := range asMap {
 		switch k {
-		case "content":
+		case "number":
 			var err error
-			var ptr1 string
-			if v != nil {
-				ptr1, err = graphql.UnmarshalString(v)
-				it.Content = &ptr1
+			it.Number, err = graphql.UnmarshalInt(v)
+			if err != nil {
+				return it, err
 			}
+		case "userId":
+			var err error
+			it.UserID, err = graphql.UnmarshalInt(v)
+			if err != nil {
+				return it, err
+			}
+		case "type":
+			var err error
+			it.Type, err = graphql.UnmarshalInt(v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
 
+	return it, nil
+}
+
+func UnmarshalResetPasword(v interface{}) (ResetPasword, error) {
+	var it ResetPasword
+	var asMap = v.(map[string]interface{})
+
+	for k, v := range asMap {
+		switch k {
+		case "ids":
+			var err error
+			var rawIf1 []interface{}
+			if v != nil {
+				if tmp1, ok := v.([]interface{}); ok {
+					rawIf1 = tmp1
+				} else {
+					rawIf1 = []interface{}{v}
+				}
+			}
+			it.Ids = make([]int, len(rawIf1))
+			for idx1 := range rawIf1 {
+				it.Ids[idx1], err = graphql.UnmarshalInt(rawIf1[idx1])
+			}
 			if err != nil {
 				return it, err
 			}
@@ -11654,6 +12840,41 @@ func UnmarshalRoleAndPermissionRelationshipInput(v interface{}) (RoleAndPermissi
 	return it, nil
 }
 
+func UnmarshalRoleAndUserFilterInput(v interface{}) (RoleAndUserFilterInput, error) {
+	var it RoleAndUserFilterInput
+	var asMap = v.(map[string]interface{})
+
+	for k, v := range asMap {
+		switch k {
+		case "roleId":
+			var err error
+			it.RoleID, err = graphql.UnmarshalInt(v)
+			if err != nil {
+				return it, err
+			}
+		case "userIds":
+			var err error
+			var rawIf1 []interface{}
+			if v != nil {
+				if tmp1, ok := v.([]interface{}); ok {
+					rawIf1 = tmp1
+				} else {
+					rawIf1 = []interface{}{v}
+				}
+			}
+			it.UserIds = make([]int, len(rawIf1))
+			for idx1 := range rawIf1 {
+				it.UserIds[idx1], err = graphql.UnmarshalInt(rawIf1[idx1])
+			}
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
 func UnmarshalRoleFilterInput(v interface{}) (RoleFilterInput, error) {
 	var it RoleFilterInput
 	var asMap = v.(map[string]interface{})
@@ -11688,86 +12909,18 @@ func UnmarshalRoleFilterInput(v interface{}) (RoleFilterInput, error) {
 	return it, nil
 }
 
-func UnmarshalUpdateAuthorInput(v interface{}) (UpdateAuthorInput, error) {
-	var it UpdateAuthorInput
+func UnmarshalTicketFilterInput(v interface{}) (TicketFilterInput, error) {
+	var it TicketFilterInput
 	var asMap = v.(map[string]interface{})
 
 	for k, v := range asMap {
 		switch k {
 		case "id":
-			var err error
-			it.ID, err = graphql.UnmarshalInt(v)
-			if err != nil {
-				return it, err
-			}
-		case "name":
-			var err error
-			var ptr1 string
-			if v != nil {
-				ptr1, err = graphql.UnmarshalString(v)
-				it.Name = &ptr1
-			}
-
-			if err != nil {
-				return it, err
-			}
-		}
-	}
-
-	return it, nil
-}
-
-func UnmarshalUpdateBookInput(v interface{}) (UpdateBookInput, error) {
-	var it UpdateBookInput
-	var asMap = v.(map[string]interface{})
-
-	for k, v := range asMap {
-		switch k {
-		case "id":
-			var err error
-			it.ID, err = graphql.UnmarshalInt(v)
-			if err != nil {
-				return it, err
-			}
-		case "name":
-			var err error
-			var ptr1 string
-			if v != nil {
-				ptr1, err = graphql.UnmarshalString(v)
-				it.Name = &ptr1
-			}
-
-			if err != nil {
-				return it, err
-			}
-		case "authorId":
 			var err error
 			var ptr1 int
 			if v != nil {
 				ptr1, err = graphql.UnmarshalInt(v)
-				it.AuthorID = &ptr1
-			}
-
-			if err != nil {
-				return it, err
-			}
-		case "picture":
-			var err error
-			var ptr1 string
-			if v != nil {
-				ptr1, err = graphql.UnmarshalString(v)
-				it.Picture = &ptr1
-			}
-
-			if err != nil {
-				return it, err
-			}
-		case "alias":
-			var err error
-			var ptr1 string
-			if v != nil {
-				ptr1, err = graphql.UnmarshalString(v)
-				it.Alias = &ptr1
+				it.ID = &ptr1
 			}
 
 			if err != nil {
@@ -11784,14 +12937,95 @@ func UnmarshalUpdateBookInput(v interface{}) (UpdateBookInput, error) {
 			if err != nil {
 				return it, err
 			}
+		case "uuid":
+			var err error
+			var ptr1 string
+			if v != nil {
+				ptr1, err = graphql.UnmarshalString(v)
+				it.UUID = &ptr1
+			}
+
+			if err != nil {
+				return it, err
+			}
+		case "count":
+			var err error
+			var ptr1 bool
+			if v != nil {
+				ptr1, err = graphql.UnmarshalBoolean(v)
+				it.Count = &ptr1
+			}
+
+			if err != nil {
+				return it, err
+			}
 		}
 	}
 
 	return it, nil
 }
 
-func UnmarshalUpdateChapterInput(v interface{}) (UpdateChapterInput, error) {
-	var it UpdateChapterInput
+func UnmarshalTicketRecordFilterInput(v interface{}) (TicketRecordFilterInput, error) {
+	var it TicketRecordFilterInput
+	var asMap = v.(map[string]interface{})
+
+	for k, v := range asMap {
+		switch k {
+		case "operator":
+			var err error
+			var ptr1 int
+			if v != nil {
+				ptr1, err = graphql.UnmarshalInt(v)
+				it.Operator = &ptr1
+			}
+
+			if err != nil {
+				return it, err
+			}
+		case "owner":
+			var err error
+			it.Owner, err = graphql.UnmarshalInt(v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
+func UnmarshalTransferTicketInput(v interface{}) (TransferTicketInput, error) {
+	var it TransferTicketInput
+	var asMap = v.(map[string]interface{})
+
+	for k, v := range asMap {
+		switch k {
+		case "number":
+			var err error
+			it.Number, err = graphql.UnmarshalInt(v)
+			if err != nil {
+				return it, err
+			}
+		case "fromUserId":
+			var err error
+			it.FromUserID, err = graphql.UnmarshalInt(v)
+			if err != nil {
+				return it, err
+			}
+		case "toUserId":
+			var err error
+			it.ToUserID, err = graphql.UnmarshalInt(v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
+func UnmarshalUpdateCanteenInput(v interface{}) (UpdateCanteenInput, error) {
+	var it UpdateCanteenInput
 	var asMap = v.(map[string]interface{})
 
 	for k, v := range asMap {
@@ -11799,17 +13033,6 @@ func UnmarshalUpdateChapterInput(v interface{}) (UpdateChapterInput, error) {
 		case "id":
 			var err error
 			it.ID, err = graphql.UnmarshalInt(v)
-			if err != nil {
-				return it, err
-			}
-		case "index":
-			var err error
-			var ptr1 int
-			if v != nil {
-				ptr1, err = graphql.UnmarshalInt(v)
-				it.Index = &ptr1
-			}
-
 			if err != nil {
 				return it, err
 			}
@@ -11824,31 +13047,124 @@ func UnmarshalUpdateChapterInput(v interface{}) (UpdateChapterInput, error) {
 			if err != nil {
 				return it, err
 			}
-		case "content":
+		case "groupID":
 			var err error
-			var ptr1 string
+			var ptr1 int
 			if v != nil {
-				ptr1, err = graphql.UnmarshalString(v)
-				it.Content = &ptr1
+				ptr1, err = graphql.UnmarshalInt(v)
+				it.GroupID = &ptr1
 			}
 
 			if err != nil {
 				return it, err
 			}
-		case "phraseIds":
+		case "breakfastTime":
 			var err error
-			var rawIf1 []interface{}
+			var ptr1 string
 			if v != nil {
-				if tmp1, ok := v.([]interface{}); ok {
-					rawIf1 = tmp1
-				} else {
-					rawIf1 = []interface{}{v}
-				}
+				ptr1, err = graphql.UnmarshalString(v)
+				it.BreakfastTime = &ptr1
 			}
-			it.PhraseIds = make([]int, len(rawIf1))
-			for idx1 := range rawIf1 {
-				it.PhraseIds[idx1], err = graphql.UnmarshalInt(rawIf1[idx1])
+
+			if err != nil {
+				return it, err
 			}
+		case "breakfastPicture":
+			var err error
+			var ptr1 string
+			if v != nil {
+				ptr1, err = graphql.UnmarshalString(v)
+				it.BreakfastPicture = &ptr1
+			}
+
+			if err != nil {
+				return it, err
+			}
+		case "bookingBreakfastDeadline":
+			var err error
+			var ptr1 string
+			if v != nil {
+				ptr1, err = graphql.UnmarshalString(v)
+				it.BookingBreakfastDeadline = &ptr1
+			}
+
+			if err != nil {
+				return it, err
+			}
+		case "lunchTime":
+			var err error
+			var ptr1 string
+			if v != nil {
+				ptr1, err = graphql.UnmarshalString(v)
+				it.LunchTime = &ptr1
+			}
+
+			if err != nil {
+				return it, err
+			}
+		case "lunchPicture":
+			var err error
+			var ptr1 string
+			if v != nil {
+				ptr1, err = graphql.UnmarshalString(v)
+				it.LunchPicture = &ptr1
+			}
+
+			if err != nil {
+				return it, err
+			}
+		case "bookingLunchDeadline":
+			var err error
+			var ptr1 string
+			if v != nil {
+				ptr1, err = graphql.UnmarshalString(v)
+				it.BookingLunchDeadline = &ptr1
+			}
+
+			if err != nil {
+				return it, err
+			}
+		case "dinnerTime":
+			var err error
+			var ptr1 string
+			if v != nil {
+				ptr1, err = graphql.UnmarshalString(v)
+				it.DinnerTime = &ptr1
+			}
+
+			if err != nil {
+				return it, err
+			}
+		case "dinnerPicture":
+			var err error
+			var ptr1 string
+			if v != nil {
+				ptr1, err = graphql.UnmarshalString(v)
+				it.DinnerPicture = &ptr1
+			}
+
+			if err != nil {
+				return it, err
+			}
+		case "bookingDinnerDeadline":
+			var err error
+			var ptr1 string
+			if v != nil {
+				ptr1, err = graphql.UnmarshalString(v)
+				it.BookingDinnerDeadline = &ptr1
+			}
+
+			if err != nil {
+				return it, err
+			}
+		case "cancelTime":
+			var err error
+			var ptr1 int
+			if v != nil {
+				ptr1, err = graphql.UnmarshalInt(v)
+				it.CancelTime = &ptr1
+			}
+
 			if err != nil {
 				return it, err
 			}
@@ -11858,8 +13174,8 @@ func UnmarshalUpdateChapterInput(v interface{}) (UpdateChapterInput, error) {
 	return it, nil
 }
 
-func UnmarshalUpdateDictionaryInput(v interface{}) (UpdateDictionaryInput, error) {
-	var it UpdateDictionaryInput
+func UnmarshalUpdateDishesInput(v interface{}) (UpdateDishesInput, error) {
+	var it UpdateDishesInput
 	var asMap = v.(map[string]interface{})
 
 	for k, v := range asMap {
@@ -11870,144 +13186,23 @@ func UnmarshalUpdateDictionaryInput(v interface{}) (UpdateDictionaryInput, error
 			if err != nil {
 				return it, err
 			}
-		case "word":
+		case "name":
 			var err error
 			var ptr1 string
 			if v != nil {
 				ptr1, err = graphql.UnmarshalString(v)
-				it.Word = &ptr1
+				it.Name = &ptr1
 			}
 
 			if err != nil {
 				return it, err
 			}
-		case "phonetic":
+		case "picture":
 			var err error
 			var ptr1 string
 			if v != nil {
 				ptr1, err = graphql.UnmarshalString(v)
-				it.Phonetic = &ptr1
-			}
-
-			if err != nil {
-				return it, err
-			}
-		case "definition":
-			var err error
-			var ptr1 string
-			if v != nil {
-				ptr1, err = graphql.UnmarshalString(v)
-				it.Definition = &ptr1
-			}
-
-			if err != nil {
-				return it, err
-			}
-		case "translation":
-			var err error
-			var ptr1 string
-			if v != nil {
-				ptr1, err = graphql.UnmarshalString(v)
-				it.Translation = &ptr1
-			}
-
-			if err != nil {
-				return it, err
-			}
-		case "pos":
-			var err error
-			var ptr1 string
-			if v != nil {
-				ptr1, err = graphql.UnmarshalString(v)
-				it.Pos = &ptr1
-			}
-
-			if err != nil {
-				return it, err
-			}
-		case "collins":
-			var err error
-			var ptr1 string
-			if v != nil {
-				ptr1, err = graphql.UnmarshalString(v)
-				it.Collins = &ptr1
-			}
-
-			if err != nil {
-				return it, err
-			}
-		case "oxford":
-			var err error
-			var ptr1 string
-			if v != nil {
-				ptr1, err = graphql.UnmarshalString(v)
-				it.Oxford = &ptr1
-			}
-
-			if err != nil {
-				return it, err
-			}
-		case "tag":
-			var err error
-			var ptr1 string
-			if v != nil {
-				ptr1, err = graphql.UnmarshalString(v)
-				it.Tag = &ptr1
-			}
-
-			if err != nil {
-				return it, err
-			}
-		case "bnc":
-			var err error
-			var ptr1 string
-			if v != nil {
-				ptr1, err = graphql.UnmarshalString(v)
-				it.Bnc = &ptr1
-			}
-
-			if err != nil {
-				return it, err
-			}
-		case "frq":
-			var err error
-			var ptr1 string
-			if v != nil {
-				ptr1, err = graphql.UnmarshalString(v)
-				it.Frq = &ptr1
-			}
-
-			if err != nil {
-				return it, err
-			}
-		case "exchange":
-			var err error
-			var ptr1 string
-			if v != nil {
-				ptr1, err = graphql.UnmarshalString(v)
-				it.Exchange = &ptr1
-			}
-
-			if err != nil {
-				return it, err
-			}
-		case "detail":
-			var err error
-			var ptr1 string
-			if v != nil {
-				ptr1, err = graphql.UnmarshalString(v)
-				it.Detail = &ptr1
-			}
-
-			if err != nil {
-				return it, err
-			}
-		case "audio":
-			var err error
-			var ptr1 string
-			if v != nil {
-				ptr1, err = graphql.UnmarshalString(v)
-				it.Audio = &ptr1
+				it.Picture = &ptr1
 			}
 
 			if err != nil {
@@ -12037,6 +13232,17 @@ func UnmarshalUpdateGroupInput(v interface{}) (UpdateGroupInput, error) {
 			if v != nil {
 				ptr1, err = graphql.UnmarshalString(v)
 				it.Name = &ptr1
+			}
+
+			if err != nil {
+				return it, err
+			}
+		case "admin":
+			var err error
+			var ptr1 int
+			if v != nil {
+				ptr1, err = graphql.UnmarshalInt(v)
+				it.Admin = &ptr1
 			}
 
 			if err != nil {
@@ -12078,35 +13284,6 @@ func UnmarshalUpdateGroupInput(v interface{}) (UpdateGroupInput, error) {
 			for idx1 := range rawIf1 {
 				it.UserID[idx1], err = graphql.UnmarshalInt(rawIf1[idx1])
 			}
-			if err != nil {
-				return it, err
-			}
-		}
-	}
-
-	return it, nil
-}
-
-func UnmarshalUpdatePhraseInput(v interface{}) (UpdatePhraseInput, error) {
-	var it UpdatePhraseInput
-	var asMap = v.(map[string]interface{})
-
-	for k, v := range asMap {
-		switch k {
-		case "id":
-			var err error
-			it.ID, err = graphql.UnmarshalInt(v)
-			if err != nil {
-				return it, err
-			}
-		case "content":
-			var err error
-			var ptr1 string
-			if v != nil {
-				ptr1, err = graphql.UnmarshalString(v)
-				it.Content = &ptr1
-			}
-
 			if err != nil {
 				return it, err
 			}
@@ -12405,6 +13582,30 @@ func UnmarshalUserFilterInput(v interface{}) (UserFilterInput, error) {
 	return it, nil
 }
 
+func UnmarshalcancelBookingInput(v interface{}) (CancelBookingInput, error) {
+	var it CancelBookingInput
+	var asMap = v.(map[string]interface{})
+
+	for k, v := range asMap {
+		switch k {
+		case "userId":
+			var err error
+			it.UserID, err = graphql.UnmarshalInt(v)
+			if err != nil {
+				return it, err
+			}
+		case "bookingId":
+			var err error
+			it.BookingID, err = graphql.UnmarshalInt(v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
 func (ec *executionContext) FieldMiddleware(ctx context.Context, obj interface{}, next graphql.Resolver) (ret interface{}) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -12430,9 +13631,15 @@ func (ec *executionContext) FieldMiddleware(ctx context.Context, obj interface{}
 			}
 		case "needLogin":
 			if ec.directives.NeedLogin != nil {
+				rawArgs := d.ArgumentMap(ec.Variables)
+				args, err := dir_needLogin_args(rawArgs)
+				if err != nil {
+					ec.Error(ctx, err)
+					return nil
+				}
 				n := next
 				next = func(ctx context.Context) (interface{}, error) {
-					return ec.directives.NeedLogin(ctx, obj, n)
+					return ec.directives.NeedLogin(ctx, obj, n, args["resolver"].(string))
 				}
 			}
 		}
@@ -12461,8 +13668,7 @@ func (ec *executionContext) introspectType(name string) (*introspection.Type, er
 
 var parsedSchema = gqlparser.MustLoadSchema(
 	&ast.Source{Name: "schema.graphql", Input: `directive @hasRole(resolver: String!) on FIELD_DEFINITION
-directive @needLogin on FIELD_DEFINITION
-
+directive @needLogin(resolver: String!) on FIELD_DEFINITION
 
 type QueryUserResponse{
     totalCount:Int,
@@ -12470,7 +13676,6 @@ type QueryUserResponse{
     take:Int,
     rows: [User!]!
 }
-
 
 type User {
     id: ID!
@@ -12482,11 +13687,12 @@ type User {
     is_super: Boolean!
     picture: String!
     state: Int!
-    created_at: String!
-    updated_at: String!
-    deleted_at: String!
+    createdAt: String!
+    updatedAt: String!
+    deletedAt: String!
     groups(pagination: Pagination):QueryGroupResponse!
     roles(pagination: Pagination):QueryRoleResponse!
+    tickets(pagination: Pagination,filter:TicketFilterInput):QueryTicketResponse!
 }
 
 type QueryGroupResponse{
@@ -12500,22 +13706,161 @@ type Group {
     id: ID!
     name: String!
     parent: Int!
+    adminId: Int!
+    adminInfo: User!
     levels: String!
-    created_at: String!
-    updated_at: String!
-    deleted_at: String!
+    createdAt: String!
+    updatedAt: String!
+    deletedAt: String!
 
     users(filter:UserFilterInput, pagination: Pagination):QueryUserResponse!
+    canteens(filter:CanteenFilterInput, pagination: Pagination):QueryCanteenResponse!
+}
+
+type Booking {
+    userId:Int!
+    canteenId:Int!
+    type:String!
+    date:String!
+
+    createdAt: String!
+    updatedAt: String!
+    deletedAt: String!
+}
+
+type QueryBookingResponse{
+    totalCount: Int
+    skip: Int
+    take: Int
+    rows: [Booking!]!
+}
+
+type Count{
+    breakfast: Int!
+    lunch: Int!
+    dinner: Int!
+}
+
+type QueryTicketResponse{
+    totalCount:Int
+    skip:Int
+    take:Int
+    count: Count
+    rows: [Ticket!]!
+}
+
+type Ticket {
+    id: ID!
+    UUID: String!
+    userId:Int!
+    type:Int!
+    price:Int!
+    createdAt: String!
+    updatedAt: String!
+}
+
+input TicketFilterInput {
+    id: Int
+    userId:Int
+    uuid:String
+    count: Boolean
+}
+
+type QueryTicketRecordResponse {
+    totalCount:Int
+    skip:Int
+    take:Int
+    rows: [TicketRecord!]!
+}
+
+type TicketRecord {
+    id: ID!
+    operator: Int!
+    owner: Int!
+    number: Int!
+    action: String!
+    description: String!
+    createdAt: String!
+    updatedAt: String!
+    deletedAt: String!
+}
+
+input TicketRecordFilterInput{
+    operator: Int
+    owner: Int!
+}
+
+type QueryDishesResponse{
+    totalCount:Int
+    skip:Int
+    take:Int
+    rows: [Dishes!]!
+}
+
+type Dishes {
+    id: ID!
+    name: String!
+    picture: String!
+    createdAt: String!
+    updatedAt: String!
+    deletedAt: String!
+}
+
+input DishesFilterInput {
+    id: Int
+    name:String
+}
+
+type CanteenCount{
+    date:String!
+    breakfast:Int!
+    lunch:Int!
+    dinner:Int!
+}
+
+type Canteen {
+    id: ID!
+    name: String!
+    groupID: Int!
+    breakfastTime: String!
+    breakfastPicture: String
+    bookingBreakfastDeadline: String!
+    lunchTime: String!
+    lunchPicture: String
+    bookingLunchDeadline: String!
+    dinnerTime: String!
+    dinnerPicture: String
+    bookingDinnerDeadline: String!
+    cancelTime:Int!
+    createdAt: String!
+    updatedAt: String!
+    deletedAt: String!
+    qrcode: String!
+    count: [CanteenCount!]
+}
+
+type QueryCanteenResponse{
+    totalCount:Int,
+    skip:Int,
+    take:Int,
+    rows: [Canteen!]!
+}
+
+input CanteenFilterInput {
+    id: Int
+    name:String
+    groupID: Int
 }
 
 type Role {
     id: ID!
     name: String!
-    created_at: String!
-    updated_at: String!
-    deleted_at: String!
+    createdAt: String!
+    updatedAt: String!
+    deletedAt: String!
     users(filter:UserFilterInput, pagination: Pagination):QueryUserResponse!
 }
+
 type QueryRoleResponse{
     totalCount:Int,
     skip:Int,
@@ -12529,100 +13874,16 @@ type Permission {
     resource:String!
     object:String!
     checked:Boolean!
+    createdAt: String!
+    updatedAt: String!
+    deletedAt: String!
 }
 
 type QueryPermissionResponse{
-    totalCount:Int,
-    skip:Int,
-    take:Int,
+    totalCount: Int,
+    skip: Int,
+    take: Int,
     rows: [Permission!]!
-}
-
-type Dictionary {
-    id:Int!
-	word: String!
-	phonetic: String!
-	definition: String!
-	translation: String!
-	pos: String!
-	collins: String!
-	oxford: String!
-	tag: String!
-	bnc: String!
-	frq: String!
-	exchange: String!
-	detail: String!
-	audio: String!
-}
-
-type QueryDictionaryResponse{
-    totalCount:Int,
-    skip:Int,
-    take:Int,
-    rows: [Dictionary!]!
-}
-
-type Book {
-    id: Int!
-    name: String!
-    authors: QueryAuthorResponse!
-    picture: String!
-    alias: String!
-    users: QueryUserResponse!
-    chapters(filter:ChapterFilterInput, pagination: Pagination):QueryChapterResponse!
-}
-
-type QueryBookResponse{
-    totalCount:Int,
-    skip:Int,
-    take:Int,
-    rows: [Book!]!
-}
-
-type Chapter {
-    id: Int!
-    index: Int!
-    name: String!
-    content: String!
-    phrases:QueryDictionaryResponse!
-    cet4Words:QueryDictionaryResponse!
-    cet6Words:QueryDictionaryResponse!
-    kyWords:QueryDictionaryResponse!
-    toefiWords:QueryDictionaryResponse!
-    ieltsWords:QueryDictionaryResponse!
-    greWords:QueryDictionaryResponse!
-}
-
-type QueryChapterResponse{
-    totalCount:Int,
-    skip:Int,
-    take:Int,
-    rows: [Chapter!]!
-}
-
-type Author{
-    id: Int!
-    name: String!
-    books(filter:BookFilterInput, pagination: Pagination):QueryBookResponse!
-}
-
-type QueryAuthorResponse{
-    totalCount:Int,
-    skip:Int,
-    take:Int,
-    rows: [Author!]!
-}
-
-type Phrase{
-    id: Int!
-    content: String!
-    translation:String!
-}
-type QueryPhraseResponse{
-    totalCount:Int,
-    skip:Int,
-    take:Int,
-    rows: [Phrase!]!
 }
 
 input Pagination {
@@ -12639,14 +13900,6 @@ input UserFilterInput {
     state:Int
 }
 
-input DictionaryFilterInput {
-    id: Int
-    word:String
-    translation:String
-    tag:String
-}
-
-
 input GroupFilterInput {
     id: Int
     name:String
@@ -12657,26 +13910,9 @@ input RoleFilterInput {
     name:String
 }
 
-input BookFilterInput {
-    id: Int
-    name:String
-    author:String
-}
-
-input ChapterFilterInput {
-    ids: [Int!]
-    index: Int
-}
-input AuthorFilterInput {
-    name:String
-}
-
-input PhraseFilterInput {
-    content:String
-}
-
-input ChapterAnalysisInput{
-    chapterId:Int!
+input BookingFilterInput {
+    userId: Int
+    canteenId:Int
 }
 
 # order by
@@ -12687,18 +13923,44 @@ enum GroupOrderByInput {
     created_at_DESC
 }
 
+input RoleAndUserFilterInput {
+    roleId:Int!
+    userIds:[Int!]!
+}
+
+type OrgDashboard{
+    name:String!
+    userCount:Int!
+    canteenCount: Int!
+}
+
+type SystemInfo {
+    currentLoginCount: Int!
+}
+
+type DashboardResponse {
+    orgInfo: [OrgDashboard!]!
+    systemInfo: SystemInfo!
+    ticketInfo: [String!]
+}
+
 type Query {
-    dictionaries(filter:DictionaryFilterInput, pagination: Pagination): QueryDictionaryResponse!  @hasRole(resolver: "dictionaries") @needLogin
-    groups(filter:GroupFilterInput, pagination: Pagination,orderBy:GroupOrderByInput): QueryGroupResponse!  @hasRole(resolver: "groups") @needLogin
-    users(filter:UserFilterInput, pagination: Pagination):QueryUserResponse!  @hasRole(resolver: "users") @needLogin
-    roles(filter:RoleFilterInput, pagination: Pagination):QueryRoleResponse!  @hasRole(resolver: "roles") @needLogin
-    permissions(filter:RoleFilterInput!):QueryPermissionResponse!  @hasRole(resolver: "permissions") @needLogin
-    books(filter:BookFilterInput, pagination: Pagination):QueryBookResponse! @hasRole(resolver: "books") @needLogin
-    chapters(filter:ChapterFilterInput):[Chapter!]! @hasRole(resolver: "chapters") @needLogin
-    authors(filter:AuthorFilterInput, pagination: Pagination):QueryAuthorResponse! @hasRole(resolver: "authors") @needLogin
-    phrases(filter:PhraseFilterInput, pagination: Pagination): QueryPhraseResponse! @hasRole(resolver: "phrases") @needLogin
-    analysis(input:ChapterAnalysisInput!): QueryDictionaryResponse! @hasRole(resolver: "analysis") @needLogin
+    groups(filter:GroupFilterInput, pagination: Pagination,orderBy:GroupOrderByInput): QueryGroupResponse!  @hasRole(resolver: "groups") @needLogin(resolver: "groups")
+    users(filter:UserFilterInput, pagination: Pagination):QueryUserResponse!  @hasRole(resolver: "users") @needLogin(resolver: "users")
+    roles(filter:RoleFilterInput, pagination: Pagination):QueryRoleResponse!  @hasRole(resolver: "roles") @needLogin(resolver: "roles")
+    checkUserNotInRole(filter:RoleAndUserFilterInput): [Int!]!  @hasRole(resolver: "checkUserNotInRole") @needLogin(resolver: "checkUserNotInRole")
+    permissions(filter:RoleFilterInput!):QueryPermissionResponse!  @hasRole(resolver: "permissions") @needLogin(resolver: "permissions")
+    tickets(filter:TicketFilterInput, pagination: Pagination):QueryTicketResponse!  @hasRole(resolver: "tickets") @needLogin(resolver: "tickets")
+    ticketRecords(filter:TicketRecordFilterInput, pagination: Pagination):QueryTicketRecordResponse!  @hasRole(resolver: "ticketRecords") @needLogin(resolver: "ticketRecords")
+    dishes(filter:DishesFilterInput, pagination: Pagination):QueryDishesResponse!  @hasRole(resolver: "dishes") @needLogin(resolver: "dishes")
+    canteens(filter:CanteenFilterInput, pagination: Pagination):QueryCanteenResponse!  @hasRole(resolver: "canteens") @needLogin(resolver: "canteens")
+    booking(filter:BookingFilterInput):QueryBookingResponse!  @hasRole(resolver: "booking") @needLogin(resolver: "booking")
+    dashboard:DashboardResponse!  @needLogin(resolver: "dashboard")
     messages:String!
+}
+
+input ResetPasword {
+    ids:[Int!]!
 }
 
 input NewTodo {
@@ -12716,6 +13978,7 @@ input NewUser {
     is_super: Boolean
     picture: String
     state: Int
+    groupId: Int
 }
 
 input UpdateUserInput {
@@ -12733,17 +13996,70 @@ input UpdateUserInput {
 input NewGroup {
     id: Int
     name: String!
+    admin: Int!
     parent: Int!
     levels: String!
     userId: [Int!]
 }
 
+input NewCanteen {
+    id: Int
+    name: String!
+    groupID: Int!
+    breakfastTime: String!
+    breakfastPicture: String
+    bookingBreakfastDeadline: String!
+    lunchTime: String!
+    lunchPicture: String
+    bookingLunchDeadline: String!
+    dinnerTime: String!
+    dinnerPicture: String
+    bookingDinnerDeadline: String!
+    cancelTime:Int!
+}
+
+input GenarateTicketInput {
+    number: Int!
+    userId: Int!
+    type: Int!
+    price: Int!
+}
+
+input TransferTicketInput {
+    number: Int!
+    fromUserId: Int!
+    toUserId: Int!
+}
+
+input RecyclingTicketsInput{
+    number: Int!
+    userId: Int!
+    type: Int!
+}
+
 input UpdateGroupInput {
     id: Int!
     name: String
+    admin: Int
     parent: Int
     levels: String
     userId: [Int!]
+}
+
+input UpdateCanteenInput {
+    id: Int!
+    name: String
+    groupID: Int
+    breakfastTime: String
+    breakfastPicture: String
+    bookingBreakfastDeadline: String
+    lunchTime: String
+    lunchPicture: String
+    bookingLunchDeadline: String
+    dinnerTime: String
+    dinnerPicture: String
+    bookingDinnerDeadline: String
+    cancelTime:Int
 }
 
 input NewRole {
@@ -12758,110 +14074,19 @@ input UpdateRoleInput {
     userId: [Int!]
 }
 
-input NewBook {
-    name: String!
-    authorId: Int!
-    picture: String!
-    alias: String!
-    userId:  Int!
+input NewDishes  {
+    Name: String!
+    Picture: String!
 }
 
-input NewAuthor {
-    name: String!
-}
-
-input UpdateAuthorInput {
+input UpdateDishesInput {
     id: Int!
     name: String
-}
-
-input UpdateBookInput {
-    id: Int!
-    name: String
-    authorId: Int
     picture: String
-    alias: String
-    userId:  Int
 }
 
 input DeleteIDInput{
     ids:[Int!]!
-}
-
-input NewChapter {
-    id: Int
-    index: Int
-    name: String!
-    content: String!
-    phraseIds:[Int!]
-    bookId:Int!
-}
-
-input UpdateChapterInput {
-    id: Int!
-    index: Int
-    name: String
-    content: String
-    phraseIds:[Int!]
-}
-
-input NewPhrase {
-    id: Int
-    content: String!
-}
-
-input UpdatePhraseInput {
-    id: Int!
-    content: String
-}
-
-input NewDictionary {
-    word: String!
-    translation: String!
-    phonetic: String
-    definition: String
-    pos: String
-    collins: String
-    oxford: String
-    tag: String
-    bnc: String
-    frq: String
-    exchange: String
-    detail: String
-    audio: String
-}
-
-input UpdateDictionaryInput {
-    id:Int!
-    word: String
-    phonetic: String
-    definition: String
-    translation: String
-    pos: String
-    collins: String
-    oxford: String
-    tag: String
-    bnc: String
-    frq: String
-    exchange: String
-    detail: String
-    audio: String
-}
-
-enum DictionaryLevel  {
-    cet4
-    cet6
-    ky
-    toefi
-    ielts
-    gre
-    phrase
-}
-
-input ChapterAndDictionaryRelationshipInput {
-    chapterId: Int!
-    dictId:[Int!]!
-    level: DictionaryLevel!
 }
 
 input UserAndGroupRelationshipInput{
@@ -12869,19 +14094,9 @@ input UserAndGroupRelationshipInput{
     groupId: Int!
 }
 
-input AuthorAndBookRelationshipInput{
-    bookIds: [Int!]!
-    authorId: Int!
-}
-
 input UserAndRoleRelationshipInput{
     userIds: [Int!]!
     roleId: Int!
-}
-
-input BookAndChapterRelationshipInput{
-    chapterIds: [Int!]!
-    bookId: Int!
 }
 
 input RoleAndPermissionRelationshipInput {
@@ -12894,52 +14109,82 @@ input LoginInput {
     password:String!
 }
 
+input LogoutInput {
+    username:String!
+}
+
+type LoginResponse {
+    token:String!
+    permissions:[String!]!
+    user:User!
+}
+
+enum BookingTypeInput {
+    breakfast
+    lunch
+    dinner
+}
+
+input BookingInput {
+    userId:Int!
+    canteenId:Int!
+    type:BookingTypeInput!
+    date:String!
+    autoCurrentMonth:Boolean
+}
+
+input cancelBookingInput{
+    userId:Int!
+    bookingId:Int!
+}
+
+type TransferResponse {
+    successCount: Int!
+    errorCount: Int!
+    errorMsg: String
+}
+
+input CanteenQrcodeInput{
+    id: Int!
+}
+
 type Mutation {
-    login(input:LoginInput!):String!
-    createUser(input: NewUser!): User! @hasRole(resolver: "createUser") @needLogin
-    updateUser(input: UpdateUserInput!): User! @hasRole(resolver: "updateUser") @needLogin
-    deleteUser(input: DeleteIDInput!)  : Boolean! @hasRole(resolver: "deleteUser") @needLogin
+    login(input:LoginInput!):LoginResponse!
+    logout(input:LogoutInput!):Boolean!
+    createUser(input: NewUser!): User! @hasRole(resolver: "createUser") @needLogin(resolver: "createUser")
+    updateUser(input: UpdateUserInput!): User! @hasRole(resolver: "updateUser") @needLogin(resolver: "updateUser")
+    deleteUser(input: DeleteIDInput!)  : Boolean! @hasRole(resolver: "deleteUser") @needLogin(resolver: "deleteUser")
+    resetPassword(input: ResetPasword!) : String! @hasRole(resolver: "resetPassword") @needLogin(resolver: "resetPassword")
 
-    createGroup(input: NewGroup!): Group! @hasRole(resolver: "createGroup") @needLogin
-    updateGroup(input: UpdateGroupInput!): Group! @hasRole(resolver: "updateGroup") @needLogin
-    deleteGroup(input: DeleteIDInput!)  : Boolean! @hasRole(resolver: "deleteGroup") @needLogin
+    createGroup(input: NewGroup!): Group! @hasRole(resolver: "createGroup") @needLogin(resolver: "createGroup")
+    updateGroup(input: UpdateGroupInput!): Group! @hasRole(resolver: "updateGroup") @needLogin(resolver: "updateGroup")
+    deleteGroup(input: DeleteIDInput!)  : Boolean! @hasRole(resolver: "deleteGroup") @needLogin(resolver: "deleteGroup")
 
-    createUserAndGroupRelationship(input: UserAndGroupRelationshipInput!): Boolean! @hasRole(resolver: "createUserAndGroupRelationship") @needLogin
-    removeUserAndGroupRelationship(input: UserAndGroupRelationshipInput!): Boolean! @hasRole(resolver: "removeUserAndGroupRelationship") @needLogin
+    createUserAndGroupRelationship(input: UserAndGroupRelationshipInput!): Boolean! @hasRole(resolver: "createUserAndGroupRelationship") @needLogin(resolver: "createUserAndGroupRelationship")
+    removeUserAndGroupRelationship(input: UserAndGroupRelationshipInput!): Boolean! @hasRole(resolver: "removeUserAndGroupRelationship") @needLogin(resolver: "removeUserAndGroupRelationship")
 
-    createRole(input: NewRole!): Role! @hasRole(resolver: "createRole") @needLogin
-    updateRole(input: UpdateRoleInput!): Role! @hasRole(resolver: "updateRole") @needLogin
-    createUserAndRoleRelationship(input: UserAndRoleRelationshipInput!): Boolean! @hasRole(resolver: "createUserAndRoleRelationship") @needLogin
-    removeUserAndRoleRelationship(input: UserAndRoleRelationshipInput!): Boolean! @hasRole(resolver: "removeUserAndRoleRelationship") @needLogin
-    createRoleAndPermissionRelationship(input: RoleAndPermissionRelationshipInput!) : Boolean! @hasRole(resolver: "createRoleAndPermissionRelationship") @needLogin
+    createRole(input: NewRole!): Role! @hasRole(resolver: "createRole") @needLogin(resolver: "createRole")
+    updateRole(input: UpdateRoleInput!): Role! @hasRole(resolver: "updateRole") @needLogin(resolver: "updateRole")
+    createUserAndRoleRelationship(input: UserAndRoleRelationshipInput!): Boolean! @hasRole(resolver: "createUserAndRoleRelationship") @needLogin(resolver: "createUserAndRoleRelationship")
+    removeUserAndRoleRelationship(input: UserAndRoleRelationshipInput!): Boolean! @hasRole(resolver: "removeUserAndRoleRelationship") @needLogin(resolver: "removeUserAndRoleRelationship")
+    createRoleAndPermissionRelationship(input: RoleAndPermissionRelationshipInput!) : Boolean! @hasRole(resolver: "createRoleAndPermissionRelationship") @needLogin(resolver: "createRoleAndPermissionRelationship")
 
-    createBook(input: NewBook!): Book! @hasRole(resolver: "createBook") @needLogin
-    updateBook(input: UpdateBookInput!): Book! @hasRole(resolver: "updateBook") @needLogin
-    deleteBook(input: DeleteIDInput!)  : Boolean! @hasRole(resolver: "deleteBook") @needLogin
-    addBookChapters(input: BookAndChapterRelationshipInput!) : Boolean! @hasRole(resolver: "addBookChapters") @needLogin
-    removeBookChapters(input:BookAndChapterRelationshipInput!) : Boolean! @hasRole(resolver: "removeBookChapters") @needLogin
+    createDishes(input: NewDishes!): Dishes! @hasRole(resolver: "createDishes") @needLogin(resolver: "createDishes")
+    updateDishes(input: UpdateDishesInput!): Dishes! @hasRole(resolver: "updateDishes") @needLogin(resolver: "updateDishes")
+    deleteDishes(input: DeleteIDInput!)  : Boolean! @hasRole(resolver: "deleteUser") @needLogin(resolver: "deleteUser")
 
-    createAuthor(input: NewAuthor!): Author! @hasRole(resolver: "createAuthor") @needLogin
-    updateAuthor(input: UpdateAuthorInput!): Author! @hasRole(resolver: "updateAuthor") @needLogin
-    deleteAuthor(input: DeleteIDInput!)  : Boolean! @hasRole(resolver: "deleteAuthor") @needLogin
-    createAuthorAndBookRelationship(input: AuthorAndBookRelationshipInput!): Boolean! @hasRole(resolver: "createAuthorAndBookRelationship") @needLogin
-    removeAuthorAndBookRelationship(input: AuthorAndBookRelationshipInput!): Boolean! @hasRole(resolver: "removeAuthorAndBookRelationship") @needLogin
+    createCanteens(input: NewCanteen!): Canteen! @hasRole(resolver: "createCanteens") @needLogin(resolver: "createCanteens")
+    updateCanteens(input: UpdateCanteenInput!): Canteen! @hasRole(resolver: "updateCanteens") @needLogin(resolver: "updateCanteens")
+    deleteCanteens(input: DeleteIDInput!)  : Boolean! @hasRole(resolver: "deleteCanteens") @needLogin(resolver: "deleteCanteens")
 
-    createChapter(input: NewChapter!): Chapter! @hasRole(resolver: "createChapter") @needLogin
-    updateChapter(input: UpdateChapterInput!): Chapter! @hasRole(resolver: "updateChapter") @needLogin
-    deleteChapter(input: DeleteIDInput!)  : Boolean! @hasRole(resolver: "deleteChapter") @needLogin
-    createChapterAndDictionaryRelationship(input: ChapterAndDictionaryRelationshipInput!): Boolean! @hasRole(resolver:"createChapterAndDictionaryRelationship") @needLogin
-    removeChapterAndDictionaryRelationship(input: ChapterAndDictionaryRelationshipInput!): Boolean! @hasRole(resolver: "removeChapterAndDictionaryRelationship") @needLogin
+    generateTickets(input: GenarateTicketInput!): QueryTicketResponse!  @hasRole(resolver: "generateTickets") @needLogin(resolver: "generateTickets")
+    transferTickets(input: TransferTicketInput!): TransferResponse!  @hasRole(resolver: "transferTickets") @needLogin(resolver: "transferTickets")
+    recyclingTickets(input: RecyclingTicketsInput!): Boolean! @hasRole(resolver: "recyclingTickets") @needLogin(resolver: "recyclingTickets")
 
-    createDictionary(input: NewDictionary!): Dictionary! @hasRole(resolver: "createDictionary") @needLogin
-    updateDictionary(input: UpdateDictionaryInput!): Dictionary! @hasRole(resolver: "updateDictionary") @needLogin
-    deleteDictionary(input: DeleteIDInput!): Boolean! @hasRole(resolver: "deleteDictionary") @needLogin
+    createQrcode(input: CanteenQrcodeInput!): String! @hasRole(resolver: "createQrcode") @needLogin(resolver: "createQrcode")
 
-    createPhrase(input: NewPhrase!): Phrase! @hasRole(resolver: "createPhrase") @needLogin
-    updatePhrase(input: UpdatePhraseInput!): Phrase! @hasRole(resolver: "updatePhrase") @needLogin
-    deletePhrase(input: DeleteIDInput!): Boolean! @hasRole(resolver: "deletePhrase") @needLogin
-
-
+    cancelBooking(input:cancelBookingInput!): Boolean! @hasRole(resolver: "cancelBooking") @needLogin(resolver: "cancelBooking")
+    booking(input:BookingInput!): Boolean! @hasRole(resolver: "createBooking") @needLogin(resolver: "createBooking")
 }
 
 type Subscription {

@@ -1,0 +1,530 @@
+2019-04-20 09:28:42.649 INFO server/server.go:182 connect to http://localhost:8080/ for GraphQL playground
+2019-04-20 09:29:33.675 INFO server/server.go:216 28µs          | [::1]:50534  
+2019-04-20 09:29:33.761 INFO server/server.go:216 41.764ms      | [::1]:50534  
+2019-04-20 10:03:11.419 INFO server/server.go:189 connect to http://localhost:8080/ for GraphQL playground
+2019-04-20 10:03:39.147 INFO server/server.go:223 24µs          | [::1]:50835  
+2019-04-20 10:03:39.194 INFO server/server.go:154 resolver users         | role 系统管理员        | user id %!s(uint64=4) 
+2019-04-20 10:03:39.194 INFO server/server.go:121 resolver users         | role 系统管理员        | user %!s(MISSING) 
+2019-04-20 10:03:39.242 INFO server/server.go:223 48.448ms      | [::1]:50835  
+2019-04-20 10:16:13.872 INFO server/server.go:186 connect to http://localhost:8080/ for GraphQL playground
+2019-04-20 10:16:18.348 INFO server/server.go:151 resolver dashboard     | role              | user id %!s(uint64=0) 
+2019-04-20 10:16:18.354 INFO server/server.go:220 5.943ms       | [::1]:51023  
+2019-04-20 10:36:35.086 INFO server/server.go:186 connect to http://localhost:8080/ for GraphQL playground
+2019-04-20 10:37:07.641 INFO server/server.go:220 305µs         | [::1]:56142  
+2019-04-20 10:37:18.100 INFO server/server.go:220 6.495ms       | [::1]:56142  
+2019-04-20 10:37:24.235 INFO server/server.go:151 resolver dashboard     | role              | user id %!s(uint64=0) 
+2019-04-20 10:37:24.241 INFO server/server.go:220 6.554ms       | [::1]:56142  
+2019-04-20 10:38:45.735 INFO server/server.go:220 8µs           | [::1]:56663  
+2019-04-20 10:38:45.757 INFO server/server.go:151 resolver groups        | role 系统管理员        | user id %!s(uint64=4) 
+2019-04-20 10:38:45.785 INFO server/server.go:220 28.241ms      | [::1]:56663  
+2019-04-20 10:38:49.708 INFO server/server.go:151 resolver groups        | role 系统管理员        | user id %!s(uint64=4) 
+2019-04-20 10:38:49.794 INFO server/server.go:220 85.942ms      | [::1]:56663  
+2019-04-20 10:38:53.099 INFO server/server.go:220 24µs          | [::1]:56663  
+2019-04-20 10:38:53.114 INFO server/server.go:151 resolver groups        | role 系统管理员        | user id %!s(uint64=4) 
+2019-04-20 10:38:53.145 INFO server/server.go:220 30.88ms       | [::1]:56663  
+2019-04-20 10:38:56.242 INFO server/server.go:151 resolver groups        | role 系统管理员        | user id %!s(uint64=4) 
+2019-04-20 10:38:56.247 INFO server/server.go:151 resolver canteens      | role 系统管理员        | user id %!s(uint64=4) 
+2019-04-20 10:38:56.281 INFO server/server.go:220 38.588ms      | [::1]:56663  
+2019-04-20 10:38:56.317 INFO server/server.go:220 69.686ms      | [::1]:56746  
+2019-04-20 10:38:58.331 INFO server/server.go:220 9µs           | [::1]:56746  
+2019-04-20 10:38:58.363 INFO server/server.go:151 resolver groups        | role 系统管理员        | user id %!s(uint64=4) 
+2019-04-20 10:38:58.410 INFO server/server.go:220 47.461ms      | [::1]:56746  
+2019-04-20 10:39:01.810 INFO server/server.go:151 resolver groups        | role 系统管理员        | user id %!s(uint64=4) 
+2019-04-20 10:39:01.847 INFO server/server.go:220 37.19ms       | [::1]:56746  
+2019-04-20 10:39:03.678 INFO server/server.go:220 10µs          | [::1]:56746  
+2019-04-20 10:39:03.682 INFO server/server.go:220 12µs          | [::1]:56746  
+2019-04-20 10:39:03.711 INFO server/server.go:151 resolver groups        | role 系统管理员        | user id %!s(uint64=4) 
+2019-04-20 10:39:03.715 INFO server/server.go:151 resolver canteens      | role 系统管理员        | user id %!s(uint64=4) 
+2019-04-20 10:39:03.742 INFO server/server.go:220 30.558ms      | [::1]:56746  
+2019-04-20 10:39:03.747 INFO server/server.go:220 32.089ms      | [::1]:56663  
+2019-04-20 10:39:10.389 INFO server/server.go:220 9µs           | [::1]:56663  
+2019-04-20 10:39:10.413 INFO server/server.go:151 resolver groups        | role 系统管理员        | user id %!s(uint64=4) 
+2019-04-20 10:39:10.438 INFO server/server.go:220 24.688ms      | [::1]:56663  
+2019-04-20 10:39:12.317 INFO server/server.go:151 resolver groups        | role 系统管理员        | user id %!s(uint64=4) 
+2019-04-20 10:39:12.382 INFO server/server.go:220 64.761ms      | [::1]:56663  
+2019-04-20 10:39:13.657 INFO server/server.go:151 resolver tickets       | role 系统管理员        | user id %!s(uint64=4) 
+2019-04-20 10:39:13.657 INFO server/server.go:151 resolver ticketRecords | role 系统管理员        | user id %!s(uint64=4) 
+2019-04-20 10:39:13.669 INFO server/server.go:220 12.098ms      | [::1]:56663  
+2019-04-20 10:39:13.687 INFO server/server.go:220 30.411ms      | [::1]:56746  
+2019-04-20 10:41:17.175 INFO server/server.go:220 10µs          | [::1]:56746  
+2019-04-20 10:41:17.206 INFO server/server.go:151 resolver groups        | role 系统管理员        | user id %!s(uint64=4) 
+2019-04-20 10:41:17.245 INFO server/server.go:220 39.046ms      | [::1]:56746  
+2019-04-20 10:42:46.799 INFO server/server.go:220 9µs           | [::1]:56746  
+2019-04-20 10:42:46.839 INFO server/server.go:151 resolver groups        | role 系统管理员        | user id %!s(uint64=4) 
+2019-04-20 10:42:46.901 INFO server/server.go:220 62.935ms      | [::1]:56746  
+2019-04-20 10:43:22.485 INFO server/server.go:220 10µs          | [::1]:56746  
+2019-04-20 10:43:22.519 INFO server/server.go:151 resolver groups        | role 系统管理员        | user id %!s(uint64=4) 
+2019-04-20 10:43:22.568 INFO server/server.go:220 48.962ms      | [::1]:56746  
+2019-04-20 11:02:22.379 INFO server/server.go:220 16µs          | [::1]:52277  
+2019-04-20 11:02:22.404 INFO server/server.go:151 resolver dashboard     | role 系统管理员        | user id %!s(uint64=4) 
+2019-04-20 11:02:22.422 INFO server/server.go:220 17.686ms      | [::1]:52277  
+2019-04-20 11:03:51.793 INFO server/server.go:220 10µs          | [::1]:52277  
+2019-04-20 11:03:51.811 INFO server/server.go:151 resolver dashboard     | role 系统管理员        | user id %!s(uint64=4) 
+2019-04-20 11:03:51.858 INFO server/server.go:220 46.988ms      | [::1]:52277  
+2019-04-20 11:04:06.762 INFO server/server.go:220 9µs           | [::1]:52277  
+2019-04-20 11:04:06.803 INFO server/server.go:151 resolver dashboard     | role 系统管理员        | user id %!s(uint64=4) 
+2019-04-20 11:04:06.819 INFO server/server.go:220 15.268ms      | [::1]:52277  
+2019-04-20 11:05:27.414 INFO server/server.go:220 10µs          | [::1]:52277  
+2019-04-20 11:05:27.457 INFO server/server.go:151 resolver dashboard     | role 系统管理员        | user id %!s(uint64=4) 
+2019-04-20 11:05:27.490 INFO server/server.go:220 32.281ms      | [::1]:52277  
+2019-04-20 11:06:47.795 INFO server/server.go:220 14µs          | [::1]:52277  
+2019-04-20 11:06:47.817 INFO server/server.go:151 resolver dashboard     | role 系统管理员        | user id %!s(uint64=4) 
+2019-04-20 11:06:47.836 INFO server/server.go:220 18.969ms      | [::1]:52277  
+2019-04-20 11:07:10.717 INFO server/server.go:220 11µs          | [::1]:52277  
+2019-04-20 11:07:10.752 INFO server/server.go:151 resolver dashboard     | role 系统管理员        | user id %!s(uint64=4) 
+2019-04-20 11:07:10.790 INFO server/server.go:220 39.081ms      | [::1]:52277  
+2019-04-20 11:07:40.597 INFO server/server.go:220 17µs          | [::1]:52277  
+2019-04-20 11:07:40.626 INFO server/server.go:151 resolver dashboard     | role 系统管理员        | user id %!s(uint64=4) 
+2019-04-20 11:07:40.642 INFO server/server.go:220 15.314ms      | [::1]:52277  
+2019-04-20 11:08:12.874 INFO server/server.go:220 12µs          | [::1]:52277  
+2019-04-20 11:08:12.909 INFO server/server.go:151 resolver dashboard     | role 系统管理员        | user id %!s(uint64=4) 
+2019-04-20 11:08:12.935 INFO server/server.go:220 26.232ms      | [::1]:52277  
+2019-04-20 11:08:58.050 INFO server/server.go:220 9µs           | [::1]:52277  
+2019-04-20 11:08:58.076 INFO server/server.go:151 resolver dashboard     | role 系统管理员        | user id %!s(uint64=4) 
+2019-04-20 11:08:58.092 INFO server/server.go:220 15.286ms      | [::1]:52277  
+2019-04-20 11:09:13.500 INFO server/server.go:220 9µs           | [::1]:52277  
+2019-04-20 11:09:13.528 INFO server/server.go:151 resolver dashboard     | role 系统管理员        | user id %!s(uint64=4) 
+2019-04-20 11:09:13.556 INFO server/server.go:220 27.867ms      | [::1]:52277  
+2019-04-20 11:47:08.196 INFO server/server.go:186 connect to http://localhost:8080/ for GraphQL playground
+2019-04-20 11:47:40.642 INFO server/server.go:186 connect to http://localhost:8080/ for GraphQL playground
+2019-04-20 11:47:57.136 INFO server/server.go:220 8.025ms       | [::1]:61134  
+2019-04-20 11:48:04.705 INFO server/server.go:151 resolver dashboard     | role              | user id %!s(uint64=0) 
+2019-04-20 11:48:04.717 INFO server/server.go:220 12.043ms      | [::1]:61134  
+2019-04-20 11:53:22.108 INFO server/server.go:186 connect to http://localhost:8080/ for GraphQL playground
+2019-04-20 11:53:25.045 INFO server/server.go:151 resolver dashboard     | role              | user id %!s(uint64=0) 
+2019-04-20 11:53:25.065 INFO server/server.go:220 20.225ms      | [::1]:64211  
+2019-04-20 11:54:24.349 INFO server/server.go:186 connect to http://localhost:8080/ for GraphQL playground
+2019-04-20 11:54:26.734 INFO server/server.go:151 resolver dashboard     | role              | user id %!s(uint64=0) 
+2019-04-20 11:54:26.754 INFO server/server.go:220 20.872ms      | [::1]:64886  
+2019-04-20 11:59:15.286 INFO server/server.go:186 connect to http://localhost:8080/ for GraphQL playground
+2019-04-20 11:59:18.442 INFO server/server.go:151 resolver dashboard     | role              | user id %!s(uint64=0) 
+2019-04-20 11:59:18.457 INFO server/server.go:220 15.289ms      | [::1]:51257  
+2019-04-20 11:59:48.037 INFO server/server.go:186 connect to http://localhost:8080/ for GraphQL playground
+2019-04-20 11:59:50.107 INFO server/server.go:151 resolver dashboard     | role              | user id %!s(uint64=0) 
+2019-04-20 11:59:50.120 INFO server/server.go:220 13.377ms      | [::1]:51668  
+2019-04-20 12:00:02.631 INFO server/server.go:220 9µs           | [::1]:51786  
+2019-04-20 12:00:02.667 INFO server/server.go:151 resolver groups        | role 系统管理员        | user id %!s(uint64=4) 
+2019-04-20 12:00:02.701 INFO server/server.go:220 34.579ms      | [::1]:51786  
+2019-04-20 12:00:06.006 INFO server/server.go:151 resolver groups        | role 系统管理员        | user id %!s(uint64=4) 
+2019-04-20 12:00:06.083 INFO server/server.go:220 77.347ms      | [::1]:51786  
+2019-04-20 12:00:07.526 INFO server/server.go:151 resolver tickets       | role 系统管理员        | user id %!s(uint64=4) 
+2019-04-20 12:00:07.527 INFO server/server.go:151 resolver ticketRecords | role 系统管理员        | user id %!s(uint64=4) 
+2019-04-20 12:00:07.534 INFO server/server.go:220 7.832ms       | [::1]:51786  
+2019-04-20 12:00:07.579 INFO server/server.go:220 52.057ms      | [::1]:51846  
+2019-04-20 12:00:12.082 INFO server/server.go:220 10µs          | [::1]:51846  
+2019-04-20 12:00:12.088 INFO server/server.go:151 resolver generateTickets | role 系统管理员        | user id %!s(uint64=4) 
+2019-04-20 12:00:12.106 INFO server/server.go:220 18.904ms      | [::1]:51846  
+2019-04-20 12:00:12.121 INFO server/server.go:151 resolver tickets       | role 系统管理员        | user id %!s(uint64=4) 
+2019-04-20 12:00:12.131 INFO server/server.go:220 10.05ms       | [::1]:51846  
+2019-04-20 12:00:16.746 INFO server/server.go:151 resolver dashboard     | role              | user id %!s(uint64=0) 
+2019-04-20 12:00:16.758 INFO server/server.go:220 12.013ms      | [::1]:51668  
+2019-04-20 12:00:40.484 INFO server/server.go:220 9µs           | [::1]:51846  
+2019-04-20 12:00:40.641 INFO server/server.go:151 resolver groups        | role 系统管理员        | user id %!s(uint64=4) 
+2019-04-20 12:00:40.751 INFO server/server.go:220 109.744ms     | [::1]:51846  
+2019-04-20 12:00:44.172 INFO server/server.go:151 resolver dashboard     | role 系统管理员        | user id %!s(uint64=4) 
+2019-04-20 12:00:44.217 INFO server/server.go:220 45.702ms      | [::1]:51846  
+2019-04-20 12:01:33.049 INFO server/server.go:220 7µs           | [::1]:51846  
+2019-04-20 12:01:33.075 INFO server/server.go:151 resolver dashboard     | role 系统管理员        | user id %!s(uint64=4) 
+2019-04-20 12:01:33.122 INFO server/server.go:220 47.156ms      | [::1]:51846  
+2019-04-20 12:02:15.046 INFO server/server.go:186 connect to http://localhost:8080/ for GraphQL playground
+2019-04-20 12:02:38.084 INFO server/server.go:220 40µs          | [::1]:53354  
+2019-04-20 12:02:38.115 INFO server/server.go:151 resolver dashboard     | role 系统管理员        | user id %!s(uint64=4) 
+2019-04-20 12:02:38.141 INFO server/server.go:220 25.506ms      | [::1]:53354  
+2019-04-20 12:04:10.795 INFO server/server.go:220 11µs          | [::1]:53354  
+2019-04-20 12:04:10.820 INFO server/server.go:151 resolver dashboard     | role 系统管理员        | user id %!s(uint64=4) 
+2019-04-20 12:04:10.842 INFO server/server.go:220 22.67ms       | [::1]:53354  
+2019-04-20 13:10:57.407 INFO server/server.go:220 8µs           | [::1]:57159  
+2019-04-20 13:10:57.427 INFO server/server.go:151 resolver dashboard     | role 系统管理员        | user id %!s(uint64=4) 
+2019-04-20 13:10:57.444 INFO server/server.go:220 17.218ms      | [::1]:57159  
+2019-04-20 13:11:29.379 INFO server/server.go:220 9µs           | [::1]:57159  
+2019-04-20 13:11:29.405 INFO server/server.go:151 resolver dashboard     | role 系统管理员        | user id %!s(uint64=4) 
+2019-04-20 13:11:29.435 INFO server/server.go:220 30.714ms      | [::1]:57159  
+2019-04-20 13:11:50.108 INFO server/server.go:220 9µs           | [::1]:57159  
+2019-04-20 13:11:50.129 INFO server/server.go:151 resolver dashboard     | role 系统管理员        | user id %!s(uint64=4) 
+2019-04-20 13:11:50.155 INFO server/server.go:220 26.328ms      | [::1]:57159  
+2019-04-20 13:12:15.632 INFO server/server.go:220 9µs           | [::1]:57159  
+2019-04-20 13:12:15.651 INFO server/server.go:151 resolver dashboard     | role 系统管理员        | user id %!s(uint64=4) 
+2019-04-20 13:12:15.670 INFO server/server.go:220 18.384ms      | [::1]:57159  
+2019-04-20 13:13:34.291 INFO server/server.go:220 9µs           | [::1]:57159  
+2019-04-20 13:13:34.326 INFO server/server.go:151 resolver dashboard     | role 系统管理员        | user id %!s(uint64=4) 
+2019-04-20 13:13:34.371 INFO server/server.go:220 44.967ms      | [::1]:57159  
+2019-04-20 13:15:27.641 INFO server/server.go:220 9µs           | [::1]:57159  
+2019-04-20 13:15:27.676 INFO server/server.go:151 resolver groups        | role 系统管理员        | user id %!s(uint64=4) 
+2019-04-20 13:15:27.700 INFO server/server.go:220 24.221ms      | [::1]:57159  
+2019-04-20 13:15:31.015 INFO server/server.go:151 resolver groups        | role 系统管理员        | user id %!s(uint64=4) 
+2019-04-20 13:15:31.018 INFO server/server.go:151 resolver canteens      | role 系统管理员        | user id %!s(uint64=4) 
+2019-04-20 13:15:31.062 INFO server/server.go:220 44.641ms      | [::1]:58896  
+2019-04-20 13:15:31.066 INFO server/server.go:220 51.045ms      | [::1]:57159  
+2019-04-20 13:15:35.923 INFO server/server.go:220 8µs           | [::1]:57159  
+2019-04-20 13:15:35.946 INFO server/server.go:151 resolver dashboard     | role 系统管理员        | user id %!s(uint64=4) 
+2019-04-20 13:15:35.967 INFO server/server.go:220 20.501ms      | [::1]:57159  
+2019-04-20 13:18:28.725 INFO server/server.go:220 9µs           | [::1]:57159  
+2019-04-20 13:18:28.780 INFO server/server.go:151 resolver dashboard     | role 系统管理员        | user id %!s(uint64=4) 
+2019-04-20 13:18:28.814 INFO server/server.go:220 33.755ms      | [::1]:57159  
+2019-04-20 13:19:33.499 INFO server/server.go:220 11µs          | [::1]:57159  
+2019-04-20 13:19:33.524 INFO server/server.go:151 resolver dashboard     | role 系统管理员        | user id %!s(uint64=4) 
+2019-04-20 13:19:33.551 INFO server/server.go:220 26.99ms       | [::1]:57159  
+2019-04-20 13:22:09.195 INFO server/server.go:220 32µs          | [::1]:57159  
+2019-04-20 13:22:09.217 INFO server/server.go:151 resolver dashboard     | role 系统管理员        | user id %!s(uint64=4) 
+2019-04-20 13:22:09.244 INFO server/server.go:220 26.589ms      | [::1]:57159  
+2019-04-20 13:22:37.636 INFO server/server.go:220 28µs          | [::1]:57159  
+2019-04-20 13:22:37.663 INFO server/server.go:151 resolver dashboard     | role 系统管理员        | user id %!s(uint64=4) 
+2019-04-20 13:22:37.688 INFO server/server.go:220 25.824ms      | [::1]:57159  
+2019-04-20 13:25:33.189 INFO server/server.go:220 10µs          | [::1]:57159  
+2019-04-20 13:25:33.229 INFO server/server.go:151 resolver dashboard     | role 系统管理员        | user id %!s(uint64=4) 
+2019-04-20 13:25:33.283 INFO server/server.go:220 54.012ms      | [::1]:57159  
+2019-04-20 13:25:44.155 INFO server/server.go:220 11µs          | [::1]:57159  
+2019-04-20 13:25:44.185 INFO server/server.go:151 resolver dashboard     | role 系统管理员        | user id %!s(uint64=4) 
+2019-04-20 13:25:44.214 INFO server/server.go:220 29.671ms      | [::1]:57159  
+2019-04-20 13:26:49.045 INFO server/server.go:220 9µs           | [::1]:57159  
+2019-04-20 13:26:49.079 INFO server/server.go:151 resolver dashboard     | role 系统管理员        | user id %!s(uint64=4) 
+2019-04-20 13:26:49.114 INFO server/server.go:220 34.997ms      | [::1]:57159  
+2019-04-20 13:27:09.954 INFO server/server.go:220 8µs           | [::1]:57159  
+2019-04-20 13:27:09.983 INFO server/server.go:151 resolver dashboard     | role 系统管理员        | user id %!s(uint64=4) 
+2019-04-20 13:27:10.018 INFO server/server.go:220 34.64ms       | [::1]:57159  
+2019-04-20 13:27:57.638 INFO server/server.go:220 10µs          | [::1]:57159  
+2019-04-20 13:27:57.663 INFO server/server.go:151 resolver dashboard     | role 系统管理员        | user id %!s(uint64=4) 
+2019-04-20 13:27:57.690 INFO server/server.go:220 26.653ms      | [::1]:57159  
+2019-04-20 13:29:00.740 INFO server/server.go:220 24µs          | [::1]:57159  
+2019-04-20 13:29:00.790 INFO server/server.go:151 resolver users         | role 系统管理员        | user id %!s(uint64=4) 
+2019-04-20 13:29:00.812 INFO server/server.go:220 22.328ms      | [::1]:57159  
+2019-04-20 13:29:11.646 INFO server/server.go:220 10µs          | [::1]:57159  
+2019-04-20 13:29:11.669 INFO server/server.go:151 resolver roles         | role 系统管理员        | user id %!s(uint64=4) 
+2019-04-20 13:29:11.683 INFO server/server.go:220 14.955ms      | [::1]:57159  
+2019-04-20 13:29:13.182 INFO server/server.go:151 resolver permissions   | role 系统管理员        | user id %!s(uint64=4) 
+2019-04-20 13:29:13.183 INFO server/server.go:220 1.45ms        | [::1]:57159  
+2019-04-20 13:29:23.084 INFO server/server.go:220 8µs           | [::1]:57159  
+2019-04-20 13:29:23.109 INFO server/server.go:151 resolver groups        | role 系统管理员        | user id %!s(uint64=4) 
+2019-04-20 13:29:23.141 INFO server/server.go:220 31.928ms      | [::1]:57159  
+2019-04-20 13:29:32.803 INFO server/server.go:220 8µs           | [::1]:57159  
+2019-04-20 13:29:32.839 INFO server/server.go:151 resolver groups        | role 系统管理员        | user id %!s(uint64=4) 
+2019-04-20 13:29:32.884 INFO server/server.go:220 45.485ms      | [::1]:57159  
+2019-04-20 13:29:34.958 INFO server/server.go:151 resolver tickets       | role 系统管理员        | user id %!s(uint64=4) 
+2019-04-20 13:29:34.959 INFO server/server.go:151 resolver ticketRecords | role 系统管理员        | user id %!s(uint64=4) 
+2019-04-20 13:29:34.965 INFO server/server.go:220 6.697ms       | [::1]:57159  
+2019-04-20 13:29:34.995 INFO server/server.go:220 36.819ms      | [::1]:65085  
+2019-04-20 19:44:35.342 INFO server/server.go:186 connect to http://localhost:8080/ for GraphQL playground
+2019-04-20 19:51:41.487 INFO server/server.go:220 4.578ms       | [::1]:50213  
+2019-04-20 22:09:35.506 INFO server/server.go:220 8µs           | [::1]:50887  
+2019-04-20 22:09:35.546 INFO server/server.go:151 resolver groups        | role 系统管理员        | user id %!s(uint64=4) 
+2019-04-20 22:09:35.586 INFO server/server.go:220 40.53ms       | [::1]:50887  
+2019-04-20 22:13:08.926 INFO server/server.go:220 10µs          | [::1]:50887  
+2019-04-20 22:13:08.955 INFO server/server.go:151 resolver users         | role 系统管理员        | user id %!s(uint64=4) 
+2019-04-20 22:13:08.986 INFO server/server.go:220 30.911ms      | [::1]:50887  
+2019-04-20 22:13:11.586 INFO server/server.go:151 resolver roles         | role 系统管理员        | user id %!s(uint64=4) 
+2019-04-20 22:13:11.606 INFO server/server.go:220 20.351ms      | [::1]:50887  
+2019-04-20 22:13:13.370 INFO server/server.go:151 resolver groups        | role 系统管理员        | user id %!s(uint64=4) 
+2019-04-20 22:13:13.405 INFO server/server.go:220 36.134ms      | [::1]:50887  
+2019-04-20 22:13:16.112 INFO server/server.go:220 10µs          | [::1]:50887  
+2019-04-20 22:13:16.146 INFO server/server.go:151 resolver groups        | role 系统管理员        | user id %!s(uint64=4) 
+2019-04-20 22:13:16.200 INFO server/server.go:220 53.347ms      | [::1]:50887  
+2019-04-20 22:15:37.990 INFO server/server.go:220 10µs          | [::1]:50887  
+2019-04-20 22:15:37.998 INFO server/server.go:151 resolver groups        | role 系统管理员        | user id %!s(uint64=4) 
+2019-04-20 22:15:38.029 INFO server/server.go:220 30.683ms      | [::1]:50887  
+2019-04-20 22:15:39.315 INFO server/server.go:151 resolver groups        | role 系统管理员        | user id %!s(uint64=4) 
+2019-04-20 22:15:39.345 INFO server/server.go:220 30.769ms      | [::1]:50887  
+2019-04-20 22:15:40.628 INFO server/server.go:151 resolver groups        | role 系统管理员        | user id %!s(uint64=4) 
+2019-04-20 22:15:40.658 INFO server/server.go:220 30.709ms      | [::1]:50887  
+2019-04-20 22:15:41.938 INFO server/server.go:151 resolver groups        | role 系统管理员        | user id %!s(uint64=4) 
+2019-04-20 22:15:41.969 INFO server/server.go:220 31.728ms      | [::1]:50887  
+2019-04-20 22:49:57.638 INFO server/server.go:220 9µs           | [::1]:51263  
+2019-04-20 22:49:57.696 INFO server/server.go:151 resolver groups        | role 系统管理员        | user id %!s(uint64=4) 
+2019-04-20 22:49:57.747 INFO server/server.go:220 51.191ms      | [::1]:51263  
+2019-04-20 22:50:02.300 INFO server/server.go:151 resolver groups        | role 系统管理员        | user id %!s(uint64=4) 
+2019-04-20 22:50:02.391 INFO server/server.go:220 90.993ms      | [::1]:51263  
+2019-04-20 22:50:49.924 INFO server/server.go:220 9µs           | [::1]:51263  
+2019-04-20 22:50:49.973 INFO server/server.go:151 resolver groups        | role 系统管理员        | user id %!s(uint64=4) 
+2019-04-20 22:50:50.024 INFO server/server.go:220 50.901ms      | [::1]:51263  
+2019-04-20 22:54:31.165 INFO server/server.go:220 11µs          | [::1]:51263  
+2019-04-20 22:54:31.207 INFO server/server.go:151 resolver groups        | role 系统管理员        | user id %!s(uint64=4) 
+2019-04-20 22:54:31.261 INFO server/server.go:220 54.328ms      | [::1]:51263  
+2019-04-20 22:56:40.131 INFO server/server.go:220 22µs          | [::1]:51263  
+2019-04-20 22:56:40.171 INFO server/server.go:151 resolver groups        | role 系统管理员        | user id %!s(uint64=4) 
+2019-04-20 22:56:40.221 INFO server/server.go:220 50.218ms      | [::1]:51263  
+2019-04-20 22:58:32.432 INFO server/server.go:220 12µs          | [::1]:51263  
+2019-04-20 22:58:32.480 INFO server/server.go:151 resolver groups        | role 系统管理员        | user id %!s(uint64=4) 
+2019-04-20 22:58:32.536 INFO server/server.go:220 55.972ms      | [::1]:51263  
+2019-04-20 23:00:54.659 INFO server/server.go:220 9µs           | [::1]:51263  
+2019-04-20 23:00:54.711 INFO server/server.go:151 resolver groups        | role 系统管理员        | user id %!s(uint64=4) 
+2019-04-20 23:00:54.761 INFO server/server.go:220 49.879ms      | [::1]:51263  
+2019-04-20 23:02:00.822 INFO server/server.go:220 10µs          | [::1]:51263  
+2019-04-20 23:02:00.863 INFO server/server.go:151 resolver groups        | role 系统管理员        | user id %!s(uint64=4) 
+2019-04-20 23:02:00.908 INFO server/server.go:220 45.565ms      | [::1]:51263  
+2019-04-20 23:02:19.007 INFO server/server.go:220 8µs           | [::1]:51263  
+2019-04-20 23:02:19.040 INFO server/server.go:151 resolver groups        | role 系统管理员        | user id %!s(uint64=4) 
+2019-04-20 23:02:19.152 INFO server/server.go:220 112.286ms     | [::1]:51263  
+2019-04-20 23:02:20.999 INFO server/server.go:151 resolver groups        | role 系统管理员        | user id %!s(uint64=4) 
+2019-04-20 23:02:21.053 INFO server/server.go:220 53.38ms       | [::1]:51263  
+2019-04-20 23:04:04.440 INFO server/server.go:220 10µs          | [::1]:51263  
+2019-04-20 23:04:04.474 INFO server/server.go:151 resolver groups        | role 系统管理员        | user id %!s(uint64=4) 
+2019-04-20 23:04:04.531 INFO server/server.go:220 57.952ms      | [::1]:51263  
+2019-04-20 23:07:19.831 INFO server/server.go:220 9µs           | [::1]:51263  
+2019-04-20 23:07:19.900 INFO server/server.go:151 resolver groups        | role 系统管理员        | user id %!s(uint64=4) 
+2019-04-20 23:07:19.936 INFO server/server.go:220 36.844ms      | [::1]:51263  
+2019-04-20 23:07:51.903 INFO server/server.go:220 24µs          | [::1]:51263  
+2019-04-20 23:07:51.943 INFO server/server.go:151 resolver groups        | role 系统管理员        | user id %!s(uint64=4) 
+2019-04-20 23:07:52.008 INFO server/server.go:220 64.929ms      | [::1]:51263  
+2019-04-20 23:08:58.654 INFO server/server.go:220 10µs          | [::1]:51263  
+2019-04-20 23:08:58.694 INFO server/server.go:151 resolver groups        | role 系统管理员        | user id %!s(uint64=4) 
+2019-04-20 23:08:58.753 INFO server/server.go:220 59.618ms      | [::1]:51263  
+2019-04-20 23:11:15.042 INFO server/server.go:220 10µs          | [::1]:51263  
+2019-04-20 23:11:15.074 INFO server/server.go:151 resolver groups        | role 系统管理员        | user id %!s(uint64=4) 
+2019-04-20 23:11:15.101 INFO server/server.go:220 26.836ms      | [::1]:51263  
+2019-04-20 23:11:44.250 INFO server/server.go:220 9µs           | [::1]:51263  
+2019-04-20 23:11:44.287 INFO server/server.go:151 resolver groups        | role 系统管理员        | user id %!s(uint64=4) 
+2019-04-20 23:11:44.318 INFO server/server.go:220 31.341ms      | [::1]:51263  
+2019-04-20 23:11:51.031 INFO server/server.go:220 11µs          | [::1]:51263  
+2019-04-20 23:11:51.076 INFO server/server.go:151 resolver groups        | role 系统管理员        | user id %!s(uint64=4) 
+2019-04-20 23:11:51.132 INFO server/server.go:220 56.712ms      | [::1]:51263  
+2019-04-20 23:12:07.335 INFO server/server.go:220 10µs          | [::1]:51263  
+2019-04-20 23:12:07.348 INFO server/server.go:151 resolver groups        | role 系统管理员        | user id %!s(uint64=4) 
+2019-04-20 23:12:07.390 INFO server/server.go:220 41.794ms      | [::1]:51263  
+2019-04-20 23:12:29.969 INFO server/server.go:220 9µs           | [::1]:51263  
+2019-04-20 23:12:30.010 INFO server/server.go:151 resolver groups        | role 系统管理员        | user id %!s(uint64=4) 
+2019-04-20 23:12:30.055 INFO server/server.go:220 45.207ms      | [::1]:51263  
+2019-04-20 23:15:14.686 INFO server/server.go:220 10µs          | [::1]:51263  
+2019-04-20 23:15:14.734 INFO server/server.go:151 resolver groups        | role 系统管理员        | user id %!s(uint64=4) 
+2019-04-20 23:15:14.773 INFO server/server.go:220 38.893ms      | [::1]:51263  
+2019-04-20 23:16:42.541 INFO server/server.go:220 11µs          | [::1]:51263  
+2019-04-20 23:16:42.594 INFO server/server.go:151 resolver groups        | role 系统管理员        | user id %!s(uint64=4) 
+2019-04-20 23:16:42.641 INFO server/server.go:220 47.544ms      | [::1]:51263  
+2019-04-20 23:24:13.085 INFO server/server.go:220 12µs          | [::1]:54700  
+2019-04-20 23:24:13.123 INFO server/server.go:151 resolver groups        | role 系统管理员        | user id %!s(uint64=4) 
+2019-04-20 23:24:13.155 INFO server/server.go:220 32.553ms      | [::1]:54700  
+2019-04-20 23:24:35.186 INFO server/server.go:220 32µs          | [::1]:54700  
+2019-04-20 23:24:35.246 INFO server/server.go:151 resolver groups        | role 系统管理员        | user id %!s(uint64=4) 
+2019-04-20 23:24:35.295 INFO server/server.go:220 49.828ms      | [::1]:54700  
+2019-04-20 23:25:33.715 INFO server/server.go:220 9µs           | [::1]:54700  
+2019-04-20 23:25:33.757 INFO server/server.go:151 resolver groups        | role 系统管理员        | user id %!s(uint64=4) 
+2019-04-20 23:25:33.801 INFO server/server.go:220 44.047ms      | [::1]:54700  
+2019-04-20 23:30:07.353 INFO server/server.go:220 10µs          | [::1]:54700  
+2019-04-20 23:30:07.400 INFO server/server.go:151 resolver groups        | role 系统管理员        | user id %!s(uint64=4) 
+2019-04-20 23:30:07.443 INFO server/server.go:220 43.88ms       | [::1]:54700  
+2019-04-20 23:30:45.078 INFO server/server.go:220 10µs          | [::1]:54700  
+2019-04-20 23:30:45.121 INFO server/server.go:151 resolver groups        | role 系统管理员        | user id %!s(uint64=4) 
+2019-04-20 23:30:45.171 INFO server/server.go:220 49.873ms      | [::1]:54700  
+2019-04-20 23:44:08.762 INFO server/server.go:220 28µs          | [::1]:59756  
+2019-04-20 23:44:08.802 INFO server/server.go:151 resolver groups        | role 系统管理员        | user id %!s(uint64=4) 
+2019-04-20 23:44:08.847 INFO server/server.go:220 45.026ms      | [::1]:59756  
+2019-04-20 23:44:49.685 INFO server/server.go:220 24µs          | [::1]:59756  
+2019-04-20 23:44:49.722 INFO server/server.go:151 resolver groups        | role 系统管理员        | user id %!s(uint64=4) 
+2019-04-20 23:44:49.765 INFO server/server.go:220 43.248ms      | [::1]:59756  
+2019-04-20 23:46:56.017 INFO server/server.go:220 22µs          | [::1]:59756  
+2019-04-20 23:46:56.056 INFO server/server.go:151 resolver groups        | role 系统管理员        | user id %!s(uint64=4) 
+2019-04-20 23:46:56.105 INFO server/server.go:220 49.324ms      | [::1]:59756  
+2019-04-20 23:47:27.291 INFO server/server.go:220 10µs          | [::1]:59756  
+2019-04-20 23:47:27.341 INFO server/server.go:151 resolver groups        | role 系统管理员        | user id %!s(uint64=4) 
+2019-04-20 23:47:27.405 INFO server/server.go:220 64.689ms      | [::1]:59756  
+2019-04-20 23:48:29.950 INFO server/server.go:220 9µs           | [::1]:59756  
+2019-04-20 23:48:29.984 INFO server/server.go:151 resolver groups        | role 系统管理员        | user id %!s(uint64=4) 
+2019-04-20 23:48:30.040 INFO server/server.go:220 56.386ms      | [::1]:59756  
+2019-04-20 23:49:09.162 INFO server/server.go:220 9µs           | [::1]:59756  
+2019-04-20 23:49:09.214 INFO server/server.go:151 resolver groups        | role 系统管理员        | user id %!s(uint64=4) 
+2019-04-20 23:49:09.265 INFO server/server.go:220 51.289ms      | [::1]:59756  
+2019-04-20 23:53:00.485 INFO server/server.go:220 10µs          | [::1]:59756  
+2019-04-20 23:53:00.513 INFO server/server.go:151 resolver groups        | role 系统管理员        | user id %!s(uint64=4) 
+2019-04-20 23:53:00.549 INFO server/server.go:220 36.25ms       | [::1]:59756  
+2019-04-20 23:56:18.731 INFO server/server.go:220 11µs          | [::1]:59756  
+2019-04-20 23:56:18.766 INFO server/server.go:151 resolver groups        | role 系统管理员        | user id %!s(uint64=4) 
+2019-04-20 23:56:18.813 INFO server/server.go:220 47.27ms       | [::1]:59756  
+2019-04-20 23:56:54.474 INFO server/server.go:220 9µs           | [::1]:59756  
+2019-04-20 23:56:54.524 INFO server/server.go:151 resolver groups        | role 系统管理员        | user id %!s(uint64=4) 
+2019-04-20 23:56:54.570 INFO server/server.go:220 45.991ms      | [::1]:59756  
+2019-04-20 23:58:05.319 INFO server/server.go:220 12µs          | [::1]:59756  
+2019-04-20 23:58:05.368 INFO server/server.go:151 resolver groups        | role 系统管理员        | user id %!s(uint64=4) 
+2019-04-20 23:58:05.407 INFO server/server.go:220 39.709ms      | [::1]:59756  
+2019-04-20 23:58:26.115 INFO server/server.go:220 22µs          | [::1]:59756  
+2019-04-20 23:58:26.152 INFO server/server.go:151 resolver groups        | role 系统管理员        | user id %!s(uint64=4) 
+2019-04-20 23:58:26.196 INFO server/server.go:220 44.21ms       | [::1]:59756  
+2019-04-20 23:58:34.183 INFO server/server.go:220 10µs          | [::1]:59756  
+2019-04-20 23:58:34.192 INFO server/server.go:151 resolver updateUser    | role 系统管理员        | user id %!s(uint64=4) 
+2019-04-20 23:58:34.205 INFO server/server.go:220 13.606ms      | [::1]:59756  
+2019-04-20 23:58:44.823 INFO server/server.go:220 9µs           | [::1]:59756  
+2019-04-20 23:58:44.916 INFO server/server.go:220 89.214ms      | [::1]:59756  
+2019-04-20 23:58:49.260 INFO server/server.go:220 109.509ms     | [::1]:59756  
+2019-04-20 23:58:50.789 INFO server/server.go:220 15µs          | [::1]:59756  
+2019-04-20 23:58:50.814 INFO server/server.go:151 resolver dashboard     | role 系统管理员        | user id %!s(uint64=4) 
+2019-04-20 23:58:50.841 INFO server/server.go:220 27.26ms       | [::1]:59756  
+2019-04-21 00:01:51.082 INFO server/server.go:220 11µs          | [::1]:59756  
+2019-04-21 00:01:51.094 INFO server/server.go:151 resolver dashboard     | role 系统管理员        | user id %!s(uint64=4) 
+2019-04-21 00:01:51.113 INFO server/server.go:220 19.451ms      | [::1]:59756  
+2019-04-21 00:01:57.006 INFO server/server.go:220 9µs           | [::1]:59756  
+2019-04-21 00:01:57.036 INFO server/server.go:151 resolver dashboard     | role 系统管理员        | user id %!s(uint64=4) 
+2019-04-21 00:01:57.081 INFO server/server.go:220 45.142ms      | [::1]:59756  
+2019-04-21 00:02:05.961 INFO server/server.go:220 9µs           | [::1]:59756  
+2019-04-21 00:02:05.972 INFO server/server.go:151 resolver updateUser    | role 系统管理员        | user id %!s(uint64=4) 
+2019-04-21 00:02:06.058 INFO server/server.go:220 86.448ms      | [::1]:59756  
+2019-04-21 00:02:14.795 INFO server/server.go:220 11µs          | [::1]:59756  
+2019-04-21 00:02:14.912 INFO server/server.go:220 111.043ms     | [::1]:59756  
+2019-04-21 00:02:16.397 INFO server/server.go:151 resolver dashboard     | role 系统管理员        | user id %!s(uint64=4) 
+2019-04-21 00:02:16.426 INFO server/server.go:220 29.677ms      | [::1]:59756  
+2019-04-21 00:03:13.501 INFO server/server.go:220 10µs          | [::1]:59756  
+2019-04-21 00:03:13.526 INFO server/server.go:151 resolver dashboard     | role 系统管理员        | user id %!s(uint64=4) 
+2019-04-21 00:03:13.565 INFO server/server.go:220 38.738ms      | [::1]:59756  
+2019-04-21 00:03:21.039 INFO server/server.go:220 8µs           | [::1]:59756  
+2019-04-21 00:03:21.062 INFO server/server.go:151 resolver dashboard     | role 系统管理员        | user id %!s(uint64=4) 
+2019-04-21 00:03:21.089 INFO server/server.go:220 27.181ms      | [::1]:59756  
+2019-04-21 00:03:24.746 INFO server/server.go:151 resolver dashboard     | role 系统管理员        | user id %!s(uint64=4) 
+2019-04-21 00:03:24.771 INFO server/server.go:220 24.822ms      | [::1]:59756  
+2019-04-21 00:03:55.054 INFO server/server.go:220 10µs          | [::1]:59756  
+2019-04-21 00:03:55.082 INFO server/server.go:151 resolver dashboard     | role 系统管理员        | user id %!s(uint64=4) 
+2019-04-21 00:03:55.125 INFO server/server.go:220 43.663ms      | [::1]:59756  
+2019-04-21 00:05:00.112 INFO server/server.go:220 21µs          | [::1]:65060  
+2019-04-21 00:05:00.115 INFO server/server.go:220 61µs          | [::1]:65060  
+2019-04-21 00:05:07.825 INFO server/server.go:220 23µs          | [::1]:65060  
+2019-04-21 00:05:07.827 INFO server/server.go:220 61µs          | [::1]:65060  
+2019-04-21 00:05:20.296 INFO server/server.go:220 8µs           | [::1]:65060  
+2019-04-21 00:05:20.299 INFO server/server.go:220 73µs          | [::1]:65060  
+2019-04-21 00:05:24.269 INFO server/server.go:220 8µs           | [::1]:59756  
+2019-04-21 00:05:24.315 INFO server/server.go:151 resolver users         | role 系统管理员        | user id %!s(uint64=4) 
+2019-04-21 00:05:24.347 INFO server/server.go:220 31.416ms      | [::1]:59756  
+2019-04-21 00:05:27.087 INFO server/server.go:151 resolver resetPassword | role 系统管理员        | user id %!s(uint64=4) 
+2019-04-21 00:05:27.169 INFO server/server.go:220 82.997ms      | [::1]:59756  
+2019-04-21 00:05:38.083 INFO server/server.go:220 9µs           | [::1]:65060  
+2019-04-21 00:05:38.086 INFO server/server.go:220 64µs          | [::1]:65060  
+2019-04-21 00:05:50.477 INFO server/server.go:220 9µs           | [::1]:65060  
+2019-04-21 00:05:50.480 INFO server/server.go:220 119µs         | [::1]:65060  
+2019-04-21 00:06:13.486 INFO server/server.go:220 10µs          | [::1]:59756  
+2019-04-21 00:06:13.514 INFO server/server.go:151 resolver roles         | role 系统管理员        | user id %!s(uint64=4) 
+2019-04-21 00:06:13.532 INFO server/server.go:220 17.293ms      | [::1]:59756  
+2019-04-21 00:06:15.244 INFO server/server.go:151 resolver permissions   | role 系统管理员        | user id %!s(uint64=4) 
+2019-04-21 00:06:15.245 INFO server/server.go:220 1.463ms       | [::1]:59756  
+2019-04-21 00:06:17.039 INFO server/server.go:151 resolver roles         | role 系统管理员        | user id %!s(uint64=4) 
+2019-04-21 00:06:17.079 INFO server/server.go:220 40.778ms      | [::1]:59756  
+2019-04-21 00:06:23.814 INFO server/server.go:220 7µs           | [::1]:59756  
+2019-04-21 00:06:23.844 INFO server/server.go:151 resolver users         | role 系统管理员        | user id %!s(uint64=4) 
+2019-04-21 00:06:23.879 INFO server/server.go:220 35.086ms      | [::1]:59756  
+2019-04-21 00:06:28.165 INFO server/server.go:151 resolver users         | role 系统管理员        | user id %!s(uint64=4) 
+2019-04-21 00:06:28.179 INFO server/server.go:220 13.966ms      | [::1]:59756  
+2019-04-21 00:06:28.209 INFO server/server.go:151 resolver users         | role 系统管理员        | user id %!s(uint64=4) 
+2019-04-21 00:06:28.227 INFO server/server.go:220 18.498ms      | [::1]:59756  
+2019-04-21 00:06:28.396 INFO server/server.go:151 resolver users         | role 系统管理员        | user id %!s(uint64=4) 
+2019-04-21 00:06:28.409 INFO server/server.go:220 12.699ms      | [::1]:59756  
+2019-04-21 00:06:28.602 INFO server/server.go:151 resolver users         | role 系统管理员        | user id %!s(uint64=4) 
+2019-04-21 00:06:28.614 INFO server/server.go:220 12.624ms      | [::1]:59756  
+2019-04-21 00:06:28.667 INFO server/server.go:151 resolver users         | role 系统管理员        | user id %!s(uint64=4) 
+2019-04-21 00:06:28.682 INFO server/server.go:220 15.744ms      | [::1]:59756  
+2019-04-21 00:06:28.764 INFO server/server.go:151 resolver users         | role 系统管理员        | user id %!s(uint64=4) 
+2019-04-21 00:06:28.777 INFO server/server.go:220 13.509ms      | [::1]:59756  
+2019-04-21 00:06:30.709 INFO server/server.go:220 9µs           | [::1]:59756  
+2019-04-21 00:06:30.715 INFO server/server.go:151 resolver resetPassword | role 系统管理员        | user id %!s(uint64=4) 
+2019-04-21 00:06:30.798 INFO server/server.go:220 83.267ms      | [::1]:59756  
+2019-04-21 00:06:40.740 INFO server/server.go:220 10µs          | [::1]:65060  
+2019-04-21 00:06:40.743 INFO server/server.go:220 89µs          | [::1]:65060  
+2019-04-21 00:06:44.162 INFO server/server.go:220 88µs          | [::1]:65060  
+2019-04-21 00:06:44.800 INFO server/server.go:220 83µs          | [::1]:65060  
+2019-04-21 00:06:44.969 INFO server/server.go:220 52µs          | [::1]:65060  
+2019-04-21 00:06:45.130 INFO server/server.go:220 73µs          | [::1]:65060  
+2019-04-21 00:06:54.955 INFO server/server.go:220 8µs           | [::1]:65060  
+2019-04-21 00:06:54.958 INFO server/server.go:220 76µs          | [::1]:65060  
+2019-04-21 00:07:54.752 INFO server/server.go:186 connect to http://localhost:8080/ for GraphQL playground
+2019-04-21 00:08:24.578 INFO server/server.go:220 6.164ms       | [::1]:65330  
+2019-04-21 00:09:08.733 INFO server/server.go:220 95.073ms      | [::1]:65330  
+2019-04-21 00:11:00.460 INFO server/server.go:220 10µs          | [::1]:49211  
+2019-04-21 00:11:00.513 INFO server/server.go:151 resolver users         | role 系统管理员        | user id %!s(uint64=4) 
+2019-04-21 00:11:00.543 INFO server/server.go:220 30.07ms       | [::1]:49211  
+2019-04-21 00:11:34.184 INFO server/server.go:220 10µs          | [::1]:49211  
+2019-04-21 00:11:34.219 INFO server/server.go:151 resolver users         | role 系统管理员        | user id %!s(uint64=4) 
+2019-04-21 00:11:34.235 INFO server/server.go:220 16.338ms      | [::1]:49211  
+2019-04-21 00:13:48.422 INFO server/server.go:220 10µs          | [::1]:49211  
+2019-04-21 00:13:48.474 INFO server/server.go:151 resolver users         | role 系统管理员        | user id %!s(uint64=4) 
+2019-04-21 00:13:48.497 INFO server/server.go:220 22.958ms      | [::1]:49211  
+2019-04-21 00:13:52.899 INFO server/server.go:151 resolver users         | role 系统管理员        | user id %!s(uint64=4) 
+2019-04-21 00:13:52.910 INFO server/server.go:220 11.166ms      | [::1]:49211  
+2019-04-21 00:14:34.122 INFO server/server.go:220 23µs          | [::1]:49211  
+2019-04-21 00:14:34.149 INFO server/server.go:151 resolver users         | role 系统管理员        | user id %!s(uint64=4) 
+2019-04-21 00:14:34.159 INFO server/server.go:220 10.349ms      | [::1]:49211  
+2019-04-21 00:14:47.866 INFO server/server.go:220 9µs           | [::1]:49211  
+2019-04-21 00:14:47.902 INFO server/server.go:151 resolver users         | role 系统管理员        | user id %!s(uint64=4) 
+2019-04-21 00:14:47.925 INFO server/server.go:220 23.386ms      | [::1]:49211  
+2019-04-21 00:15:23.268 INFO server/server.go:220 11µs          | [::1]:49211  
+2019-04-21 00:15:23.305 INFO server/server.go:151 resolver users         | role 系统管理员        | user id %!s(uint64=4) 
+2019-04-21 00:15:23.318 INFO server/server.go:220 12.285ms      | [::1]:49211  
+2019-04-21 00:15:46.214 INFO server/server.go:220 8µs           | [::1]:49211  
+2019-04-21 00:15:46.242 INFO server/server.go:151 resolver users         | role 系统管理员        | user id %!s(uint64=4) 
+2019-04-21 00:15:46.253 INFO server/server.go:220 11.094ms      | [::1]:49211  
+2019-04-21 00:16:26.065 INFO server/server.go:220 11µs          | [::1]:49211  
+2019-04-21 00:16:26.123 INFO server/server.go:151 resolver users         | role 系统管理员        | user id %!s(uint64=4) 
+2019-04-21 00:16:26.140 INFO server/server.go:220 17.456ms      | [::1]:49211  
+2019-04-21 00:16:46.131 INFO server/server.go:220 10µs          | [::1]:49211  
+2019-04-21 00:16:46.174 INFO server/server.go:151 resolver users         | role 系统管理员        | user id %!s(uint64=4) 
+2019-04-21 00:16:46.186 INFO server/server.go:220 12.299ms      | [::1]:49211  
+2019-04-21 00:16:53.828 INFO server/server.go:220 12µs          | [::1]:50967  
+2019-04-21 00:16:53.939 INFO server/server.go:220 109.035ms     | [::1]:50967  
+2019-04-21 00:16:55.100 INFO server/server.go:151 resolver dashboard     | role 普通用户         | user id %!s(uint64=18) 
+2019-04-21 00:16:55.127 INFO server/server.go:220 27.416ms      | [::1]:50967  
+2019-04-21 00:17:03.994 INFO server/server.go:220 11µs          | [::1]:50967  
+2019-04-21 00:17:04.025 INFO server/server.go:151 resolver users         | role 普通用户         | user id %!s(uint64=18) 
+2019-04-21 00:17:04.054 INFO server/server.go:220 29.384ms      | [::1]:50967  
+2019-04-21 00:17:07.947 INFO server/server.go:151 resolver roles         | role 普通用户         | user id %!s(uint64=18) 
+2019-04-21 00:17:07.978 INFO server/server.go:220 30.91ms       | [::1]:50967  
+2019-04-21 00:17:10.702 INFO server/server.go:220 10µs          | [::1]:50967  
+2019-04-21 00:17:10.717 INFO server/server.go:151 resolver groups        | role 普通用户         | user id %!s(uint64=18) 
+2019-04-21 00:17:10.741 INFO server/server.go:220 24.081ms      | [::1]:50967  
+2019-04-21 00:17:14.014 INFO server/server.go:151 resolver users         | role 普通用户         | user id %!s(uint64=18) 
+2019-04-21 00:17:14.033 INFO server/server.go:220 19.46ms       | [::1]:50967  
+2019-04-21 00:19:13.403 INFO server/server.go:186 connect to http://localhost:8080/ for GraphQL playground
+2019-04-21 00:20:20.061 INFO server/server.go:220 6.58ms        | [::1]:51969  
+2019-04-21 00:20:21.697 INFO server/server.go:220 5.074ms       | [::1]:51969  
+2019-04-21 00:21:14.367 INFO server/server.go:220 8µs           | [::1]:52222  
+2019-04-21 00:21:14.397 INFO server/server.go:151 resolver users         | role 系统管理员        | user id %!s(uint64=4) 
+2019-04-21 00:21:14.426 INFO server/server.go:220 29.523ms      | [::1]:52222  
+2019-04-21 00:23:28.727 INFO server/server.go:186 connect to http://localhost:8080/ for GraphQL playground
+2019-04-21 00:23:33.328 INFO server/server.go:220 6.978ms       | [::1]:52930  
+2019-04-21 00:23:35.170 INFO server/server.go:220 6.535ms       | [::1]:52930  
+2019-04-21 00:23:40.916 INFO server/server.go:220 15.666ms      | [::1]:52930  
+2019-04-21 00:23:44.085 INFO server/server.go:220 15µs          | [::1]:52997  
+2019-04-21 00:23:44.129 INFO server/server.go:151 resolver users         | role 系统管理员        | user id %!s(uint64=4) 
+2019-04-21 00:23:44.156 INFO server/server.go:220 27.3ms        | [::1]:52997  
+2019-04-21 00:23:46.006 INFO server/server.go:151 resolver dashboard     | role 系统管理员        | user id %!s(uint64=4) 
+2019-04-21 00:23:46.040 INFO server/server.go:220 34.396ms      | [::1]:52997  
+2019-04-21 00:23:59.163 INFO server/server.go:220 31µs          | [::1]:53078  
+2019-04-21 00:23:59.278 INFO server/server.go:220 111.805ms     | [::1]:53078  
+2019-04-21 00:24:00.437 INFO server/server.go:151 resolver dashboard     | role 系统管理员        | user id %!s(uint64=2) 
+2019-04-21 00:24:00.462 INFO server/server.go:220 24.709ms      | [::1]:53078  
+2019-04-21 00:24:08.401 INFO server/server.go:220 10µs          | [::1]:52997  
+2019-04-21 00:24:08.421 INFO server/server.go:151 resolver dashboard     | role 系统管理员        | user id %!s(uint64=4) 
+2019-04-21 00:24:08.445 INFO server/server.go:220 23.931ms      | [::1]:52997  
+2019-04-21 00:24:10.723 INFO server/server.go:151 resolver dashboard     | role 系统管理员        | user id %!s(uint64=4) 
+2019-04-21 00:24:10.760 INFO server/server.go:220 36.768ms      | [::1]:52997  
+2019-04-21 00:24:12.615 INFO server/server.go:151 resolver dashboard     | role 系统管理员        | user id %!s(uint64=4) 
+2019-04-21 00:24:12.647 INFO server/server.go:220 32.281ms      | [::1]:52997  
+2019-04-21 00:24:19.360 INFO server/server.go:220 12µs          | [::1]:53078  
+2019-04-21 00:24:19.467 INFO server/server.go:220 104.152ms     | [::1]:53078  
+2019-04-21 00:24:20.616 INFO server/server.go:151 resolver dashboard     | role 系统管理员        | user id %!s(uint64=2) 
+2019-04-21 00:24:20.641 INFO server/server.go:220 25.98ms       | [::1]:53078  
+2019-04-21 00:24:23.553 INFO server/server.go:151 resolver dashboard     | role 系统管理员        | user id %!s(uint64=2) 
+2019-04-21 00:24:23.575 INFO server/server.go:220 22.811ms      | [::1]:53078  
+2019-04-21 00:26:17.914 INFO server/server.go:220 12µs          | [::1]:52997  
+2019-04-21 00:26:17.953 INFO server/server.go:151 resolver dashboard     | role 系统管理员        | user id %!s(uint64=4) 
+2019-04-21 00:26:17.996 INFO server/server.go:220 42.993ms      | [::1]:52997  
+2019-04-21 00:26:18.387 INFO server/server.go:220 9µs           | [::1]:53078  
+2019-04-21 00:26:18.398 INFO server/server.go:151 resolver dashboard     | role 系统管理员        | user id %!s(uint64=2) 
+2019-04-21 00:26:18.432 INFO server/server.go:220 34.165ms      | [::1]:53078  
+2019-04-21 00:28:54.247 INFO server/server.go:220 10µs          | [::1]:52997  
+2019-04-21 00:28:54.281 INFO server/server.go:151 resolver dashboard     | role 系统管理员        | user id %!s(uint64=4) 
+2019-04-21 00:28:54.303 INFO server/server.go:220 22.538ms      | [::1]:52997  
+2019-04-21 00:28:54.795 INFO server/server.go:220 10µs          | [::1]:53078  
+2019-04-21 00:28:54.804 INFO server/server.go:151 resolver dashboard     | role 系统管理员        | user id %!s(uint64=2) 
+2019-04-21 00:28:54.822 INFO server/server.go:220 18.23ms       | [::1]:53078  
+2019-04-21 00:29:02.244 INFO server/server.go:220 10µs          | [::1]:53078  
+2019-04-21 00:29:02.253 INFO server/server.go:151 resolver dashboard     | role 系统管理员        | user id %!s(uint64=2) 
+2019-04-21 00:29:02.276 INFO server/server.go:220 23.682ms      | [::1]:53078  
+2019-04-21 00:29:05.222 INFO server/server.go:220 133µs         | [::1]:53078  
+2019-04-21 00:29:36.218 INFO server/server.go:220 10µs          | [::1]:52997  
+2019-04-21 00:29:36.242 INFO server/server.go:151 resolver dashboard     | role 系统管理员        | user id %!s(uint64=4) 
+2019-04-21 00:29:36.271 INFO server/server.go:220 29.578ms      | [::1]:52997  
+2019-04-21 00:29:36.474 INFO server/server.go:220 8µs           | [::1]:53078  
+2019-04-21 00:29:36.482 INFO server/server.go:151 resolver dashboard     | role 系统管理员        | user id %!s(uint64=2) 
+2019-04-21 00:29:36.504 INFO server/server.go:220 22.11ms       | [::1]:53078  
+2019-04-21 00:29:38.270 INFO server/server.go:220 102µs         | [::1]:53078  
+2019-04-21 00:30:06.785 INFO server/server.go:220 9µs           | [::1]:52997  
+2019-04-21 00:30:06.815 INFO server/server.go:151 resolver dashboard     | role 系统管理员        | user id %!s(uint64=4) 
+2019-04-21 00:30:06.837 INFO server/server.go:220 22.759ms      | [::1]:52997  
+2019-04-21 00:30:07.042 INFO server/server.go:220 9µs           | [::1]:53078  
+2019-04-21 00:30:07.050 INFO server/server.go:151 resolver dashboard     | role 系统管理员        | user id %!s(uint64=2) 
+2019-04-21 00:30:07.072 INFO server/server.go:220 21.759ms      | [::1]:53078  
+2019-04-21 00:30:09.889 INFO server/server.go:220 19.498ms      | [::1]:53078  
+2019-04-21 00:30:15.734 INFO server/server.go:220 8µs           | [::1]:52997  
+2019-04-21 00:30:15.756 INFO server/server.go:151 resolver dashboard     | role 系统管理员        | user id %!s(uint64=4) 
+2019-04-21 00:30:15.784 INFO server/server.go:220 27.891ms      | [::1]:52997  

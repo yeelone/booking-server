@@ -17,15 +17,15 @@ models:
     model: booking/models.User
   Group:
     model: booking/models.Group
-  Dictionary:
-    model: booking/models.Dictionary
   Role:
     model: booking/models.Role
-  Book:
-    model: booking/models.Book
-  Author:
-    model: booking/models.Author
-  Chapter:
-    model: booking/models.Chapter
-  Phrase:
-    model: booking/models.Phrase
+  Dishes:
+    model: booking/models.Dishes
+  Ticket:
+    model: booking/models.Ticket
+  Canteen:
+    model: booking/models.Canteen
+  Booking:
+    model: booking/models.Booking
+  TicketRecord:
+    model: booking/models.TicketRecord

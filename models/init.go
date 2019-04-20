@@ -1,6 +1,9 @@
 package models
+
 import (
+	"booking/util"
 	"fmt"
+	"github.com/boltdb/bolt"
 
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/postgres"
@@ -8,12 +11,17 @@ import (
 )
 
 type Database struct {
-	Self   *gorm.DB
+	Self  *gorm.DB
+	Cache *bolt.DB
 }
 
 var DB *Database
 
 var TableNames = map[string]string{"Profile": "tb_profile", "Template": "tb_template"}
+
+const Login_Record_BoltDB_Key = "login_record"
+const CURRENTUSERID = "CURRENTUSERID"
+const CLIENT_IP = "Client_IP"
 
 func openDB(username, password, addr, name string) *gorm.DB {
 
@@ -54,10 +62,17 @@ func GetSelfDB() *gorm.DB {
 	return InitSelfDB()
 }
 
+func GetCacheDB() *bolt.DB {
+	db, _ := bolt.Open("db/cache.db", 0600, nil)
+	return db
+
+}
+
 //Init :
 func (db *Database) Init() {
 	DB = &Database{
-		Self: GetSelfDB(),
+		Self:  GetSelfDB(),
+		Cache: GetCacheDB(),
 	}
 
 	initTable()
@@ -67,17 +82,84 @@ func (db *Database) Init() {
 //Close :
 func (db *Database) Close() {
 	DB.Self.Close()
+	DB.Cache.Close()
 }
 
 //InitDatabaseTable :
 func initTable() {
-	var chapter Chapter
 	var user User
 	var group Group
 	var role Role
-	var book Book
-	var phrase Phrase
-	var author Author
-	var dict   Dictionary
-	DB.Self.AutoMigrate(&dict,&author, &book, &chapter, &phrase, &user,&group,&role)
+	var ticket Ticket
+	var dishes Dishes
+	var canteen Canteen
+	var booking Booking
+	var record TicketRecord
+	DB.Self.AutoMigrate(&record, &ticket, &dishes, &user, &group, &role, &canteen, &booking)
+
+	initAdmin()
+}
+
+//initAdmin: 初始化管理员账号
+func initAdmin() {
+	u := User{}
+	//查看账号是否存在
+	email := viper.GetString("admin.email")
+	err := DB.Self.Where("email = ?", email).First(&u).Error
+
+	if err != nil {
+		u.Email = email
+		u.Username = viper.GetString("admin.username")
+		u.IDCard = "000000"
+		u.Password = viper.GetString("admin.password")
+		u.Save()
+	}
+
+	r := Role{}
+	//查看账号是否存在
+	organization := viper.GetString("role.organization")
+	err = DB.Self.Where("name = ?", organization).First(&r).Error
+
+	if err != nil {
+		r.Name = organization
+		r.Create()
+	}
+
+	r = Role{}
+	//查看账号是否存在
+	system := viper.GetString("role.system")
+	err = DB.Self.Where("name = ?", system).First(&r).Error
+
+	if err != nil {
+		r.Name = system
+		r.Create()
+	}
+	uids := make([]uint64, 1)
+	uids[0] = u.ID
+
+	if result, _ := CheckUsersNotInRole(r.ID, uids); len(result) > 0 {
+		fmt.Println("result", util.PrettyJson(result))
+		AddRoleUsers(r.ID, uids)
+	}
+
+	r = Role{}
+	//查看账号是否存在
+	canteen := viper.GetString("role.canteen")
+	err = DB.Self.Where("name = ?", canteen).First(&r).Error
+
+	if err != nil {
+		r.Name = canteen
+		r.Create()
+	}
+
+	r = Role{}
+	//查看账号是否存在
+	normal := viper.GetString("role.normal")
+	err = DB.Self.Where("name = ?", normal).First(&r).Error
+
+	if err != nil {
+		r.Name = normal
+		r.Create()
+	}
+
 }
