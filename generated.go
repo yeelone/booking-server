@@ -36,6 +36,7 @@ type ResolverRoot interface {
 	Canteen() CanteenResolver
 	Dishes() DishesResolver
 	Group() GroupResolver
+	Message() MessageResolver
 	Mutation() MutationResolver
 	Query() QueryResolver
 	Role() RoleResolver
@@ -53,6 +54,7 @@ type DirectiveRoot struct {
 
 type ComplexityRoot struct {
 	Booking struct {
+		Id        func(childComplexity int) int
 		UserId    func(childComplexity int) int
 		CanteenId func(childComplexity int) int
 		Type      func(childComplexity int) int
@@ -80,7 +82,9 @@ type ComplexityRoot struct {
 		UpdatedAt                func(childComplexity int) int
 		DeletedAt                func(childComplexity int) int
 		Qrcode                   func(childComplexity int) int
+		QrcodeUuid               func(childComplexity int) int
 		Count                    func(childComplexity int) int
+		Admin                    func(childComplexity int) int
 	}
 
 	CanteenCount struct {
@@ -131,6 +135,14 @@ type ComplexityRoot struct {
 		User        func(childComplexity int) int
 	}
 
+	Message struct {
+		Id        func(childComplexity int) int
+		Text      func(childComplexity int) int
+		CreatedBy func(childComplexity int) int
+		CreatedAt func(childComplexity int) int
+		Error     func(childComplexity int) int
+	}
+
 	Mutation struct {
 		Login                               func(childComplexity int, input LoginInput) int
 		Logout                              func(childComplexity int, input LogoutInput) int
@@ -160,6 +172,7 @@ type ComplexityRoot struct {
 		CreateQrcode                        func(childComplexity int, input CanteenQrcodeInput) int
 		CancelBooking                       func(childComplexity int, input CancelBookingInput) int
 		Booking                             func(childComplexity int, input BookingInput) int
+		Spend                               func(childComplexity int, input SpendInput) int
 	}
 
 	OrgDashboard struct {
@@ -268,7 +281,7 @@ type ComplexityRoot struct {
 	}
 
 	Subscription struct {
-		MessageAdded func(childComplexity int, roomName string) int
+		MessageAdded func(childComplexity int, roomName string, adminId int) int
 	}
 
 	SystemInfo struct {
@@ -304,25 +317,28 @@ type ComplexityRoot struct {
 	}
 
 	User struct {
-		Id        func(childComplexity int) int
-		Email     func(childComplexity int) int
-		Username  func(childComplexity int) int
-		Nickname  func(childComplexity int) int
-		IdCard    func(childComplexity int) int
-		Password  func(childComplexity int) int
-		IsSuper   func(childComplexity int) int
-		Picture   func(childComplexity int) int
-		State     func(childComplexity int) int
-		CreatedAt func(childComplexity int) int
-		UpdatedAt func(childComplexity int) int
-		DeletedAt func(childComplexity int) int
-		Groups    func(childComplexity int, pagination *Pagination) int
-		Roles     func(childComplexity int, pagination *Pagination) int
-		Tickets   func(childComplexity int, pagination *Pagination, filter *TicketFilterInput) int
+		Id         func(childComplexity int) int
+		Email      func(childComplexity int) int
+		Username   func(childComplexity int) int
+		Nickname   func(childComplexity int) int
+		IdCard     func(childComplexity int) int
+		Password   func(childComplexity int) int
+		IsSuper    func(childComplexity int) int
+		Picture    func(childComplexity int) int
+		State      func(childComplexity int) int
+		CreatedAt  func(childComplexity int) int
+		UpdatedAt  func(childComplexity int) int
+		DeletedAt  func(childComplexity int) int
+		Qrcode     func(childComplexity int) int
+		QrcodeUuid func(childComplexity int) int
+		Groups     func(childComplexity int, pagination *Pagination) int
+		Roles      func(childComplexity int, pagination *Pagination) int
+		Tickets    func(childComplexity int, pagination *Pagination, filter *TicketFilterInput) int
 	}
 }
 
 type BookingResolver interface {
+	ID(ctx context.Context, obj *models.Booking) (string, error)
 	UserID(ctx context.Context, obj *models.Booking) (int, error)
 	CanteenID(ctx context.Context, obj *models.Booking) (int, error)
 	Type(ctx context.Context, obj *models.Booking) (string, error)
@@ -341,6 +357,7 @@ type CanteenResolver interface {
 	DeletedAt(ctx context.Context, obj *models.Canteen) (string, error)
 
 	Count(ctx context.Context, obj *models.Canteen) ([]CanteenCount, error)
+	Admin(ctx context.Context, obj *models.Canteen) (models.User, error)
 }
 type DishesResolver interface {
 	ID(ctx context.Context, obj *models.Dishes) (string, error)
@@ -361,6 +378,11 @@ type GroupResolver interface {
 	DeletedAt(ctx context.Context, obj *models.Group) (string, error)
 	Users(ctx context.Context, obj *models.Group, filter *UserFilterInput, pagination *Pagination) (QueryUserResponse, error)
 	Canteens(ctx context.Context, obj *models.Group, filter *CanteenFilterInput, pagination *Pagination) (QueryCanteenResponse, error)
+}
+type MessageResolver interface {
+	ID(ctx context.Context, obj *models.Message) (string, error)
+
+	CreatedAt(ctx context.Context, obj *models.Message) (string, error)
 }
 type MutationResolver interface {
 	Login(ctx context.Context, input LoginInput) (LoginResponse, error)
@@ -391,6 +413,7 @@ type MutationResolver interface {
 	CreateQrcode(ctx context.Context, input CanteenQrcodeInput) (string, error)
 	CancelBooking(ctx context.Context, input CancelBookingInput) (bool, error)
 	Booking(ctx context.Context, input BookingInput) (bool, error)
+	Spend(ctx context.Context, input SpendInput) (bool, error)
 }
 type QueryResolver interface {
 	Groups(ctx context.Context, filter *GroupFilterInput, pagination *Pagination, orderBy *GroupOrderByInput) (QueryGroupResponse, error)
@@ -415,7 +438,7 @@ type RoleResolver interface {
 	Users(ctx context.Context, obj *models.Role, filter *UserFilterInput, pagination *Pagination) (QueryUserResponse, error)
 }
 type SubscriptionResolver interface {
-	MessageAdded(ctx context.Context, roomName string) (<-chan string, error)
+	MessageAdded(ctx context.Context, roomName string, adminId int) (<-chan models.Message, error)
 }
 type TicketResolver interface {
 	ID(ctx context.Context, obj *models.Ticket) (string, error)
@@ -440,6 +463,7 @@ type UserResolver interface {
 	CreatedAt(ctx context.Context, obj *models.User) (string, error)
 	UpdatedAt(ctx context.Context, obj *models.User) (string, error)
 	DeletedAt(ctx context.Context, obj *models.User) (string, error)
+
 	Groups(ctx context.Context, obj *models.User, pagination *Pagination) (QueryGroupResponse, error)
 	Roles(ctx context.Context, obj *models.User, pagination *Pagination) (QueryRoleResponse, error)
 	Tickets(ctx context.Context, obj *models.User, pagination *Pagination, filter *TicketFilterInput) (QueryTicketResponse, error)
@@ -933,6 +957,21 @@ func field_Mutation_booking_args(rawArgs map[string]interface{}) (map[string]int
 
 }
 
+func field_Mutation_spend_args(rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	args := map[string]interface{}{}
+	var arg0 SpendInput
+	if tmp, ok := rawArgs["input"]; ok {
+		var err error
+		arg0, err = UnmarshalSpendInput(tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+
+}
+
 func field_Query_groups_args(rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	args := map[string]interface{}{}
 	var arg0 *GroupFilterInput
@@ -1300,6 +1339,15 @@ func field_Subscription_messageAdded_args(rawArgs map[string]interface{}) (map[s
 		}
 	}
 	args["roomName"] = arg0
+	var arg1 int
+	if tmp, ok := rawArgs["adminId"]; ok {
+		var err error
+		arg1, err = graphql.UnmarshalInt(tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["adminId"] = arg1
 	return args, nil
 
 }
@@ -1450,6 +1498,13 @@ func (e *executableSchema) Schema() *ast.Schema {
 
 func (e *executableSchema) Complexity(typeName, field string, childComplexity int, rawArgs map[string]interface{}) (int, bool) {
 	switch typeName + "." + field {
+
+	case "Booking.id":
+		if e.complexity.Booking.Id == nil {
+			break
+		}
+
+		return e.complexity.Booking.Id(childComplexity), true
 
 	case "Booking.userId":
 		if e.complexity.Booking.UserId == nil {
@@ -1619,12 +1674,26 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Canteen.Qrcode(childComplexity), true
 
+	case "Canteen.qrcodeUuid":
+		if e.complexity.Canteen.QrcodeUuid == nil {
+			break
+		}
+
+		return e.complexity.Canteen.QrcodeUuid(childComplexity), true
+
 	case "Canteen.count":
 		if e.complexity.Canteen.Count == nil {
 			break
 		}
 
 		return e.complexity.Canteen.Count(childComplexity), true
+
+	case "Canteen.admin":
+		if e.complexity.Canteen.Admin == nil {
+			break
+		}
+
+		return e.complexity.Canteen.Admin(childComplexity), true
 
 	case "CanteenCount.date":
 		if e.complexity.CanteenCount.Date == nil {
@@ -1845,6 +1914,41 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.LoginResponse.User(childComplexity), true
+
+	case "Message.id":
+		if e.complexity.Message.Id == nil {
+			break
+		}
+
+		return e.complexity.Message.Id(childComplexity), true
+
+	case "Message.text":
+		if e.complexity.Message.Text == nil {
+			break
+		}
+
+		return e.complexity.Message.Text(childComplexity), true
+
+	case "Message.createdBy":
+		if e.complexity.Message.CreatedBy == nil {
+			break
+		}
+
+		return e.complexity.Message.CreatedBy(childComplexity), true
+
+	case "Message.createdAt":
+		if e.complexity.Message.CreatedAt == nil {
+			break
+		}
+
+		return e.complexity.Message.CreatedAt(childComplexity), true
+
+	case "Message.error":
+		if e.complexity.Message.Error == nil {
+			break
+		}
+
+		return e.complexity.Message.Error(childComplexity), true
 
 	case "Mutation.login":
 		if e.complexity.Mutation.Login == nil {
@@ -2181,6 +2285,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Mutation.Booking(childComplexity, args["input"].(BookingInput)), true
+
+	case "Mutation.spend":
+		if e.complexity.Mutation.Spend == nil {
+			break
+		}
+
+		args, err := field_Mutation_spend_args(rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.Spend(childComplexity, args["input"].(SpendInput)), true
 
 	case "OrgDashboard.name":
 		if e.complexity.OrgDashboard.Name == nil {
@@ -2709,7 +2825,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Subscription.MessageAdded(childComplexity, args["roomName"].(string)), true
+		return e.complexity.Subscription.MessageAdded(childComplexity, args["roomName"].(string), args["adminId"].(int)), true
 
 	case "SystemInfo.currentLoginCount":
 		if e.complexity.SystemInfo.CurrentLoginCount == nil {
@@ -2935,6 +3051,20 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.User.DeletedAt(childComplexity), true
 
+	case "User.qrcode":
+		if e.complexity.User.Qrcode == nil {
+			break
+		}
+
+		return e.complexity.User.Qrcode(childComplexity), true
+
+	case "User.qrcodeUuid":
+		if e.complexity.User.QrcodeUuid == nil {
+			break
+		}
+
+		return e.complexity.User.QrcodeUuid(childComplexity), true
+
 	case "User.groups":
 		if e.complexity.User.Groups == nil {
 			break
@@ -3061,6 +3191,15 @@ func (ec *executionContext) _Booking(ctx context.Context, sel ast.SelectionSet, 
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Booking")
+		case "id":
+			wg.Add(1)
+			go func(i int, field graphql.CollectedField) {
+				out.Values[i] = ec._Booking_id(ctx, field, obj)
+				if out.Values[i] == graphql.Null {
+					invalid = true
+				}
+				wg.Done()
+			}(i, field)
 		case "userId":
 			wg.Add(1)
 			go func(i int, field graphql.CollectedField) {
@@ -3133,6 +3272,33 @@ func (ec *executionContext) _Booking(ctx context.Context, sel ast.SelectionSet, 
 		return graphql.Null
 	}
 	return out
+}
+
+// nolint: vetshadow
+func (ec *executionContext) _Booking_id(ctx context.Context, field graphql.CollectedField, obj *models.Booking) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object: "Booking",
+		Args:   nil,
+		Field:  field,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Booking().ID(rctx, obj)
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return graphql.MarshalID(res)
 }
 
 // nolint: vetshadow
@@ -3435,10 +3601,24 @@ func (ec *executionContext) _Canteen(ctx context.Context, sel ast.SelectionSet, 
 			if out.Values[i] == graphql.Null {
 				invalid = true
 			}
+		case "qrcodeUuid":
+			out.Values[i] = ec._Canteen_qrcodeUuid(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalid = true
+			}
 		case "count":
 			wg.Add(1)
 			go func(i int, field graphql.CollectedField) {
 				out.Values[i] = ec._Canteen_count(ctx, field, obj)
+				wg.Done()
+			}(i, field)
+		case "admin":
+			wg.Add(1)
+			go func(i int, field graphql.CollectedField) {
+				out.Values[i] = ec._Canteen_admin(ctx, field, obj)
+				if out.Values[i] == graphql.Null {
+					invalid = true
+				}
 				wg.Done()
 			}(i, field)
 		default:
@@ -3903,6 +4083,33 @@ func (ec *executionContext) _Canteen_qrcode(ctx context.Context, field graphql.C
 }
 
 // nolint: vetshadow
+func (ec *executionContext) _Canteen_qrcodeUuid(ctx context.Context, field graphql.CollectedField, obj *models.Canteen) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object: "Canteen",
+		Args:   nil,
+		Field:  field,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.QrcodeUUID, nil
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return graphql.MarshalString(res)
+}
+
+// nolint: vetshadow
 func (ec *executionContext) _Canteen_count(ctx context.Context, field graphql.CollectedField, obj *models.Canteen) graphql.Marshaler {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
@@ -3957,6 +4164,34 @@ func (ec *executionContext) _Canteen_count(ctx context.Context, field graphql.Co
 	}
 	wg.Wait()
 	return arr1
+}
+
+// nolint: vetshadow
+func (ec *executionContext) _Canteen_admin(ctx context.Context, field graphql.CollectedField, obj *models.Canteen) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object: "Canteen",
+		Args:   nil,
+		Field:  field,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Canteen().Admin(rctx, obj)
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(models.User)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+
+	return ec._User(ctx, field.Selections, &res)
 }
 
 var canteenCountImplementors = []string{"CanteenCount"}
@@ -5185,6 +5420,201 @@ func (ec *executionContext) _LoginResponse_user(ctx context.Context, field graph
 	return ec._User(ctx, field.Selections, &res)
 }
 
+var messageImplementors = []string{"Message"}
+
+// nolint: gocyclo, errcheck, gas, goconst
+func (ec *executionContext) _Message(ctx context.Context, sel ast.SelectionSet, obj *models.Message) graphql.Marshaler {
+	fields := graphql.CollectFields(ctx, sel, messageImplementors)
+
+	var wg sync.WaitGroup
+	out := graphql.NewOrderedMap(len(fields))
+	invalid := false
+	for i, field := range fields {
+		out.Keys[i] = field.Alias
+
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("Message")
+		case "id":
+			wg.Add(1)
+			go func(i int, field graphql.CollectedField) {
+				out.Values[i] = ec._Message_id(ctx, field, obj)
+				if out.Values[i] == graphql.Null {
+					invalid = true
+				}
+				wg.Done()
+			}(i, field)
+		case "text":
+			out.Values[i] = ec._Message_text(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalid = true
+			}
+		case "createdBy":
+			out.Values[i] = ec._Message_createdBy(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalid = true
+			}
+		case "createdAt":
+			wg.Add(1)
+			go func(i int, field graphql.CollectedField) {
+				out.Values[i] = ec._Message_createdAt(ctx, field, obj)
+				if out.Values[i] == graphql.Null {
+					invalid = true
+				}
+				wg.Done()
+			}(i, field)
+		case "error":
+			out.Values[i] = ec._Message_error(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalid = true
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	wg.Wait()
+	if invalid {
+		return graphql.Null
+	}
+	return out
+}
+
+// nolint: vetshadow
+func (ec *executionContext) _Message_id(ctx context.Context, field graphql.CollectedField, obj *models.Message) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object: "Message",
+		Args:   nil,
+		Field:  field,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Message().ID(rctx, obj)
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return graphql.MarshalID(res)
+}
+
+// nolint: vetshadow
+func (ec *executionContext) _Message_text(ctx context.Context, field graphql.CollectedField, obj *models.Message) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object: "Message",
+		Args:   nil,
+		Field:  field,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Text, nil
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return graphql.MarshalString(res)
+}
+
+// nolint: vetshadow
+func (ec *executionContext) _Message_createdBy(ctx context.Context, field graphql.CollectedField, obj *models.Message) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object: "Message",
+		Args:   nil,
+		Field:  field,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.CreatedBy, nil
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(models.User)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+
+	return ec._User(ctx, field.Selections, &res)
+}
+
+// nolint: vetshadow
+func (ec *executionContext) _Message_createdAt(ctx context.Context, field graphql.CollectedField, obj *models.Message) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object: "Message",
+		Args:   nil,
+		Field:  field,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Message().CreatedAt(rctx, obj)
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return graphql.MarshalString(res)
+}
+
+// nolint: vetshadow
+func (ec *executionContext) _Message_error(ctx context.Context, field graphql.CollectedField, obj *models.Message) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object: "Message",
+		Args:   nil,
+		Field:  field,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Error, nil
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return graphql.MarshalBoolean(res)
+}
+
 var mutationImplementors = []string{"Mutation"}
 
 // nolint: gocyclo, errcheck, gas, goconst
@@ -5340,6 +5770,11 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			}
 		case "booking":
 			out.Values[i] = ec._Mutation_booking(ctx, field)
+			if out.Values[i] == graphql.Null {
+				invalid = true
+			}
+		case "spend":
+			out.Values[i] = ec._Mutation_spend(ctx, field)
 			if out.Values[i] == graphql.Null {
 				invalid = true
 			}
@@ -6278,6 +6713,39 @@ func (ec *executionContext) _Mutation_booking(ctx context.Context, field graphql
 	resTmp := ec.FieldMiddleware(ctx, nil, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
 		return ec.resolvers.Mutation().Booking(rctx, args["input"].(BookingInput))
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return graphql.MarshalBoolean(res)
+}
+
+// nolint: vetshadow
+func (ec *executionContext) _Mutation_spend(ctx context.Context, field graphql.CollectedField) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := field_Mutation_spend_args(rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	rctx := &graphql.ResolverContext{
+		Object: "Mutation",
+		Args:   args,
+		Field:  field,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, nil, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().Spend(rctx, args["input"].(SpendInput))
 	})
 	if resTmp == nil {
 		if !ec.HasError(rctx) {
@@ -9232,7 +9700,7 @@ func (ec *executionContext) _Subscription_messageAdded(ctx context.Context, fiel
 	// FIXME: subscriptions are missing request middleware stack https://github.com/99designs/gqlgen/issues/259
 	//          and Tracer stack
 	rctx := ctx
-	results, err := ec.resolvers.Subscription().MessageAdded(rctx, args["roomName"].(string))
+	results, err := ec.resolvers.Subscription().MessageAdded(rctx, args["roomName"].(string), args["adminId"].(int))
 	if err != nil {
 		ec.Error(ctx, err)
 		return nil
@@ -9243,7 +9711,9 @@ func (ec *executionContext) _Subscription_messageAdded(ctx context.Context, fiel
 			return nil
 		}
 		var out graphql.OrderedMap
-		out.Add(field.Alias, func() graphql.Marshaler { return graphql.MarshalString(res) }())
+		out.Add(field.Alias, func() graphql.Marshaler {
+			return ec._Message(ctx, field.Selections, &res)
+		}())
 		return &out
 	}
 }
@@ -10119,6 +10589,16 @@ func (ec *executionContext) _User(ctx context.Context, sel ast.SelectionSet, obj
 				}
 				wg.Done()
 			}(i, field)
+		case "qrcode":
+			out.Values[i] = ec._User_qrcode(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalid = true
+			}
+		case "qrcodeUuid":
+			out.Values[i] = ec._User_qrcodeUuid(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalid = true
+			}
 		case "groups":
 			wg.Add(1)
 			go func(i int, field graphql.CollectedField) {
@@ -10468,6 +10948,60 @@ func (ec *executionContext) _User_deletedAt(ctx context.Context, field graphql.C
 	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
 		return ec.resolvers.User().DeletedAt(rctx, obj)
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return graphql.MarshalString(res)
+}
+
+// nolint: vetshadow
+func (ec *executionContext) _User_qrcode(ctx context.Context, field graphql.CollectedField, obj *models.User) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object: "User",
+		Args:   nil,
+		Field:  field,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Qrcode, nil
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return graphql.MarshalString(res)
+}
+
+// nolint: vetshadow
+func (ec *executionContext) _User_qrcodeUuid(ctx context.Context, field graphql.CollectedField, obj *models.User) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object: "User",
+		Args:   nil,
+		Field:  field,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.QrcodeUUID, nil
 	})
 	if resTmp == nil {
 		if !ec.HasError(rctx) {
@@ -12148,6 +12682,17 @@ func UnmarshalCanteenFilterInput(v interface{}) (CanteenFilterInput, error) {
 			if err != nil {
 				return it, err
 			}
+		case "adminID":
+			var err error
+			var ptr1 int
+			if v != nil {
+				ptr1, err = graphql.UnmarshalInt(v)
+				it.AdminID = &ptr1
+			}
+
+			if err != nil {
+				return it, err
+			}
 		}
 	}
 
@@ -12448,6 +12993,12 @@ func UnmarshalNewCanteen(v interface{}) (NewCanteen, error) {
 		case "cancelTime":
 			var err error
 			it.CancelTime, err = graphql.UnmarshalInt(v)
+			if err != nil {
+				return it, err
+			}
+		case "adminId":
+			var err error
+			it.AdminID, err = graphql.UnmarshalInt(v)
 			if err != nil {
 				return it, err
 			}
@@ -12909,6 +13460,36 @@ func UnmarshalRoleFilterInput(v interface{}) (RoleFilterInput, error) {
 	return it, nil
 }
 
+func UnmarshalSpendInput(v interface{}) (SpendInput, error) {
+	var it SpendInput
+	var asMap = v.(map[string]interface{})
+
+	for k, v := range asMap {
+		switch k {
+		case "canteenId":
+			var err error
+			it.CanteenID, err = graphql.UnmarshalInt(v)
+			if err != nil {
+				return it, err
+			}
+		case "userId":
+			var err error
+			it.UserID, err = graphql.UnmarshalInt(v)
+			if err != nil {
+				return it, err
+			}
+		case "uuid":
+			var err error
+			it.UUID, err = graphql.UnmarshalString(v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
 func UnmarshalTicketFilterInput(v interface{}) (TicketFilterInput, error) {
 	var it TicketFilterInput
 	var asMap = v.(map[string]interface{})
@@ -13003,6 +13584,12 @@ func UnmarshalTransferTicketInput(v interface{}) (TransferTicketInput, error) {
 		case "number":
 			var err error
 			it.Number, err = graphql.UnmarshalInt(v)
+			if err != nil {
+				return it, err
+			}
+		case "type":
+			var err error
+			it.Type, err = graphql.UnmarshalString(v)
 			if err != nil {
 				return it, err
 			}
@@ -13163,6 +13750,17 @@ func UnmarshalUpdateCanteenInput(v interface{}) (UpdateCanteenInput, error) {
 			if v != nil {
 				ptr1, err = graphql.UnmarshalInt(v)
 				it.CancelTime = &ptr1
+			}
+
+			if err != nil {
+				return it, err
+			}
+		case "adminId":
+			var err error
+			var ptr1 int
+			if v != nil {
+				ptr1, err = graphql.UnmarshalInt(v)
+				it.AdminID = &ptr1
 			}
 
 			if err != nil {
@@ -13439,6 +14037,17 @@ func UnmarshalUpdateUserInput(v interface{}) (UpdateUserInput, error) {
 			if err != nil {
 				return it, err
 			}
+		case "re_gen_qrcode":
+			var err error
+			var ptr1 bool
+			if v != nil {
+				ptr1, err = graphql.UnmarshalBoolean(v)
+				it.ReGenQrcode = &ptr1
+			}
+
+			if err != nil {
+				return it, err
+			}
 		}
 	}
 
@@ -13690,6 +14299,8 @@ type User {
     createdAt: String!
     updatedAt: String!
     deletedAt: String!
+    qrcode: String!
+    qrcodeUuid: String!
     groups(pagination: Pagination):QueryGroupResponse!
     roles(pagination: Pagination):QueryRoleResponse!
     tickets(pagination: Pagination,filter:TicketFilterInput):QueryTicketResponse!
@@ -13718,6 +14329,7 @@ type Group {
 }
 
 type Booking {
+    id:ID!
     userId:Int!
     canteenId:Int!
     type:String!
@@ -13836,7 +14448,9 @@ type Canteen {
     updatedAt: String!
     deletedAt: String!
     qrcode: String!
+    qrcodeUuid: String!
     count: [CanteenCount!]
+    admin: User!
 }
 
 type QueryCanteenResponse{
@@ -13850,6 +14464,7 @@ input CanteenFilterInput {
     id: Int
     name:String
     groupID: Int
+    adminID: Int
 }
 
 type Role {
@@ -13991,6 +14606,7 @@ input UpdateUserInput {
     is_super: Boolean
     picture: String
     state: Int
+    re_gen_qrcode:Boolean
 }
 
 input NewGroup {
@@ -14016,6 +14632,7 @@ input NewCanteen {
     dinnerPicture: String
     bookingDinnerDeadline: String!
     cancelTime:Int!
+    adminId: Int!
 }
 
 input GenarateTicketInput {
@@ -14027,6 +14644,7 @@ input GenarateTicketInput {
 
 input TransferTicketInput {
     number: Int!
+    type: String!
     fromUserId: Int!
     toUserId: Int!
 }
@@ -14060,6 +14678,7 @@ input UpdateCanteenInput {
     dinnerPicture: String
     bookingDinnerDeadline: String
     cancelTime:Int
+    adminId: Int
 }
 
 input NewRole {
@@ -14148,6 +14767,13 @@ input CanteenQrcodeInput{
     id: Int!
 }
 
+
+input SpendInput{
+    canteenId:Int!
+    userId:Int!
+    uuid:String!
+}
+
 type Mutation {
     login(input:LoginInput!):LoginResponse!
     logout(input:LogoutInput!):Boolean!
@@ -14185,10 +14811,19 @@ type Mutation {
 
     cancelBooking(input:cancelBookingInput!): Boolean! @hasRole(resolver: "cancelBooking") @needLogin(resolver: "cancelBooking")
     booking(input:BookingInput!): Boolean! @hasRole(resolver: "createBooking") @needLogin(resolver: "createBooking")
+    spend(input:SpendInput!): Boolean! @hasRole(resolver: "spend") @needLogin(resolver: "spend")
+}
+
+type Message {
+    id: ID!
+    text: String!
+    createdBy: User!
+    createdAt: String!
+    error: Boolean!
 }
 
 type Subscription {
-    messageAdded(roomName: String!): String!
+    messageAdded(roomName: String!,adminId: Int!):  Message!
 }
 `},
 )

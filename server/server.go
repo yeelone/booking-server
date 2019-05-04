@@ -10,6 +10,7 @@ import (
 	v "booking/pkg/version"
 	"booking/resolvers"
 	"booking/util"
+	"bytes"
 	"context"
 	"crypto/sha1"
 	"encoding/json"
@@ -22,9 +23,9 @@ import (
 	"github.com/parnurzeal/gorequest"
 	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
+	"io/ioutil"
 	"math/rand"
 	"net/http"
-	"net/url"
 	"os"
 	"strconv"
 	"time"
@@ -148,7 +149,7 @@ func main() {
 
 		ctx = context.WithValue(ctx, "user_id", c.ID)
 
-		log.Infof("resolver %-13s | role %-12s | user id %s ", resolver, c.Role, c.ID )
+		log.Infof("resolver %-13s | role %-12s | user id %s ", resolver, c.Role, c.ID)
 
 		if DEBUG {
 			return next(ctx)
@@ -167,7 +168,11 @@ func main() {
 
 	fs2 := http.FileServer(http.Dir("assets/"))
 	fs3 := http.FileServer(http.Dir("download/"))
-	http.Handle("/playground", handler.Playground("GraphQL playground", "/query"))
+
+	if DEBUG {
+		http.Handle("/playground", handler.Playground("GraphQL playground", "/query"))
+	}
+
 	http.Handle("/upload/", enableCORS(http.StripPrefix("/upload/", fs)))
 	http.Handle("/assets/", enableCORS(http.StripPrefix("/assets/", fs2)))
 	http.Handle("/download/", enableCORS(http.StripPrefix("/download/", fs3)))
@@ -175,7 +180,6 @@ func main() {
 	//	//http.Handle("/login", Login())
 	http.Handle("/query", enableCORS(jwtMiddleware(handler.GraphQL(booking.NewExecutableSchema(c), handler.WebsocketUpgrader(websocket.Upgrader{
 		CheckOrigin: func(r *http.Request) bool {
-			fmt.Println("wss")
 			return true
 		},
 	})))))
@@ -251,13 +255,25 @@ func Upload() http.HandlerFunc {
 //signHandler 异步处理微信签名
 func signHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		r.ParseForm()
+		type urlStruct struct {
+			Url string
+		}
+
+		wxURL := urlStruct{}
+		result, err := ioutil.ReadAll(r.Body)
+		if err != nil {
+		} else {
+			err := json.Unmarshal(bytes.NewBuffer(result).Bytes(), &wxURL)
+			if err != nil {
+				fmt.Println(err.Error())
+			}
+		}
+
 		if r.Method == "POST" {
 			wxNoncestr := RandStringRunes(32)
-			wxURL, _ := url.QueryUnescape(r.FormValue("url"))
-			wxURL = "http://jd96138.com/user"
+			fmt.Println("url.QueryUnescape(r.FormValue)", wxURL.Url)
 
-			timestamp, signature := GetCanshu(wxNoncestr, wxURL)
+			timestamp, signature := GetCanshu(wxNoncestr, wxURL.Url)
 
 			var u = Sign{
 				AppID:     wxAppID,

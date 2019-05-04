@@ -21,6 +21,8 @@ type User {
     createdAt: String!
     updatedAt: String!
     deletedAt: String!
+    qrcode: String!
+    qrcodeUuid: String!
     groups(pagination: Pagination):QueryGroupResponse!
     roles(pagination: Pagination):QueryRoleResponse!
     tickets(pagination: Pagination,filter:TicketFilterInput):QueryTicketResponse!
@@ -49,6 +51,7 @@ type Group {
 }
 
 type Booking {
+    id:ID!
     userId:Int!
     canteenId:Int!
     type:String!
@@ -167,7 +170,9 @@ type Canteen {
     updatedAt: String!
     deletedAt: String!
     qrcode: String!
+    qrcodeUuid: String!
     count: [CanteenCount!]
+    admin: User!
 }
 
 type QueryCanteenResponse{
@@ -181,6 +186,7 @@ input CanteenFilterInput {
     id: Int
     name:String
     groupID: Int
+    adminID: Int
 }
 
 type Role {
@@ -322,6 +328,7 @@ input UpdateUserInput {
     is_super: Boolean
     picture: String
     state: Int
+    re_gen_qrcode:Boolean
 }
 
 input NewGroup {
@@ -347,6 +354,7 @@ input NewCanteen {
     dinnerPicture: String
     bookingDinnerDeadline: String!
     cancelTime:Int!
+    adminId: Int!
 }
 
 input GenarateTicketInput {
@@ -358,6 +366,7 @@ input GenarateTicketInput {
 
 input TransferTicketInput {
     number: Int!
+    type: String!
     fromUserId: Int!
     toUserId: Int!
 }
@@ -391,6 +400,7 @@ input UpdateCanteenInput {
     dinnerPicture: String
     bookingDinnerDeadline: String
     cancelTime:Int
+    adminId: Int
 }
 
 input NewRole {
@@ -479,6 +489,13 @@ input CanteenQrcodeInput{
     id: Int!
 }
 
+
+input SpendInput{
+    canteenId:Int!
+    userId:Int!
+    uuid:String!
+}
+
 type Mutation {
     login(input:LoginInput!):LoginResponse!
     logout(input:LogoutInput!):Boolean!
@@ -516,8 +533,17 @@ type Mutation {
 
     cancelBooking(input:cancelBookingInput!): Boolean! @hasRole(resolver: "cancelBooking") @needLogin(resolver: "cancelBooking")
     booking(input:BookingInput!): Boolean! @hasRole(resolver: "createBooking") @needLogin(resolver: "createBooking")
+    spend(input:SpendInput!): Boolean! @hasRole(resolver: "spend") @needLogin(resolver: "spend")
+}
+
+type Message {
+    id: ID!
+    text: String!
+    createdBy: User!
+    createdAt: String!
+    error: Boolean!
 }
 
 type Subscription {
-    messageAdded(roomName: String!): String!
+    messageAdded(roomName: String!,adminId: Int!):  Message!
 }

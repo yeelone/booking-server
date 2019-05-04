@@ -29,3 +29,5 @@ models:
     model: booking/models.Booking
   TicketRecord:
     model: booking/models.TicketRecord
+  Message:
+    model: booking/models.Message

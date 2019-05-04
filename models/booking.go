@@ -1,19 +1,20 @@
 package models
 
 import (
+	"booking/util"
 	"errors"
 	"fmt"
-	"hrgdrc/util"
 	"strings"
 	"time"
 )
 
-type Booking struct{
+type Booking struct {
 	BaseModel
-	UserID  uint64 `gorm:"column:user_id;not null"`
-	CanteenID uint64 `gorm:"not null"`
-	BookingDate    string `gorm:"not null"`
-	BookingType    string //预订的类型，早餐 ，午餐 ，晚餐 Breakfast,Lunch,Dinner
+	UserID      uint64 `gorm:"column:user_id;not null"`
+	CanteenID   uint64 `gorm:"not null"`
+	BookingDate string `gorm:"not null"`
+	BookingType string //预订的类型，早餐 ，午餐 ，晚餐 breakfast,lunch,dinner
+	Available     bool
 }
 
 // TableName :
@@ -23,13 +24,32 @@ func (b *Booking) TableName() string {
 
 // Create :
 func (b Booking) Create() (booking Booking, err error) {
-	if b.BookingType == "breakfast" ||  b.BookingType == "lunch" || b.BookingType == "dinner" {
+	if b.BookingType == "breakfast" || b.BookingType == "lunch" || b.BookingType == "dinner" {
 		err = DB.Self.Create(&b).Error
-	}else{
+	} else {
 		err = errors.New("booking type is unavailable:" + b.BookingType)
 	}
 
 	return b, err
+}
+
+//检查是否预订过
+func (b Booking) Check() (results []Booking, err error) {
+	w := "user_id=" + util.Uint2Str(b.UserID) + " AND canteen_id=" + util.Uint2Str(b.CanteenID) + " AND booking_date='" +
+		b.BookingDate + "' AND booking_type='" + b.BookingType + "' AND available=true "
+
+	bookings := make([]Booking, 0)
+
+	if err = DB.Self.Debug().Where(w).Find(&bookings).Error; err != nil {
+		return bookings, err
+	}
+
+	if len(bookings) > 0 {
+		return bookings, nil
+	}
+
+	return bookings, errors.New("nothing to find")
+
 }
 
 // CancelBooking  取消预订
@@ -43,7 +63,7 @@ func CancelBooking(userID, bookingID uint64) error {
 		return errors.New("无权操作")
 	}
 
-	canteen, err  := GetCanteen(booking.CanteenID)
+	canteen, err := GetCanteen(booking.CanteenID)
 
 	if err != nil {
 		return err
@@ -51,20 +71,20 @@ func CancelBooking(userID, bookingID uint64) error {
 
 	duringTime := ""
 
-	if booking.BookingType == "Breakfast" {
-		duringTime =  canteen.BreakfastTime
+	if booking.BookingType == "breakfast" {
+		duringTime = canteen.BreakfastTime
 	}
-	if booking.BookingType == "Lunch" {
-		duringTime =  canteen.LunchTime
+	if booking.BookingType == "lunch" {
+		duringTime = canteen.LunchTime
 	}
-	if booking.BookingType == "Dinner" {
-		duringTime =  canteen.DinnerTime
+	if booking.BookingType == "dinner" {
+		duringTime = canteen.DinnerTime
 	}
 
 	// 时间格式 ：  "07:00-9:00"
 	during := strings.Split(duringTime, "-")
 
-	startTimeString := fillTimeFormat(during[0])
+	startTimeString := booking.BookingDate + " " + util.FillTimeFormat(during[0])
 
 	startTime, _ := time.ParseInLocation("2006-01-02 15:04:05", startTimeString, time.Local)
 
@@ -81,26 +101,29 @@ func CancelBooking(userID, bookingID uint64) error {
 		return errors.New("必须提前" + fmt.Sprint(canteen.CancelTime) + "小时才能取消预订")
 	}
 
+	//取消预订之后，要重新给用户发放一个票
+	_, err = BatchCreateTickets(booking.UserID, 1, TicketTypeMap[booking.BookingType], 0)
+
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
 
-//如果是7:00 ,要将之转化为07:00
-func fillTimeFormat(timeStr string) string {
-	hourMinute := strings.Split(timeStr, ":")
-	hour := hourMinute[0]
-	minute := hourMinute[1]
-
-	if len(hour) == 1 {
-		hour = "0" + hour
+func (b *Booking) Update(data map[string]interface{}) error {
+	_, err := GetBooking(b.ID)
+	if err != nil {
+		return err
 	}
 
-	if len(minute) == 1 {
-		minute = "0" + minute
+	tx := DB.Self.Begin()
+	if err := tx.Model(&b).Update(data).Error; err != nil {
+		tx.Rollback()
+		return errors.New("无法更新")
 	}
-
-	t := time.Now().Format("2006-01-02")
-	return t + " " + hour + ":" + minute + ":00"
-
+	tx.Commit()
+	return nil
 }
 
 
@@ -110,10 +133,9 @@ func GetBooking(id uint64) (result *Booking, err error) {
 	if id == 0 {
 		return result, errors.New("cannot find Booking by id " + util.Uint2Str(id))
 	}
-	err = DB.Self.First(&d, id).Error
+	err = DB.Self.Debug().First(&d, id).Error
 	return d, err
 }
-
 
 // GetAllBooking
 func GetAllBooking(where string, value string, skip, take int) (bookings []Booking, total int, err error) {
@@ -148,20 +170,19 @@ func CountBookingByCanteen(cid uint64) (data map[string]map[string]int, err erro
 	dates := []string{}
 
 	today := time.Now().Format("2006-01-02")
-	startTime, _ := time.ParseInLocation("2006-01-02",today, time.Local)
+	startTime, _ := time.ParseInLocation("2006-01-02", today, time.Local)
 
 	h, _ := time.ParseDuration("1h")
-	dates = append(dates,`'`+today +`'`)
-	dates = append(dates,`'`+startTime.Add(time.Duration(24) * h).Format("2006-01-02")+`'`)
-	dates = append(dates,`'`+startTime.Add(time.Duration(48) * h).Format("2006-01-02")+`'`)
-	dates = append(dates,`'`+startTime.Add(time.Duration(72) * h).Format("2006-01-02")+`'`)
-	dates = append(dates,`'`+startTime.Add(time.Duration(96) * h).Format("2006-01-02")+`'`)
-	dates = append(dates,`'`+startTime.Add(time.Duration(120) * h).Format("2006-01-02")+`'`)
-	dates = append(dates,`'`+startTime.Add(time.Duration(144) * h).Format("2006-01-02")+`'`)
+	dates = append(dates, `'`+today+`'`)
+	dates = append(dates, `'`+startTime.Add(time.Duration(24)*h).Format("2006-01-02")+`'`)
+	dates = append(dates, `'`+startTime.Add(time.Duration(48)*h).Format("2006-01-02")+`'`)
+	dates = append(dates, `'`+startTime.Add(time.Duration(72)*h).Format("2006-01-02")+`'`)
+	dates = append(dates, `'`+startTime.Add(time.Duration(96)*h).Format("2006-01-02")+`'`)
+	dates = append(dates, `'`+startTime.Add(time.Duration(120)*h).Format("2006-01-02")+`'`)
+	dates = append(dates, `'`+startTime.Add(time.Duration(144)*h).Format("2006-01-02")+`'`)
 
-
-	countSql := `SELECT booking_date,sum(case when booking_type='breakfast' then 1 else 0 end) as breakfast , sum(case when booking_type='lunch' then 1 else 0 end) as lunch  ,`+
-				`sum(case when booking_type='dinner' then 1 else 0 end) as dinner  from booking where canteen_id =` + util.Uint2Str(cid) +  ` AND booking_date IN (`+ strings.Join(dates,",") +`) group by booking_date order by booking_date`
+	countSql := `SELECT booking_date,sum(case when booking_type='breakfast' then 1 else 0 end) as breakfast , sum(case when booking_type='lunch' then 1 else 0 end) as lunch  ,` +
+		`sum(case when booking_type='dinner' then 1 else 0 end) as dinner  from booking where canteen_id =` + util.Uint2Str(cid) + ` AND booking_date IN (` + strings.Join(dates, ",") + `) group by booking_date order by booking_date`
 	rows, _ := DB.Self.Debug().Raw(countSql).Rows()
 
 	data = make(map[string]map[string]int)
@@ -169,10 +190,10 @@ func CountBookingByCanteen(cid uint64) (data map[string]map[string]int, err erro
 	for rows.Next() {
 		date := ""
 		breakfast := 0
-		lunch  := 0
+		lunch := 0
 		dinner := 0
 
-		err = rows.Scan(&date, &breakfast,&lunch,&dinner)
+		err = rows.Scan(&date, &breakfast, &lunch, &dinner)
 		if _, ok := data[date]; !ok {
 			data[date] = make(map[string]int)
 		}
@@ -182,8 +203,6 @@ func CountBookingByCanteen(cid uint64) (data map[string]map[string]int, err erro
 	}
 	return data, nil
 }
-
-
 
 // DeleteBooking
 func DeleteBooking(id uint64) error {

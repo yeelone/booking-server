@@ -8,4 +8,3 @@ type BaseModel struct {
 	UpdatedAt time.Time  `gorm:"column:updated_at" json:"-"`
 	DeletedAt *time.Time `gorm:"column:deleted_at" sql:"index" json:"-"`
 }
-

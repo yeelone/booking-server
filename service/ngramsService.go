@@ -18,9 +18,8 @@ func ngrams(s []string, n int) set.Strings {
 	return result
 }
 
-func Ngrams(content string) (dicts []models.Dictionary,err error) {
+func Ngrams(content string) (dicts []models.Dictionary, err error) {
 	log.Info("Ngrams function called.")
-
 
 	doc, err := prose.NewDocument(content)
 	if err != nil {
@@ -32,7 +31,7 @@ func Ngrams(content string) (dicts []models.Dictionary,err error) {
 	// Iterate over the doc's sentences:
 	for _, sent := range doc.Sentences() {
 		subSent := strings.Split(sent.Text, " ")
-		for _, n := range []int{1,2, 3, 4, 5, 6, 7, 8} {
+		for _, n := range []int{1, 2, 3, 4, 5, 6, 7, 8} {
 			for key := range ngrams(subSent, n) {
 				if strings.Contains(key, ",") {
 					continue
@@ -60,7 +59,7 @@ func Ngrams(content string) (dicts []models.Dictionary,err error) {
 	for i := range phrases {
 		if count == limit || i == len(phrases)-1 {
 			count = 0
-			dict , err := models.QueryPhrases(phrases[i-limit : i])
+			dict, err := models.QueryPhrases(phrases[i-limit : i])
 
 			if err != nil {
 				fmt.Println("err", err)
@@ -79,5 +78,5 @@ func Ngrams(content string) (dicts []models.Dictionary,err error) {
 		count++
 	}
 
-	return dicts,nil
+	return dicts, nil
 }

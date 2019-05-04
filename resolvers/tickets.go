@@ -10,22 +10,22 @@ import (
 type ticketsResolver struct{ *Resolver }
 
 func (r *ticketsResolver) ID(ctx context.Context, obj *models.Ticket) (string, error) {
-	return fmt.Sprintf("%d",obj.ID), nil
+	return fmt.Sprintf("%d", obj.ID), nil
 }
 
-func (r *ticketsResolver) CreatedAt(ctx context.Context, obj *models.Ticket) (string, error){
+func (r *ticketsResolver) CreatedAt(ctx context.Context, obj *models.Ticket) (string, error) {
 	return fmt.Sprintf(obj.CreatedAt.Format("2006-01-02 15:04:05")), nil
 }
 
-func (r *ticketsResolver) UpdatedAt(ctx context.Context, obj *models.Ticket) (string, error){
+func (r *ticketsResolver) UpdatedAt(ctx context.Context, obj *models.Ticket) (string, error) {
 	return fmt.Sprintf(obj.UpdatedAt.Format("2006-01-02 15:04:05")), nil
 }
 
-func (r *ticketsResolver) UUID(ctx context.Context, obj *models.Ticket) (string, error){
-	return obj.UUID ,nil
+func (r *ticketsResolver) UUID(ctx context.Context, obj *models.Ticket) (string, error) {
+	return obj.UUID, nil
 }
-func (r *ticketsResolver) UserID(ctx context.Context, obj *models.Ticket) (int, error){
-	return int(obj.UserID) ,nil
+func (r *ticketsResolver) UserID(ctx context.Context, obj *models.Ticket) (int, error) {
+	return int(obj.UserID), nil
 }
 
 func (r *mutationResolver) GenerateTickets(ctx context.Context, input booking.GenarateTicketInput) (booking.QueryTicketResponse, error) {
@@ -41,11 +41,11 @@ func (r *mutationResolver) GenerateTickets(ctx context.Context, input booking.Ge
 
 	rd, err := record.Create()
 
-	if  err != nil {
-		return resp , err
+	if err != nil {
+		return resp, err
 	}
 
-	tickets, err := models.BatchCreateTickets(uint64(input.UserID),input.Number,input.Type,input.Price)
+	tickets, err := models.BatchCreateTickets(uint64(input.UserID), input.Number, input.Type, input.Price)
 	if err != nil {
 		models.DeleteTicketRecord(rd.ID)
 		return resp, err
@@ -53,8 +53,8 @@ func (r *mutationResolver) GenerateTickets(ctx context.Context, input booking.Ge
 
 	resp = booking.QueryTicketResponse{
 		TotalCount: &input.Number,
-		Rows:tickets,
-		Take:&input.Number,
+		Rows:       tickets,
+		Take:       &input.Number,
 	}
 
 	return resp, nil
@@ -64,14 +64,14 @@ func (r *mutationResolver) TransferTickets(ctx context.Context, input booking.Tr
 	// Insert the tickets to the database.
 	resp := booking.TransferResponse{}
 
-	successCount, errorCount, err := models.TransferTicket(uint64(input.FromUserID),uint64(input.ToUserID), input.Number)
+	successCount, errorCount, err := models.TransferTicket(uint64(input.FromUserID), input.Type, uint64(input.ToUserID), input.Number)
 	if err != nil {
 		return resp, err
 	}
 
 	resp = booking.TransferResponse{
 		SuccessCount: successCount,
-		ErrorCount: errorCount,
+		ErrorCount:   errorCount,
 	}
 
 	return resp, nil
@@ -87,11 +87,11 @@ func (r *mutationResolver) RecyclingTickets(ctx context.Context, input booking.R
 
 	rd, err := record.Create()
 
-	if  err != nil {
-		return false , err
+	if err != nil {
+		return false, err
 	}
 
-	err = models.RecyclingTickets(uint64(input.UserID),input.Type, input.Number)
+	err = models.RecyclingTickets(uint64(input.UserID), input.Type, input.Number)
 	if err != nil {
 		models.DeleteTicketRecord(rd.ID)
 		return false, err

@@ -12,7 +12,7 @@ type TicketRecord struct {
 	Operator    uint64 //操作员
 	Owner       uint64 // 票拥有者
 	Number      int    //
-	Action      string // 售出 或者 加收
+	Action      string // 售出 或者 回收
 	Description string
 }
 

@@ -9,19 +9,21 @@ import (
 // Canteen : 食堂，一个组可对应多个食堂，一个食堂只属于一个组
 type Canteen struct {
 	BaseModel
-	Name   string `json:"name" gorm:"column:name;not null"`
-	GroupID  uint64 `json:"group_id" gorm:"column:group_id;not null"`
-	BreakfastTime string //早餐时间，格式为"7:00, 9:00"
-	BreakfastPicture string
+	Name                     string `json:"name" gorm:"column:name;not null"`
+	GroupID                  uint64 `json:"group_id" gorm:"column:group_id;not null"`
+	BreakfastTime            string //早餐时间，格式为"7:00, 9:00"
+	BreakfastPicture         string
 	BookingBreakfastDeadline string //预订截止早餐时间，格式为"7:00"
-	LunchPicture string
-	LunchTime string 	//午餐时间，格式为"7:00, 9:00"
-	BookingLunchDeadline string
-	DinnerPicture string
-	DinnerTime string 	//晚餐时间，格式为"7:00, 9:00"
-	BookingDinnerDeadline string
-	CancelTime    int //取消时间，提前一小时，两小时
-	Qrcode    string //
+	LunchPicture             string
+	LunchTime                string //午餐时间，格式为"7:00, 9:00"
+	BookingLunchDeadline     string
+	DinnerPicture            string
+	DinnerTime               string //晚餐时间，格式为"7:00, 9:00"
+	BookingDinnerDeadline    string
+	CancelTime               int    //取消时间，提前一小时，两小时
+	Qrcode                   string //
+	QrcodeUUID               string // 用于辨别二维码的有效性
+	AdminID                  uint64
 }
 
 // TableName :
@@ -31,7 +33,7 @@ func (c *Canteen) TableName() string {
 
 // Create : Create a new Canteen
 func (c Canteen) Create() (canteen Canteen, err error) {
-	_, err = GetGroup(c.GroupID,false)
+	_, err = GetGroup(c.GroupID, false)
 	if err != nil {
 		return canteen, err
 	}
@@ -114,7 +116,7 @@ func GetCanteens(where string, value string, skip, take int, orderBy string) (cs
 }
 
 // GetCanteen :
-func GetCanteen(id uint64) (result *Canteen , err error) {
+func GetCanteen(id uint64) (result *Canteen, err error) {
 	g := &Canteen{}
 	if id == 0 {
 		return result, errors.New("cannot find Canteen by id " + util.Uint2Str(id))
@@ -141,6 +143,3 @@ func DeleteCanteen(id uint64) error {
 
 	return nil
 }
-
-
-

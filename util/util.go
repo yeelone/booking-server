@@ -5,6 +5,8 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"github.com/pkg/errors"
+	"github.com/teris-io/shortid"
 	"io"
 	"math"
 	"net/http"
@@ -12,8 +14,7 @@ import (
 	"path"
 	"strconv"
 	"strings"
-
-	"github.com/teris-io/shortid"
+	"time"
 )
 
 func GenShortId() (string, error) {
@@ -111,7 +112,7 @@ func LastMonth(year, month string) (string, string) {
 
 func Decimal(value float64) float64 {
 	//value, _ = strconv.ParseFloat(fmt.Sprintf("%.2f", value), 64)
-	value = math.Round(value*100)/100
+	value = math.Round(value*100) / 100
 	return value
 }
 
@@ -150,8 +151,8 @@ func StringSliceEqualBCE(a, b []string) bool {
 // Read a whole file into the memory and store it as array of lines
 func ReadLines(path string) (lines []string, err error) {
 	var (
-		file *os.File
-		part []byte
+		file   *os.File
+		part   []byte
 		prefix bool
 	)
 	if file, err = os.Open(path); err != nil {
@@ -187,7 +188,7 @@ func WriteLines(lines []string, path string) (err error) {
 	}
 	defer file.Close()
 
-	for _,item := range lines {
+	for _, item := range lines {
 		_, err := file.WriteString(strings.TrimSpace(item) + "\n")
 		if err != nil {
 			fmt.Println(err)
@@ -205,9 +206,9 @@ func StructToMap(model interface{}) map[string]interface{} {
 }
 
 //FindUpdatedField : 通过对比新旧两个model来找出变化的字段
-func FindUpdatedField(oldModel interface{}, newModel interface{}) (result map[string]map[string]interface{}){
+func FindUpdatedField(oldModel interface{}, newModel interface{}) (result map[string]map[string]interface{}) {
 	s1 := StructToMap(oldModel)
-	s2 :=  StructToMap(newModel)
+	s2 := StructToMap(newModel)
 	result = make(map[string]map[string]interface{}) // 字段 --》 旧值 新值
 	for k := range s1 {
 		if s1[k] != s2[k] {
@@ -227,10 +228,10 @@ func CountDays(year int, month int) (days int) {
 
 		} else {
 			days = 31
-			fmt.Fprintln(os.Stdout, "The month has 31 days");
+			fmt.Fprintln(os.Stdout, "The month has 31 days")
 		}
 	} else {
-		if (((year % 4) == 0 && (year % 100) != 0) || (year % 400) == 0) {
+		if ((year%4) == 0 && (year%100) != 0) || (year%400) == 0 {
 			days = 29
 		} else {
 			days = 28
@@ -259,3 +260,65 @@ func ReadUserIP(r *http.Request) string {
 	return IPAddress
 }
 
+//如果是7:00 ,要将之转化为07:00
+func FillTimeFormat(timeStr string) string {
+	hourMinute := strings.Split(timeStr, ":")
+	hour := hourMinute[0]
+	minute := hourMinute[1]
+
+	if len(hour) == 1 {
+		hour = "0" + hour
+	}
+
+	if len(minute) == 1 {
+		minute = "0" + minute
+	}
+
+	//t := time.Now().Format("2006-01-02")
+	return " " + hour + ":" + minute + ":00"
+
+}
+
+// 检查当前时间是不是在指定的区间里
+// during = 7:00-19:00
+func CheckTimeRange(during string) (bool, error) {
+	t := strings.Split(during, "-")
+
+	if len(t) < 2 {
+		return false, errors.New("format error")
+	}
+
+	now := ChangeToMinute(time.Now().Format("15:04"))
+
+	startTime := ChangeToMinute(t[0])
+	endTime := ChangeToMinute(t[1])
+
+	if startTime <= now && now <= endTime {
+		return true, nil
+	}
+
+	return false, nil
+
+}
+
+// 将7：00这样的时间格式转化为分钟数
+func ChangeToMinute(t string) int {
+	ts := strings.Split(t, ":")
+
+	if len(ts) < 2 {
+		return -1
+	}
+
+	hour, err := strconv.Atoi(ts[0])
+	if err != nil {
+		return -1
+	}
+
+	minute, err := strconv.Atoi(ts[1])
+	if err != nil {
+		return -1
+	}
+
+	return hour*60 + minute
+
+}

@@ -33,6 +33,7 @@ type CanteenFilterInput struct {
 	ID      *int    `json:"id"`
 	Name    *string `json:"name"`
 	GroupID *int    `json:"groupID"`
+	AdminID *int    `json:"adminID"`
 }
 
 type CanteenQrcodeInput struct {
@@ -101,6 +102,7 @@ type NewCanteen struct {
 	DinnerPicture            *string `json:"dinnerPicture"`
 	BookingDinnerDeadline    string  `json:"bookingDinnerDeadline"`
 	CancelTime               int     `json:"cancelTime"`
+	AdminID                  int     `json:"adminId"`
 }
 
 type NewDishes struct {
@@ -252,6 +254,12 @@ type RoleFilterInput struct {
 	Name *string `json:"name"`
 }
 
+type SpendInput struct {
+	CanteenID int    `json:"canteenId"`
+	UserID    int    `json:"userId"`
+	UUID      string `json:"uuid"`
+}
+
 type SystemInfo struct {
 	CurrentLoginCount int `json:"currentLoginCount"`
 }
@@ -275,9 +283,10 @@ type TransferResponse struct {
 }
 
 type TransferTicketInput struct {
-	Number     int `json:"number"`
-	FromUserID int `json:"fromUserId"`
-	ToUserID   int `json:"toUserId"`
+	Number     int    `json:"number"`
+	Type       string `json:"type"`
+	FromUserID int    `json:"fromUserId"`
+	ToUserID   int    `json:"toUserId"`
 }
 
 type UpdateCanteenInput struct {
@@ -294,6 +303,7 @@ type UpdateCanteenInput struct {
 	DinnerPicture            *string `json:"dinnerPicture"`
 	BookingDinnerDeadline    *string `json:"bookingDinnerDeadline"`
 	CancelTime               *int    `json:"cancelTime"`
+	AdminID                  *int    `json:"adminId"`
 }
 
 type UpdateDishesInput struct {
@@ -318,15 +328,16 @@ type UpdateRoleInput struct {
 }
 
 type UpdateUserInput struct {
-	ID       int     `json:"id"`
-	Email    *string `json:"email"`
-	Password *string `json:"password"`
-	Username *string `json:"username"`
-	Nickname *string `json:"nickname"`
-	IDCard   *string `json:"id_card"`
-	IsSuper  *bool   `json:"is_super"`
-	Picture  *string `json:"picture"`
-	State    *int    `json:"state"`
+	ID          int     `json:"id"`
+	Email       *string `json:"email"`
+	Password    *string `json:"password"`
+	Username    *string `json:"username"`
+	Nickname    *string `json:"nickname"`
+	IDCard      *string `json:"id_card"`
+	IsSuper     *bool   `json:"is_super"`
+	Picture     *string `json:"picture"`
+	State       *int    `json:"state"`
+	ReGenQrcode *bool   `json:"re_gen_qrcode"`
 }
 
 type UserAndGroupRelationshipInput struct {

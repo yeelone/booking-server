@@ -19,14 +19,20 @@ import (
 	"time"
 )
 
+type Tunnel struct {
+	Name      string
+	Observers map[string]chan models.Message
+}
+
 type Resolver struct {
-	groups       []models.Group
-	users        []models.User
-	roles        []models.Role
-	tickets      []models.Ticket
-	dishes      []models.Dishes
-	canteens      []models.Canteen
-	bookings      []models.Booking
+	tunnels  map[string]*Tunnel
+	groups   []models.Group
+	users    []models.User
+	roles    []models.Role
+	tickets  []models.Ticket
+	dishes   []models.Dishes
+	canteens []models.Canteen
+	bookings []models.Booking
 }
 
 func (r *Resolver) Mutation() g.MutationResolver {
@@ -70,11 +76,16 @@ func (r *Resolver) Booking() g.BookingResolver {
 }
 
 // Subscription returns a subscription resolver
-func (rr *Resolver) Subscription() g.SubscriptionResolver {
-	return &subscriptionResolver{}
+func (r *Resolver) Subscription() g.SubscriptionResolver {
+	return &subscriptionResolver{r}
+}
+
+func (r *Resolver) Message() g.MessageResolver {
+	return &messageResolver{r}
 }
 
 type mutationResolver struct{ *Resolver }
+
 
 func (r *mutationResolver) Login(ctx context.Context, input booking.LoginInput) (booking.LoginResponse, error) {
 	resp := booking.LoginResponse{}
@@ -116,7 +127,7 @@ func (r *mutationResolver) Login(ctx context.Context, input booking.LoginInput) 
 		client_ip := ctx.Value(models.CLIENT_IP).(string)
 		client_date := time.Now().UTC().String()
 		key := []byte(id)
-		value := []byte("username:"+d.Username + " ip:" + client_ip + " date:" + client_date)
+		value := []byte("username:" + d.Username + " ip:" + client_ip + " date:" + client_date)
 		err = b.Put(key, value)
 		return err
 	})
@@ -156,7 +167,7 @@ func (r *mutationResolver) Logout(ctx context.Context, input booking.LogoutInput
 	return true, err
 }
 
-func getPermissionAccessResourceByRole(role string) ( perms []string){
+func getPermissionAccessResourceByRole(role string) (perms []string) {
 	runtimeViper := viper.New()
 	runtimeViper.AddConfigPath("conf/permissions") // 如果没有指定配置文件，则解析默认的配置文件
 	runtimeViper.SetConfigName("permission")
@@ -169,7 +180,6 @@ func getPermissionAccessResourceByRole(role string) ( perms []string){
 	if role == "" {
 		return perms
 	}
-
 
 	checkedMap := permission.GetRolePermissionFromCSVFile()
 	existed := make(map[string]bool)
@@ -186,7 +196,7 @@ func getPermissionAccessResourceByRole(role string) ( perms []string){
 			object := runtimeViper.GetString(s[0] + "." + s[1] + ".object")
 			if _, ok := checkedMap[role][object]; ok {
 				fmt.Println(runtimeViper.GetString(s[0] + "." + s[1] + ".resource"))
-				perms = append(perms, runtimeViper.GetString(s[0] + "." + s[1] + ".resource"))
+				perms = append(perms, runtimeViper.GetString(s[0]+"."+s[1]+".resource"))
 			}
 		}
 	}
@@ -207,12 +217,12 @@ func (r *queryResolver) Groups(ctx context.Context, filter *booking.GroupFilterI
 	where := ""
 	whereValue := ""
 	if filter != nil {
-		if filter.Name != nil  && *filter.Name != ""{
+		if filter.Name != nil && *filter.Name != "" {
 			where = "name"
 			whereValue = *filter.Name
 		}
 
-		if filter.ID != nil  && *filter.ID != 0 {
+		if filter.ID != nil && *filter.ID != 0 {
 			where = "id"
 			whereValue = strconv.Itoa(*filter.ID)
 		}
@@ -337,13 +347,17 @@ func (r *queryResolver) Tickets(ctx context.Context, filter *booking.TicketFilte
 	}
 	var err error
 	count := booking.Count{}
-	if *filter.Count &&  filter != nil {// 只计算余票数量
-		count.Breakfast,count.Lunch,count.Dinner , err = models.CountTicketsDetailByUser(uint64(*filter.UserID))
-		resp := booking.QueryTicketResponse{
-			Count:&count,
-		}
+	if filter != nil {
+		if filter.Count != nil { // 只计算余票数量
+			count.Breakfast, count.Lunch, count.Dinner, err = models.CountTicketsDetailByUser(uint64(*filter.UserID))
+			resp := booking.QueryTicketResponse{
+				Count: &count,
+			}
 
-		return resp, err
+			fmt.Println(util.PrettyJson(resp))
+
+			return resp, err
+		}
 	}
 
 	where := ""
@@ -397,7 +411,7 @@ func (r *queryResolver) TicketRecords(ctx context.Context, filter *booking.Ticke
 	return resp, err
 }
 
-func (r *queryResolver) Canteens(ctx context.Context, filter *booking.CanteenFilterInput,pagination *booking.Pagination) (booking.QueryCanteenResponse, error){
+func (r *queryResolver) Canteens(ctx context.Context, filter *booking.CanteenFilterInput, pagination *booking.Pagination) (booking.QueryCanteenResponse, error) {
 	if pagination == nil {
 		pagination = &booking.Pagination{
 			Skip: 0,
@@ -418,6 +432,11 @@ func (r *queryResolver) Canteens(ctx context.Context, filter *booking.CanteenFil
 			whereValue = strconv.Itoa(*filter.GroupID)
 		}
 
+		if filter.AdminID != nil {
+			where = "admin_id"
+			whereValue = strconv.Itoa(*filter.AdminID)
+		}
+
 		if filter.ID != nil {
 			where = "id"
 			whereValue = strconv.Itoa(*filter.ID)
@@ -425,17 +444,17 @@ func (r *queryResolver) Canteens(ctx context.Context, filter *booking.CanteenFil
 
 	}
 
-	cs,total,err := models.GetCanteens(where,whereValue, pagination.Skip, pagination.Take,"")
+	cs, total, err := models.GetCanteens(where, whereValue, pagination.Skip, pagination.Take, "")
 	resp := booking.QueryCanteenResponse{
-		TotalCount:&total,
-		Skip:&pagination.Skip,
-		Take:&pagination.Take,
-		Rows:cs,
+		TotalCount: &total,
+		Skip:       &pagination.Skip,
+		Take:       &pagination.Take,
+		Rows:       cs,
 	}
-	return resp,err
+	return resp, err
 }
 
-func (r *queryResolver) Dashboard(ctx context.Context ) (response booking.DashboardResponse, err error){
+func (r *queryResolver) Dashboard(ctx context.Context) (response booking.DashboardResponse, err error) {
 	// 查看当前登录人数
 	systemInfo := booking.SystemInfo{}
 	systemInfo.CurrentLoginCount = 0
@@ -460,7 +479,7 @@ func (r *queryResolver) Dashboard(ctx context.Context ) (response booking.Dashbo
 
 	orgInfo := make([]booking.OrgDashboard, 0)
 
-	for name ,count := range countData {
+	for name, count := range countData {
 		d := booking.OrgDashboard{}
 		d.Name = name
 		d.UserCount = count
@@ -468,14 +487,14 @@ func (r *queryResolver) Dashboard(ctx context.Context ) (response booking.Dashbo
 	}
 
 	resp := booking.DashboardResponse{
-		SystemInfo:systemInfo,
-		OrgInfo:orgInfo,
-		TicketInfo:models.GetLatestTicketRecord(10),
+		SystemInfo: systemInfo,
+		OrgInfo:    orgInfo,
+		TicketInfo: models.GetLatestTicketRecord(10),
 	}
-	return resp,err
+	return resp, err
 }
 
-func (r *queryResolver) Booking(ctx context.Context, filter *booking.BookingFilterInput) (response booking.QueryBookingResponse,err  error) {
+func (r *queryResolver) Booking(ctx context.Context, filter *booking.BookingFilterInput) (response booking.QueryBookingResponse, err error) {
 
 	where := ""
 	whereValue := ""
@@ -490,7 +509,7 @@ func (r *queryResolver) Booking(ctx context.Context, filter *booking.BookingFilt
 		}
 	}
 
-	bookings, total, err := models.GetAllBooking(where, whereValue,0, 10000)
+	bookings, total, err := models.GetAllBooking(where, whereValue, 0, 10000)
 
 	resp := booking.QueryBookingResponse{
 		TotalCount: &total,
@@ -546,8 +565,8 @@ func (r *queryResolver) Permissions(ctx context.Context, filter booking.RoleFilt
 	return resp, nil
 }
 
-func (r *queryResolver) Messages(ctx context.Context) (string, error){
-	return "hello world",nil
+func (r *queryResolver) Messages(ctx context.Context) (string, error) {
+	return "hello world", nil
 }
 
 func (r *mutationResolver) CreateRoleAndPermissionRelationship(ctx context.Context, input booking.RoleAndPermissionRelationshipInput) (bool, error) {
@@ -571,23 +590,23 @@ func (r *mutationResolver) CreateRoleAndPermissionRelationship(ctx context.Conte
 	return true, nil
 }
 
-func  (r *queryResolver) CheckUserNotInRole(ctx context.Context, filter *booking.RoleAndUserFilterInput) ([]int, error){
+func (r *queryResolver) CheckUserNotInRole(ctx context.Context, filter *booking.RoleAndUserFilterInput) ([]int, error) {
 
-	uids := make([]uint64,len(filter.UserIds))
+	uids := make([]uint64, len(filter.UserIds))
 
 	for i, id := range filter.UserIds {
 		uids[i] = uint64(id)
 	}
 
-	fmt.Println("uids", uids,filter.UserIds)
+	fmt.Println("uids", uids, filter.UserIds)
 
-	ids, err := models.CheckUsersNotInRole(uint64(filter.RoleID), uids )
+	ids, err := models.CheckUsersNotInRole(uint64(filter.RoleID), uids)
 
-	newids := make([]int,0)
+	newids := make([]int, 0)
 
 	for _, id := range ids {
-		newids = append(newids,  int(id))
+		newids = append(newids, int(id))
 	}
 
-	return newids , err
+	return newids, err
 }

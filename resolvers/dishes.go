@@ -10,27 +10,27 @@ import (
 type dishesResolver struct{ *Resolver }
 
 func (r *dishesResolver) ID(ctx context.Context, obj *models.Dishes) (string, error) {
-	return fmt.Sprintf("%d",obj.ID), nil
+	return fmt.Sprintf("%d", obj.ID), nil
 }
-func (r *dishesResolver) CreatedAt(ctx context.Context, obj *models.Dishes) (string, error){
+func (r *dishesResolver) CreatedAt(ctx context.Context, obj *models.Dishes) (string, error) {
 	return fmt.Sprintf(obj.CreatedAt.Format("2006-01-02 15:04:05")), nil
 }
 
-func (r *dishesResolver) UpdatedAt(ctx context.Context, obj *models.Dishes) (string, error){
+func (r *dishesResolver) UpdatedAt(ctx context.Context, obj *models.Dishes) (string, error) {
 	return fmt.Sprintf(obj.UpdatedAt.Format("2006-01-02 15:04:05")), nil
 }
 
-func (r *dishesResolver) DeletedAt(ctx context.Context, obj *models.Dishes) (string, error){
+func (r *dishesResolver) DeletedAt(ctx context.Context, obj *models.Dishes) (string, error) {
 	if obj.DeletedAt != nil {
 		return fmt.Sprintf(obj.DeletedAt.Format("2006-01-02 15:04:05")), nil
 	}
-	return "",nil
+	return "", nil
 }
 
 func (r *mutationResolver) CreateDishes(ctx context.Context, input booking.NewDishes) (models.Dishes, error) {
 	m := models.Dishes{
-		Name:        input.Name,
-		Picture:     input.Picture,
+		Name:    input.Name,
+		Picture: input.Picture,
 	}
 
 	// Insert the Dishes to the database.
@@ -73,5 +73,5 @@ func (r *mutationResolver) DeleteDishes(ctx context.Context, input booking.Delet
 			return false, err
 		}
 	}
-	return true,nil
+	return true, nil
 }

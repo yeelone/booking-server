@@ -1,6 +1,5 @@
 package version
 
-
 var (
 	gitTag       string = ""
 	gitCommit    string = "$Format:%H$"          // sha1 from git, output of $(git rev-parse HEAD)

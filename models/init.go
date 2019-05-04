@@ -4,6 +4,7 @@ import (
 	"booking/util"
 	"fmt"
 	"github.com/boltdb/bolt"
+	"github.com/lexkong/log"
 
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/postgres"
@@ -31,10 +32,10 @@ func openDB(username, password, addr, name string) *gorm.DB {
 		username,
 		password,
 	)
-
+	fmt.Println("db config", config)
 	db, err := gorm.Open("postgres", config)
 	if err != nil {
-		//log.Errorf(err, "Database connection failed. Database name: %s", name)
+		log.Errorf(err, "Database connection failed. Database name: %s", name)
 	}
 
 	// set for db connection

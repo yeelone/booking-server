@@ -15,12 +15,12 @@ import (
 // Group : 用于User管理的群组
 type Group struct {
 	BaseModel
-	Name   string `json:"name" gorm:"column:name;not null"`
-	Users  []User `json:"users" gorm:"many2many:user_groups;"`
+	Name     string `json:"name" gorm:"column:name;not null"`
+	Users    []User `json:"users" gorm:"many2many:user_groups;"`
 	AdminID  uint64 `json:"admin_id"`
-	Parent uint64 `json:"parent" gorm:"column:parent;"`
+	Parent   uint64 `json:"parent" gorm:"column:parent;"`
 	Canteens []Canteen
-	Levels string `json:"levels" gorm:"column:levels"` //保存父子层级关系图,例如 pppid.ppid.pid.id
+	Levels   string `json:"levels" gorm:"column:levels"` //保存父子层级关系图,例如 pppid.ppid.pid.id
 }
 
 // TableName :
@@ -118,7 +118,7 @@ func GetGroups(where string, value string, skip, take int, orderBy string) (gs [
 }
 
 //GetGroupRelatedUsers :
-func GetGroupRelatedUsers(id uint64,where string, value string, offset, limit int) (users []User, total int, err error) {
+func GetGroupRelatedUsers(id uint64, where string, value string, offset, limit int) (users []User, total int, err error) {
 	if limit == 0 {
 		limit = constvar.DefaultLimit
 	}
@@ -157,17 +157,16 @@ func GetGroupRelatedUsers(id uint64,where string, value string, offset, limit in
 	} else {
 
 		if len(where) > 0 {
-			selectSql = "SELECT * FROM users left join user_groups on users.id=user_groups.user_id where users."+where+" like '%"+value+"%' And user_groups.group_id in (" + strings.Join(gids, ",") + ")"  + " offset " + strconv.Itoa(offset) + " limit " + strconv.Itoa(limit)
-			countSql = "SELECT count(users.id) FROM users left join user_groups on users.id=user_groups.user_id where users."+where+" like '%"+value+"%' And user_groups.group_id in (" + strings.Join(gids, ",") + ")"
-		}else{
-			selectSql = "SELECT * FROM users left join user_groups on users.id=user_groups.user_id where user_groups.group_id in (" + strings.Join(gids, ",") + ")"  + " offset " + strconv.Itoa(offset) + " limit " + strconv.Itoa(limit)
+			selectSql = "SELECT * FROM users left join user_groups on users.id=user_groups.user_id where users." + where + " like '%" + value + "%' And user_groups.group_id in (" + strings.Join(gids, ",") + ")" + " offset " + strconv.Itoa(offset) + " limit " + strconv.Itoa(limit)
+			countSql = "SELECT count(users.id) FROM users left join user_groups on users.id=user_groups.user_id where users." + where + " like '%" + value + "%' And user_groups.group_id in (" + strings.Join(gids, ",") + ")"
+		} else {
+			selectSql = "SELECT * FROM users left join user_groups on users.id=user_groups.user_id where user_groups.group_id in (" + strings.Join(gids, ",") + ")" + " offset " + strconv.Itoa(offset) + " limit " + strconv.Itoa(limit)
 			countSql = "SELECT count(users.id) FROM users left join user_groups on users.id=user_groups.user_id where user_groups.group_id in (" + strings.Join(gids, ",") + ")"
 		}
 
 		DB.Self.Debug().Raw(selectSql).Scan(&users) // Note: Ignoring errors for brevity
 
 	}
-
 
 	if id == 0 {
 		DB.Self.Model(User{}).Count(&total)
@@ -180,6 +179,7 @@ func GetGroupRelatedUsers(id uint64,where string, value string, offset, limit in
 
 	return users, total, nil
 }
+
 //
 ////GetGroupRelatedUsers :
 //func GetGroupRelatedUsers(id uint64, offset, limit int) (users []User, total int, err error) {
@@ -335,17 +335,17 @@ func DeleteGroup(id uint64) error {
 	return nil
 }
 
-func CountGroupUsers() map[string]int{
+func CountGroupUsers() map[string]int {
 	sqlstr := `select groups.name,count(user_id)  from user_groups left join groups on user_groups.group_id=groups.id group by user_groups.group_id,groups.name ;`
 
 	rows, _ := DB.Self.Raw(sqlstr).Rows()
 	data := make(map[string]int)
 	for rows.Next() {
-        name := ""
-        count := 0
+		name := ""
+		count := 0
 		rows.Scan(&name, &count)
 
-        data[name] = count
+		data[name] = count
 	}
 
 	return data
@@ -359,6 +359,5 @@ func GetGroupRelatedCanteens(id uint64) (canteens []Canteen, err error) {
 
 	DB.Self.Model(&g).Related(&canteens)
 
-
-	return canteens,nil
+	return canteens, nil
 }

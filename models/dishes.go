@@ -5,9 +5,9 @@ import (
 	"hrgdrc/util"
 )
 
-type Dishes struct{
+type Dishes struct {
 	BaseModel
-	Name   string `json:"name" gorm:"column:name;not null"`
+	Name    string `json:"name" gorm:"column:name;not null"`
 	Picture string `json:"picture"`
 }
 
@@ -50,7 +50,6 @@ func GetDish(id uint64) (result *Dishes, err error) {
 	return d, err
 }
 
-
 // GetUsers
 func GetDishes(where string, value string, skip, take int) (dishes []Dishes, total int, err error) {
 	u := &Dishes{}
@@ -75,7 +74,6 @@ func GetDishes(where string, value string, skip, take int) (dishes []Dishes, tot
 	return dishes, total, d.Error
 
 }
-
 
 // DeleteDish
 func DeleteDish(id uint64) error {

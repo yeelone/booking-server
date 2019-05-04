@@ -17,17 +17,19 @@ const (
 // User : User represents a registered user.
 type User struct {
 	BaseModel
-	Email    string   `json:"email" gorm:"column:email;"`
-	Username string   `json:"username" gorm:"column:username;not null" binding:"required" validate:"min=1,max=32"`
-	Nickname string   `json:"nickname" gorm:"column:nichname;not null" `
-	IDCard   string   `json:"id_card"`
-	Password string   `json:"password" gorm:"column:password;not null" `
-	IsSuper  bool     `json:"is_super"`
-	Picture  string   `json:"picture"`
-	State    int      `json:"state"`
-	Groups   []Group  `json:"groups" gorm:"many2many:user_groups;"`
-	Roles    []Role   `json:"roles" gorm:"many2many:user_roles"`
-	Tickets  []Ticket `json:"tickets"`
+	Email     string   `json:"email" gorm:"column:email;"`
+	Username  string   `json:"username" gorm:"column:username;not null" binding:"required" validate:"min=1,max=32"`
+	Nickname  string   `json:"nickname" gorm:"column:nichname;not null" `
+	IDCard    string   `json:"id_card"`
+	Password  string   `json:"password" gorm:"column:password;not null" `
+	IsSuper   bool     `json:"is_super"`
+	Picture   string   `json:"picture"`
+	State     int      `json:"state"`
+	Groups    []Group  `json:"groups" gorm:"many2many:user_groups;"`
+	Roles     []Role   `json:"roles" gorm:"many2many:user_roles"`
+	Tickets   []Ticket `json:"tickets"`
+	Qrcode                   string //
+	QrcodeUUID               string // 用于辨别二维码的有效性
 	CanteenID uint64
 }
 
@@ -159,17 +161,15 @@ func CountTicketsByUser(uid uint64) (total int, err error) {
 	return total, nil
 }
 
-
 // CountTicketsByUser
-func CountTicketsDetailByUser(uid uint64) (breakfast,lunch,dinner int, err error) {
+func CountTicketsDetailByUser(uid uint64) (breakfast, lunch, dinner int, err error) {
 	countSql := "SELECT sum(case when type=1 then 1 else 0 end) as breakfast , sum(case when type=2 then 1 else 0 end) as lunch  ,sum(case when type=3 then 1 else 0 end) as dinner  from tickets where user_id =" + util.Uint2Str(uid)
 	rows, _ := DB.Self.Debug().Raw(countSql).Rows()
 	for rows.Next() {
-		err = rows.Scan( &breakfast,&lunch,&dinner)
+		err = rows.Scan(&breakfast, &lunch, &dinner)
 	}
-	return breakfast,lunch,dinner, nil
+	return breakfast, lunch, dinner, nil
 }
-
 
 // CountGroupsByUser
 func CountGroupsByUser(uid uint64) (total int, err error) {

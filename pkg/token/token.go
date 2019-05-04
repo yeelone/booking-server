@@ -34,7 +34,7 @@ func secretFunc(secret string) jwt.Keyfunc {
 
 // Parse validates the token with the specified secret,
 // and returns the context if the token was valid.
-func Parse(tokenString string, secret string) (*Context, error)  {
+func Parse(tokenString string, secret string) (*Context, error) {
 	ctx := &Context{}
 
 	// Parse the token.
@@ -56,7 +56,6 @@ func Parse(tokenString string, secret string) (*Context, error)  {
 		return ctx, err
 	}
 }
-
 
 // Sign signs the context with the specified secret.
 func Sign(c Context, secret string) (tokenString string, err error) {

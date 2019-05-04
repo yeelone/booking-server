@@ -3,7 +3,6 @@ package models
 import (
 	"booking/util"
 	"errors"
-	"fmt"
 	"github.com/rs/xid"
 	"strconv"
 	"strings"
@@ -11,6 +10,12 @@ import (
 )
 
 // ticket type  : 票类型，早餐、午餐、晚餐 ， 用数字表示 ，早餐=1， 午餐=2， 晚餐=3
+
+var TicketTypeMap = map[string]int{
+	"breakfast": 1,
+	"lunch":     2,
+	"dinner":    3,
+}
 
 type Ticket struct {
 	ID             uint64    `gorm:"primary_key;AUTO_INCREMENT;column:id" json:"id"`
@@ -89,6 +94,17 @@ func GetTicket(id uint64) (result *Ticket, err error) {
 	return d, err
 }
 
+func GetTicketByType(user_id uint64, ticketType string,limit int ) (tickets []Ticket, total int, err error){
+
+	w := "user_id="+ util.Uint2Str(user_id) + " AND type="+ strconv.Itoa(TicketTypeMap[ticketType])+" "
+	d := DB.Self.Debug().Where(w).Limit(limit).Find(&tickets)
+
+	if err := DB.Self.Model(&Ticket{}).Where(w).Count(&total).Error; err != nil {
+		return tickets, 0, errors.New("cannot fetch count of the row")
+	}
+	return tickets, total, d.Error
+}
+
 // GetTickets
 func GetTickets(where string, value string, skip, take int) (tickets []Ticket, total int, err error) {
 	u := &Ticket{}
@@ -121,7 +137,7 @@ func GetTickets(where string, value string, skip, take int) (tickets []Ticket, t
 }
 
 // TransferTicket 将电子票转让给其它用户
-func TransferTicket(fromUserId uint64, toUserId uint64, number int) (success, error int, err error) {
+func TransferTicket(fromUserId uint64, ticketType string , toUserId uint64, number int) (success, error int, err error) {
 
 	fromUser, err := GetUserByID(fromUserId)
 
@@ -136,7 +152,11 @@ func TransferTicket(fromUserId uint64, toUserId uint64, number int) (success, er
 	}
 
 	// 从from用户里挑选出number张电子票
-	tickets, _, err := GetTickets("user_id", util.Uint2Str(fromUserId), 0, number)
+	tickets, total, err := GetTicketByType(fromUserId, ticketType, number)
+
+	if total < number {
+		return 0 , total , errors.New("余票不够")
+	}
 
 	record := "由[" + util.Uint2Str(fromUserId) + "_" + fromUser.Username + "] 转让给 [" + util.Uint2Str(toUserId) + "_" + toUser.Username + "] | "
 
@@ -176,9 +196,20 @@ func DeleteTicket(id uint64) error {
 func RecyclingTickets(uid uint64, ticketType, n int) error {
 	//找出最近生成的票
 	n = util.Abs(n)
+	breakfast, lunch, dinner, err := CountTicketsDetailByUser(uid)
+
+	if err != nil {
+		return err
+	}
+
+	total := breakfast + lunch + dinner
+
+	if n > total {
+		return errors.New("not enough ticket to recycling")
+	}
 
 	tickets := make([]Ticket, n)
-	err := DB.Self.Debug().Where("user_id=? AND type=?", uid, ticketType).Order("created_at DESC").Limit(n).Find(&tickets).Error
+	err = DB.Self.Debug().Where("user_id=? AND type=?", uid, ticketType).Order("created_at DESC").Limit(n).Find(&tickets).Error
 
 	ids := make([]uint64, n)
 
@@ -186,7 +217,6 @@ func RecyclingTickets(uid uint64, ticketType, n int) error {
 		ids = append(ids, t.ID)
 	}
 
-	fmt.Println("ids", ids)
 	tx := DB.Self.Begin()
 	if err := tx.Where("id IN (?)", ids).Delete(&Ticket{}).Error; err != nil {
 		tx.Rollback()
