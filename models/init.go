@@ -1,7 +1,6 @@
 package models
 
 import (
-	"booking/util"
 	"fmt"
 	"github.com/boltdb/bolt"
 	"github.com/lexkong/log"
@@ -96,7 +95,7 @@ func initTable() {
 	var canteen Canteen
 	var booking Booking
 	var record TicketRecord
-	DB.Self.AutoMigrate(&record, &ticket, &dishes, &user, &group, &role, &canteen, &booking)
+	DB.Self.AutoMigrate(&user,&record, &ticket, &dishes,  &group, &role, &canteen, &booking)
 
 	initAdmin()
 }
@@ -139,7 +138,6 @@ func initAdmin() {
 	uids[0] = u.ID
 
 	if result, _ := CheckUsersNotInRole(r.ID, uids); len(result) > 0 {
-		fmt.Println("result", util.PrettyJson(result))
 		AddRoleUsers(r.ID, uids)
 	}
 

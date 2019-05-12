@@ -38,6 +38,7 @@ type QueryGroupResponse{
 type Group {
     id: ID!
     name: String!
+    picture: String!
     parent: Int!
     adminId: Int!
     adminInfo: User!
@@ -281,6 +282,13 @@ type DashboardResponse {
     ticketInfo: [String!]
 }
 
+
+type ClientConfig {
+    wxAppID: String,
+    prompt: String,
+    wxSecret: String,
+}
+
 type Query {
     groups(filter:GroupFilterInput, pagination: Pagination,orderBy:GroupOrderByInput): QueryGroupResponse!  @hasRole(resolver: "groups") @needLogin(resolver: "groups")
     users(filter:UserFilterInput, pagination: Pagination):QueryUserResponse!  @hasRole(resolver: "users") @needLogin(resolver: "users")
@@ -293,6 +301,7 @@ type Query {
     canteens(filter:CanteenFilterInput, pagination: Pagination):QueryCanteenResponse!  @hasRole(resolver: "canteens") @needLogin(resolver: "canteens")
     booking(filter:BookingFilterInput):QueryBookingResponse!  @hasRole(resolver: "booking") @needLogin(resolver: "booking")
     dashboard:DashboardResponse!  @needLogin(resolver: "dashboard")
+    config: ClientConfig!  @needLogin(resolver: "config")
     messages:String!
 }
 
@@ -318,6 +327,15 @@ input NewUser {
     groupId: Int
 }
 
+input NewUsers {
+    uploadFile:String!
+    groupId:Int!
+}
+
+type CreateUsersResponse {
+    errors: [String!]
+}
+
 input UpdateUserInput {
     id: Int!
     email: String
@@ -336,7 +354,7 @@ input NewGroup {
     name: String!
     admin: Int!
     parent: Int!
-    levels: String!
+    picture: String!
     userId: [Int!]
 }
 
@@ -382,6 +400,7 @@ input UpdateGroupInput {
     name: String
     admin: Int
     parent: Int
+    picture: String
     levels: String
     userId: [Int!]
 }
@@ -489,17 +508,23 @@ input CanteenQrcodeInput{
     id: Int!
 }
 
-
 input SpendInput{
     canteenId:Int!
     userId:Int!
     uuid:String!
 }
 
+input ConfigInput{
+    prompt: String
+    wxAppID: String
+    wxSecret: String
+}
+
 type Mutation {
     login(input:LoginInput!):LoginResponse!
     logout(input:LogoutInput!):Boolean!
     createUser(input: NewUser!): User! @hasRole(resolver: "createUser") @needLogin(resolver: "createUser")
+    createUsers(input: NewUsers!): CreateUsersResponse! @hasRole(resolver: "createUsers") @needLogin(resolver: "createUsers")
     updateUser(input: UpdateUserInput!): User! @hasRole(resolver: "updateUser") @needLogin(resolver: "updateUser")
     deleteUser(input: DeleteIDInput!)  : Boolean! @hasRole(resolver: "deleteUser") @needLogin(resolver: "deleteUser")
     resetPassword(input: ResetPasword!) : String! @hasRole(resolver: "resetPassword") @needLogin(resolver: "resetPassword")
@@ -534,6 +559,8 @@ type Mutation {
     cancelBooking(input:cancelBookingInput!): Boolean! @hasRole(resolver: "cancelBooking") @needLogin(resolver: "cancelBooking")
     booking(input:BookingInput!): Boolean! @hasRole(resolver: "createBooking") @needLogin(resolver: "createBooking")
     spend(input:SpendInput!): Boolean! @hasRole(resolver: "spend") @needLogin(resolver: "spend")
+
+    config(input:ConfigInput!):ClientConfig! @needLogin(resolver: "config")
 }
 
 type Message {

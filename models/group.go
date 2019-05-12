@@ -15,10 +15,11 @@ import (
 // Group : 用于User管理的群组
 type Group struct {
 	BaseModel
-	Name     string `json:"name" gorm:"column:name;not null"`
+	Name     string `json:"name" gorm:"column:name;not null;unique"`
 	Users    []User `json:"users" gorm:"many2many:user_groups;"`
 	AdminID  uint64 `json:"admin_id"`
 	Parent   uint64 `json:"parent" gorm:"column:parent;"`
+	Picture  string
 	Canteens []Canteen
 	Levels   string `json:"levels" gorm:"column:levels"` //保存父子层级关系图,例如 pppid.ppid.pid.id
 }
@@ -67,7 +68,7 @@ func (g *Group) Update(data map[string]interface{}) error {
 func GetGroups(where string, value string, skip, take int, orderBy string) (gs []Group, total int, err error) {
 	g := &Group{}
 
-	fieldsStr := "id,name,parent,levels,created_at,admin_id,updated_at,deleted_at"
+	fieldsStr := "id,name,parent,picture,levels,created_at,admin_id,updated_at,deleted_at"
 	orderKey := ""
 	orderType := "ASC"
 

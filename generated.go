@@ -94,10 +94,20 @@ type ComplexityRoot struct {
 		Dinner    func(childComplexity int) int
 	}
 
+	ClientConfig struct {
+		WxAppId  func(childComplexity int) int
+		Prompt   func(childComplexity int) int
+		WxSecret func(childComplexity int) int
+	}
+
 	Count struct {
 		Breakfast func(childComplexity int) int
 		Lunch     func(childComplexity int) int
 		Dinner    func(childComplexity int) int
+	}
+
+	CreateUsersResponse struct {
+		Errors func(childComplexity int) int
 	}
 
 	DashboardResponse struct {
@@ -118,6 +128,7 @@ type ComplexityRoot struct {
 	Group struct {
 		Id        func(childComplexity int) int
 		Name      func(childComplexity int) int
+		Picture   func(childComplexity int) int
 		Parent    func(childComplexity int) int
 		AdminId   func(childComplexity int) int
 		AdminInfo func(childComplexity int) int
@@ -147,6 +158,7 @@ type ComplexityRoot struct {
 		Login                               func(childComplexity int, input LoginInput) int
 		Logout                              func(childComplexity int, input LogoutInput) int
 		CreateUser                          func(childComplexity int, input NewUser) int
+		CreateUsers                         func(childComplexity int, input NewUsers) int
 		UpdateUser                          func(childComplexity int, input UpdateUserInput) int
 		DeleteUser                          func(childComplexity int, input DeleteIDInput) int
 		ResetPassword                       func(childComplexity int, input ResetPasword) int
@@ -173,6 +185,7 @@ type ComplexityRoot struct {
 		CancelBooking                       func(childComplexity int, input CancelBookingInput) int
 		Booking                             func(childComplexity int, input BookingInput) int
 		Spend                               func(childComplexity int, input SpendInput) int
+		Config                              func(childComplexity int, input ConfigInput) int
 	}
 
 	OrgDashboard struct {
@@ -204,6 +217,7 @@ type ComplexityRoot struct {
 		Canteens           func(childComplexity int, filter *CanteenFilterInput, pagination *Pagination) int
 		Booking            func(childComplexity int, filter *BookingFilterInput) int
 		Dashboard          func(childComplexity int) int
+		Config             func(childComplexity int) int
 		Messages           func(childComplexity int) int
 	}
 
@@ -388,6 +402,7 @@ type MutationResolver interface {
 	Login(ctx context.Context, input LoginInput) (LoginResponse, error)
 	Logout(ctx context.Context, input LogoutInput) (bool, error)
 	CreateUser(ctx context.Context, input NewUser) (models.User, error)
+	CreateUsers(ctx context.Context, input NewUsers) (CreateUsersResponse, error)
 	UpdateUser(ctx context.Context, input UpdateUserInput) (models.User, error)
 	DeleteUser(ctx context.Context, input DeleteIDInput) (bool, error)
 	ResetPassword(ctx context.Context, input ResetPasword) (string, error)
@@ -414,6 +429,7 @@ type MutationResolver interface {
 	CancelBooking(ctx context.Context, input CancelBookingInput) (bool, error)
 	Booking(ctx context.Context, input BookingInput) (bool, error)
 	Spend(ctx context.Context, input SpendInput) (bool, error)
+	Config(ctx context.Context, input ConfigInput) (ClientConfig, error)
 }
 type QueryResolver interface {
 	Groups(ctx context.Context, filter *GroupFilterInput, pagination *Pagination, orderBy *GroupOrderByInput) (QueryGroupResponse, error)
@@ -427,6 +443,7 @@ type QueryResolver interface {
 	Canteens(ctx context.Context, filter *CanteenFilterInput, pagination *Pagination) (QueryCanteenResponse, error)
 	Booking(ctx context.Context, filter *BookingFilterInput) (QueryBookingResponse, error)
 	Dashboard(ctx context.Context) (DashboardResponse, error)
+	Config(ctx context.Context) (ClientConfig, error)
 	Messages(ctx context.Context) (string, error)
 }
 type RoleResolver interface {
@@ -573,6 +590,21 @@ func field_Mutation_createUser_args(rawArgs map[string]interface{}) (map[string]
 	if tmp, ok := rawArgs["input"]; ok {
 		var err error
 		arg0, err = UnmarshalNewUser(tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+
+}
+
+func field_Mutation_createUsers_args(rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	args := map[string]interface{}{}
+	var arg0 NewUsers
+	if tmp, ok := rawArgs["input"]; ok {
+		var err error
+		arg0, err = UnmarshalNewUsers(tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -963,6 +995,21 @@ func field_Mutation_spend_args(rawArgs map[string]interface{}) (map[string]inter
 	if tmp, ok := rawArgs["input"]; ok {
 		var err error
 		arg0, err = UnmarshalSpendInput(tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+
+}
+
+func field_Mutation_config_args(rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	args := map[string]interface{}{}
+	var arg0 ConfigInput
+	if tmp, ok := rawArgs["input"]; ok {
+		var err error
+		arg0, err = UnmarshalConfigInput(tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -1723,6 +1770,27 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.CanteenCount.Dinner(childComplexity), true
 
+	case "ClientConfig.wxAppID":
+		if e.complexity.ClientConfig.WxAppId == nil {
+			break
+		}
+
+		return e.complexity.ClientConfig.WxAppId(childComplexity), true
+
+	case "ClientConfig.prompt":
+		if e.complexity.ClientConfig.Prompt == nil {
+			break
+		}
+
+		return e.complexity.ClientConfig.Prompt(childComplexity), true
+
+	case "ClientConfig.wxSecret":
+		if e.complexity.ClientConfig.WxSecret == nil {
+			break
+		}
+
+		return e.complexity.ClientConfig.WxSecret(childComplexity), true
+
 	case "Count.breakfast":
 		if e.complexity.Count.Breakfast == nil {
 			break
@@ -1743,6 +1811,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Count.Dinner(childComplexity), true
+
+	case "CreateUsersResponse.errors":
+		if e.complexity.CreateUsersResponse.Errors == nil {
+			break
+		}
+
+		return e.complexity.CreateUsersResponse.Errors(childComplexity), true
 
 	case "DashboardResponse.orgInfo":
 		if e.complexity.DashboardResponse.OrgInfo == nil {
@@ -1820,6 +1895,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Group.Name(childComplexity), true
+
+	case "Group.picture":
+		if e.complexity.Group.Picture == nil {
+			break
+		}
+
+		return e.complexity.Group.Picture(childComplexity), true
 
 	case "Group.parent":
 		if e.complexity.Group.Parent == nil {
@@ -1985,6 +2067,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Mutation.CreateUser(childComplexity, args["input"].(NewUser)), true
+
+	case "Mutation.createUsers":
+		if e.complexity.Mutation.CreateUsers == nil {
+			break
+		}
+
+		args, err := field_Mutation_createUsers_args(rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.CreateUsers(childComplexity, args["input"].(NewUsers)), true
 
 	case "Mutation.updateUser":
 		if e.complexity.Mutation.UpdateUser == nil {
@@ -2298,6 +2392,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Mutation.Spend(childComplexity, args["input"].(SpendInput)), true
 
+	case "Mutation.config":
+		if e.complexity.Mutation.Config == nil {
+			break
+		}
+
+		args, err := field_Mutation_config_args(rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.Config(childComplexity, args["input"].(ConfigInput)), true
+
 	case "OrgDashboard.name":
 		if e.complexity.OrgDashboard.Name == nil {
 			break
@@ -2501,6 +2607,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Query.Dashboard(childComplexity), true
+
+	case "Query.config":
+		if e.complexity.Query.Config == nil {
+			break
+		}
+
+		return e.complexity.Query.Config(childComplexity), true
 
 	case "Query.messages":
 		if e.complexity.Query.Messages == nil {
@@ -4347,6 +4460,121 @@ func (ec *executionContext) _CanteenCount_dinner(ctx context.Context, field grap
 	return graphql.MarshalInt(res)
 }
 
+var clientConfigImplementors = []string{"ClientConfig"}
+
+// nolint: gocyclo, errcheck, gas, goconst
+func (ec *executionContext) _ClientConfig(ctx context.Context, sel ast.SelectionSet, obj *ClientConfig) graphql.Marshaler {
+	fields := graphql.CollectFields(ctx, sel, clientConfigImplementors)
+
+	out := graphql.NewOrderedMap(len(fields))
+	invalid := false
+	for i, field := range fields {
+		out.Keys[i] = field.Alias
+
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("ClientConfig")
+		case "wxAppID":
+			out.Values[i] = ec._ClientConfig_wxAppID(ctx, field, obj)
+		case "prompt":
+			out.Values[i] = ec._ClientConfig_prompt(ctx, field, obj)
+		case "wxSecret":
+			out.Values[i] = ec._ClientConfig_wxSecret(ctx, field, obj)
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+
+	if invalid {
+		return graphql.Null
+	}
+	return out
+}
+
+// nolint: vetshadow
+func (ec *executionContext) _ClientConfig_wxAppID(ctx context.Context, field graphql.CollectedField, obj *ClientConfig) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object: "ClientConfig",
+		Args:   nil,
+		Field:  field,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.WxAppID, nil
+	})
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+
+	if res == nil {
+		return graphql.Null
+	}
+	return graphql.MarshalString(*res)
+}
+
+// nolint: vetshadow
+func (ec *executionContext) _ClientConfig_prompt(ctx context.Context, field graphql.CollectedField, obj *ClientConfig) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object: "ClientConfig",
+		Args:   nil,
+		Field:  field,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Prompt, nil
+	})
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+
+	if res == nil {
+		return graphql.Null
+	}
+	return graphql.MarshalString(*res)
+}
+
+// nolint: vetshadow
+func (ec *executionContext) _ClientConfig_wxSecret(ctx context.Context, field graphql.CollectedField, obj *ClientConfig) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object: "ClientConfig",
+		Args:   nil,
+		Field:  field,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.WxSecret, nil
+	})
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+
+	if res == nil {
+		return graphql.Null
+	}
+	return graphql.MarshalString(*res)
+}
+
 var countImplementors = []string{"Count"}
 
 // nolint: gocyclo, errcheck, gas, goconst
@@ -4466,6 +4694,66 @@ func (ec *executionContext) _Count_dinner(ctx context.Context, field graphql.Col
 	rctx.Result = res
 	ctx = ec.Tracer.StartFieldChildExecution(ctx)
 	return graphql.MarshalInt(res)
+}
+
+var createUsersResponseImplementors = []string{"CreateUsersResponse"}
+
+// nolint: gocyclo, errcheck, gas, goconst
+func (ec *executionContext) _CreateUsersResponse(ctx context.Context, sel ast.SelectionSet, obj *CreateUsersResponse) graphql.Marshaler {
+	fields := graphql.CollectFields(ctx, sel, createUsersResponseImplementors)
+
+	out := graphql.NewOrderedMap(len(fields))
+	invalid := false
+	for i, field := range fields {
+		out.Keys[i] = field.Alias
+
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("CreateUsersResponse")
+		case "errors":
+			out.Values[i] = ec._CreateUsersResponse_errors(ctx, field, obj)
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+
+	if invalid {
+		return graphql.Null
+	}
+	return out
+}
+
+// nolint: vetshadow
+func (ec *executionContext) _CreateUsersResponse_errors(ctx context.Context, field graphql.CollectedField, obj *CreateUsersResponse) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object: "CreateUsersResponse",
+		Args:   nil,
+		Field:  field,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Errors, nil
+	})
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.([]string)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+
+	arr1 := make(graphql.Array, len(res))
+
+	for idx1 := range res {
+		arr1[idx1] = func() graphql.Marshaler {
+			return graphql.MarshalString(res[idx1])
+		}()
+	}
+
+	return arr1
 }
 
 var dashboardResponseImplementors = []string{"DashboardResponse"}
@@ -4889,6 +5177,11 @@ func (ec *executionContext) _Group(ctx context.Context, sel ast.SelectionSet, ob
 			if out.Values[i] == graphql.Null {
 				invalid = true
 			}
+		case "picture":
+			out.Values[i] = ec._Group_picture(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalid = true
+			}
 		case "parent":
 			wg.Add(1)
 			go func(i int, field graphql.CollectedField) {
@@ -5018,6 +5311,33 @@ func (ec *executionContext) _Group_name(ctx context.Context, field graphql.Colle
 	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Name, nil
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return graphql.MarshalString(res)
+}
+
+// nolint: vetshadow
+func (ec *executionContext) _Group_picture(ctx context.Context, field graphql.CollectedField, obj *models.Group) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object: "Group",
+		Args:   nil,
+		Field:  field,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Picture, nil
 	})
 	if resTmp == nil {
 		if !ec.HasError(rctx) {
@@ -5648,6 +5968,11 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			if out.Values[i] == graphql.Null {
 				invalid = true
 			}
+		case "createUsers":
+			out.Values[i] = ec._Mutation_createUsers(ctx, field)
+			if out.Values[i] == graphql.Null {
+				invalid = true
+			}
 		case "updateUser":
 			out.Values[i] = ec._Mutation_updateUser(ctx, field)
 			if out.Values[i] == graphql.Null {
@@ -5778,6 +6103,11 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			if out.Values[i] == graphql.Null {
 				invalid = true
 			}
+		case "config":
+			out.Values[i] = ec._Mutation_config(ctx, field)
+			if out.Values[i] == graphql.Null {
+				invalid = true
+			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -5888,6 +6218,40 @@ func (ec *executionContext) _Mutation_createUser(ctx context.Context, field grap
 	ctx = ec.Tracer.StartFieldChildExecution(ctx)
 
 	return ec._User(ctx, field.Selections, &res)
+}
+
+// nolint: vetshadow
+func (ec *executionContext) _Mutation_createUsers(ctx context.Context, field graphql.CollectedField) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := field_Mutation_createUsers_args(rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	rctx := &graphql.ResolverContext{
+		Object: "Mutation",
+		Args:   args,
+		Field:  field,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, nil, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().CreateUsers(rctx, args["input"].(NewUsers))
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(CreateUsersResponse)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+
+	return ec._CreateUsersResponse(ctx, field.Selections, &res)
 }
 
 // nolint: vetshadow
@@ -6759,6 +7123,40 @@ func (ec *executionContext) _Mutation_spend(ctx context.Context, field graphql.C
 	return graphql.MarshalBoolean(res)
 }
 
+// nolint: vetshadow
+func (ec *executionContext) _Mutation_config(ctx context.Context, field graphql.CollectedField) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := field_Mutation_config_args(rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	rctx := &graphql.ResolverContext{
+		Object: "Mutation",
+		Args:   args,
+		Field:  field,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, nil, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().Config(rctx, args["input"].(ConfigInput))
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(ClientConfig)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+
+	return ec._ClientConfig(ctx, field.Selections, &res)
+}
+
 var orgDashboardImplementors = []string{"OrgDashboard"}
 
 // nolint: gocyclo, errcheck, gas, goconst
@@ -7279,6 +7677,15 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 				}
 				wg.Done()
 			}(i, field)
+		case "config":
+			wg.Add(1)
+			go func(i int, field graphql.CollectedField) {
+				out.Values[i] = ec._Query_config(ctx, field)
+				if out.Values[i] == graphql.Null {
+					invalid = true
+				}
+				wg.Done()
+			}(i, field)
 		case "messages":
 			wg.Add(1)
 			go func(i int, field graphql.CollectedField) {
@@ -7677,6 +8084,34 @@ func (ec *executionContext) _Query_dashboard(ctx context.Context, field graphql.
 	ctx = ec.Tracer.StartFieldChildExecution(ctx)
 
 	return ec._DashboardResponse(ctx, field.Selections, &res)
+}
+
+// nolint: vetshadow
+func (ec *executionContext) _Query_config(ctx context.Context, field graphql.CollectedField) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object: "Query",
+		Args:   nil,
+		Field:  field,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, nil, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().Config(rctx)
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(ClientConfig)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+
+	return ec._ClientConfig(ctx, field.Selections, &res)
 }
 
 // nolint: vetshadow
@@ -12717,6 +13152,51 @@ func UnmarshalCanteenQrcodeInput(v interface{}) (CanteenQrcodeInput, error) {
 	return it, nil
 }
 
+func UnmarshalConfigInput(v interface{}) (ConfigInput, error) {
+	var it ConfigInput
+	var asMap = v.(map[string]interface{})
+
+	for k, v := range asMap {
+		switch k {
+		case "prompt":
+			var err error
+			var ptr1 string
+			if v != nil {
+				ptr1, err = graphql.UnmarshalString(v)
+				it.Prompt = &ptr1
+			}
+
+			if err != nil {
+				return it, err
+			}
+		case "wxAppID":
+			var err error
+			var ptr1 string
+			if v != nil {
+				ptr1, err = graphql.UnmarshalString(v)
+				it.WxAppID = &ptr1
+			}
+
+			if err != nil {
+				return it, err
+			}
+		case "wxSecret":
+			var err error
+			var ptr1 string
+			if v != nil {
+				ptr1, err = graphql.UnmarshalString(v)
+				it.WxSecret = &ptr1
+			}
+
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
 func UnmarshalDeleteIDInput(v interface{}) (DeleteIDInput, error) {
 	var it DeleteIDInput
 	var asMap = v.(map[string]interface{})
@@ -13067,9 +13547,9 @@ func UnmarshalNewGroup(v interface{}) (NewGroup, error) {
 			if err != nil {
 				return it, err
 			}
-		case "levels":
+		case "picture":
 			var err error
-			it.Levels, err = graphql.UnmarshalString(v)
+			it.Picture, err = graphql.UnmarshalString(v)
 			if err != nil {
 				return it, err
 			}
@@ -13264,6 +13744,30 @@ func UnmarshalNewUser(v interface{}) (NewUser, error) {
 				it.GroupID = &ptr1
 			}
 
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
+func UnmarshalNewUsers(v interface{}) (NewUsers, error) {
+	var it NewUsers
+	var asMap = v.(map[string]interface{})
+
+	for k, v := range asMap {
+		switch k {
+		case "uploadFile":
+			var err error
+			it.UploadFile, err = graphql.UnmarshalString(v)
+			if err != nil {
+				return it, err
+			}
+		case "groupId":
+			var err error
+			it.GroupID, err = graphql.UnmarshalInt(v)
 			if err != nil {
 				return it, err
 			}
@@ -13857,6 +14361,17 @@ func UnmarshalUpdateGroupInput(v interface{}) (UpdateGroupInput, error) {
 			if err != nil {
 				return it, err
 			}
+		case "picture":
+			var err error
+			var ptr1 string
+			if v != nil {
+				ptr1, err = graphql.UnmarshalString(v)
+				it.Picture = &ptr1
+			}
+
+			if err != nil {
+				return it, err
+			}
 		case "levels":
 			var err error
 			var ptr1 string
@@ -14316,6 +14831,7 @@ type QueryGroupResponse{
 type Group {
     id: ID!
     name: String!
+    picture: String!
     parent: Int!
     adminId: Int!
     adminInfo: User!
@@ -14559,6 +15075,13 @@ type DashboardResponse {
     ticketInfo: [String!]
 }
 
+
+type ClientConfig {
+    wxAppID: String,
+    prompt: String,
+    wxSecret: String,
+}
+
 type Query {
     groups(filter:GroupFilterInput, pagination: Pagination,orderBy:GroupOrderByInput): QueryGroupResponse!  @hasRole(resolver: "groups") @needLogin(resolver: "groups")
     users(filter:UserFilterInput, pagination: Pagination):QueryUserResponse!  @hasRole(resolver: "users") @needLogin(resolver: "users")
@@ -14571,6 +15094,7 @@ type Query {
     canteens(filter:CanteenFilterInput, pagination: Pagination):QueryCanteenResponse!  @hasRole(resolver: "canteens") @needLogin(resolver: "canteens")
     booking(filter:BookingFilterInput):QueryBookingResponse!  @hasRole(resolver: "booking") @needLogin(resolver: "booking")
     dashboard:DashboardResponse!  @needLogin(resolver: "dashboard")
+    config: ClientConfig!  @needLogin(resolver: "config")
     messages:String!
 }
 
@@ -14596,6 +15120,15 @@ input NewUser {
     groupId: Int
 }
 
+input NewUsers {
+    uploadFile:String!
+    groupId:Int!
+}
+
+type CreateUsersResponse {
+    errors: [String!]
+}
+
 input UpdateUserInput {
     id: Int!
     email: String
@@ -14614,7 +15147,7 @@ input NewGroup {
     name: String!
     admin: Int!
     parent: Int!
-    levels: String!
+    picture: String!
     userId: [Int!]
 }
 
@@ -14660,6 +15193,7 @@ input UpdateGroupInput {
     name: String
     admin: Int
     parent: Int
+    picture: String
     levels: String
     userId: [Int!]
 }
@@ -14767,17 +15301,23 @@ input CanteenQrcodeInput{
     id: Int!
 }
 
-
 input SpendInput{
     canteenId:Int!
     userId:Int!
     uuid:String!
 }
 
+input ConfigInput{
+    prompt: String
+    wxAppID: String
+    wxSecret: String
+}
+
 type Mutation {
     login(input:LoginInput!):LoginResponse!
     logout(input:LogoutInput!):Boolean!
     createUser(input: NewUser!): User! @hasRole(resolver: "createUser") @needLogin(resolver: "createUser")
+    createUsers(input: NewUsers!): CreateUsersResponse! @hasRole(resolver: "createUsers") @needLogin(resolver: "createUsers")
     updateUser(input: UpdateUserInput!): User! @hasRole(resolver: "updateUser") @needLogin(resolver: "updateUser")
     deleteUser(input: DeleteIDInput!)  : Boolean! @hasRole(resolver: "deleteUser") @needLogin(resolver: "deleteUser")
     resetPassword(input: ResetPasword!) : String! @hasRole(resolver: "resetPassword") @needLogin(resolver: "resetPassword")
@@ -14812,6 +15352,8 @@ type Mutation {
     cancelBooking(input:cancelBookingInput!): Boolean! @hasRole(resolver: "cancelBooking") @needLogin(resolver: "cancelBooking")
     booking(input:BookingInput!): Boolean! @hasRole(resolver: "createBooking") @needLogin(resolver: "createBooking")
     spend(input:SpendInput!): Boolean! @hasRole(resolver: "spend") @needLogin(resolver: "spend")
+
+    config(input:ConfigInput!):ClientConfig! @needLogin(resolver: "config")
 }
 
 type Message {

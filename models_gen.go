@@ -40,10 +40,26 @@ type CanteenQrcodeInput struct {
 	ID int `json:"id"`
 }
 
+type ClientConfig struct {
+	WxAppID  *string `json:"wxAppID"`
+	Prompt   *string `json:"prompt"`
+	WxSecret *string `json:"wxSecret"`
+}
+
+type ConfigInput struct {
+	Prompt   *string `json:"prompt"`
+	WxAppID  *string `json:"wxAppID"`
+	WxSecret *string `json:"wxSecret"`
+}
+
 type Count struct {
 	Breakfast int `json:"breakfast"`
 	Lunch     int `json:"lunch"`
 	Dinner    int `json:"dinner"`
+}
+
+type CreateUsersResponse struct {
+	Errors []string `json:"errors"`
 }
 
 type DashboardResponse struct {
@@ -111,12 +127,12 @@ type NewDishes struct {
 }
 
 type NewGroup struct {
-	ID     *int   `json:"id"`
-	Name   string `json:"name"`
-	Admin  int    `json:"admin"`
-	Parent int    `json:"parent"`
-	Levels string `json:"levels"`
-	UserID []int  `json:"userId"`
+	ID      *int   `json:"id"`
+	Name    string `json:"name"`
+	Admin   int    `json:"admin"`
+	Parent  int    `json:"parent"`
+	Picture string `json:"picture"`
+	UserID  []int  `json:"userId"`
 }
 
 type NewRole struct {
@@ -141,6 +157,11 @@ type NewUser struct {
 	Picture  *string `json:"picture"`
 	State    *int    `json:"state"`
 	GroupID  *int    `json:"groupId"`
+}
+
+type NewUsers struct {
+	UploadFile string `json:"uploadFile"`
+	GroupID    int    `json:"groupId"`
 }
 
 type OrgDashboard struct {
@@ -313,12 +334,13 @@ type UpdateDishesInput struct {
 }
 
 type UpdateGroupInput struct {
-	ID     int     `json:"id"`
-	Name   *string `json:"name"`
-	Admin  *int    `json:"admin"`
-	Parent *int    `json:"parent"`
-	Levels *string `json:"levels"`
-	UserID []int   `json:"userId"`
+	ID      int     `json:"id"`
+	Name    *string `json:"name"`
+	Admin   *int    `json:"admin"`
+	Parent  *int    `json:"parent"`
+	Picture *string `json:"picture"`
+	Levels  *string `json:"levels"`
+	UserID  []int   `json:"userId"`
 }
 
 type UpdateRoleInput struct {

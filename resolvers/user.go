@@ -6,6 +6,7 @@ import (
 	"booking/util"
 	"context"
 	"fmt"
+	"github.com/360EntSecGroup-Skylar/excelize"
 	"github.com/rs/xid"
 	"github.com/skip2/go-qrcode"
 	"github.com/spf13/viper"
@@ -108,6 +109,7 @@ func (r *userResolver) Tickets(ctx context.Context, obj *models.User, pagination
 }
 
 func (r *mutationResolver) CreateUser(ctx context.Context, input booking.NewUser) (user models.User, err error) {
+
 	u := models.User{
 		Email:    input.Email,
 		IsSuper:  false,
@@ -117,27 +119,22 @@ func (r *mutationResolver) CreateUser(ctx context.Context, input booking.NewUser
 
 	// Validate the data.
 	if err = u.Validate(); err != nil {
-		fmt.Println("user validate error", err)
 		return user, err
 	}
 
 	// Encrypt the user password.
 	if err := u.Encrypt(); err != nil {
-		fmt.Println("user Encrypt error", err)
 		return user, err
 	}
 
 	// Insert the user to the database.
 	if err := u.Create(); err != nil {
-		fmt.Println("user Create error", err)
 		return user, err
 	}
 
 	if err := createUserQrCode(u); err != nil {
-		fmt.Println("user Create qr code error", err)
 		return user, err
 	}
-
 
 	//如果 存在组ID，则将用户加入到该组里
 	if input.GroupID != nil {
@@ -164,6 +161,75 @@ func (r *mutationResolver) CreateUser(ctx context.Context, input booking.NewUser
 	}
 
 	return u, nil
+}
+
+func (r *mutationResolver) CreateUsers(ctx context.Context, input booking.NewUsers) (booking.CreateUsersResponse, error) {
+	resp := booking.CreateUsersResponse{}
+
+	resp.Errors = []string{}
+
+	xlsx, err := excelize.OpenFile(input.UploadFile)
+	if err != nil {
+		fmt.Println("OpenFile", err)
+		return resp, err
+	}
+	uids := []uint64{}
+
+	rows := xlsx.GetRows("Sheet1")
+
+	for _, row := range rows[1:] {
+		u := models.User{
+			Email:    row[1],
+			IsSuper:  false,
+			Password: viper.GetString("default_password"),
+			Username: row[0],
+		}
+		errmsg := ""
+
+		// Validate the data.
+		if err = u.Validate(); err != nil {
+			errmsg = "批量创建用户发生错误，用户名:" +  row[0] + ";error:" + err.Error()
+			resp.Errors = append(resp.Errors, errmsg)
+			continue
+		}
+
+		// Encrypt the user password.
+		if err := u.Encrypt(); err != nil {
+			errmsg = "批量创建用户发生错误，用户名:" +  row[0] + ";error:" + err.Error()
+			resp.Errors = append(resp.Errors, errmsg)
+			continue
+		}
+
+		// Insert the user to the database.
+		if err := u.Create(); err != nil {
+			errmsg = "批量创建用户发生错误，用户名:" +  row[0] + ";error:" + err.Error()
+			resp.Errors = append(resp.Errors, errmsg)
+			continue
+		}
+
+		if err := createUserQrCode(u); err != nil {
+			errmsg = "用户:" +  row[0] + "已创建成功，但为用户生成二维码时出现错误;error:" + err.Error()
+			resp.Errors = append(resp.Errors, errmsg)
+		}
+
+		uids = append(uids, u.ID)
+	}
+
+	fmt.Println("uids", uids )
+	//如果存在组ID，则将用户加入到该组里
+	if input.GroupID != 0 {
+		models.AddGroupUsers(uint64(input.GroupID), uids)
+	}
+
+	//查看账号是否存在
+	normal := viper.GetString("role.normal")
+	roles, _, _ := models.GetRoles("name", normal, 0, 1)
+
+	if len(roles) > 0 {
+		models.AddRoleUsers(roles[0].ID, uids)
+	}
+
+	return resp, nil
 }
 
 func createUserQrCode(user models.User) error {

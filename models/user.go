@@ -18,7 +18,7 @@ const (
 type User struct {
 	BaseModel
 	Email     string   `json:"email" gorm:"column:email;"`
-	Username  string   `json:"username" gorm:"column:username;not null" binding:"required" validate:"min=1,max=32"`
+	Username  string   `json:"username" gorm:"column:username;not null;unique" binding:"required" validate:"min=1,max=32"`
 	Nickname  string   `json:"nickname" gorm:"column:nichname;not null" `
 	IDCard    string   `json:"id_card"`
 	Password  string   `json:"password" gorm:"column:password;not null" `

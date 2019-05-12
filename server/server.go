@@ -36,9 +36,8 @@ const defaultPort = "8080"
 var (
 	cfg     = pflag.StringP("config", "c", "", "booking config file path.")
 	version = pflag.BoolP("version", "v", false, "show version info.")
-)
-
-const DEBUG = true
+	DEBUG = true
+	)
 
 type HttpResponse struct {
 	Code    int               `json:"code"`
@@ -88,7 +87,14 @@ func main() {
 		fmt.Println(string(marshalled))
 		return
 	}
+	viper.SetConfigFile("./conf/client_config.yaml") // 如果指定了配置文件，则解析指定的配置文件
+	viper.SetConfigType("yaml")     // 设置配置文件格式为YAML
+	if err := viper.ReadInConfig(); err != nil { // viper解析配置文件
+		return
+	}
 
+	wxAppID = viper.GetString("wxappid")
+	wxSecret = viper.GetString("wxsecret")
 	// init config
 	if err := config.Init(*cfg); err != nil {
 		panic(err)
@@ -101,6 +107,17 @@ func main() {
 	if port == "" {
 		port = defaultPort
 	}
+
+	//debug := os.Getenv("BOOKINGDEBUG")
+	//
+	//if debug == "" {
+	//	DEBUG  = false
+	//}else if debug == "true" {
+	//	DEBUG = true
+	//}else{
+	//	DEBUG = false
+	//}
+
 
 	go func() {
 		for {
@@ -124,7 +141,7 @@ func main() {
 		}
 
 		if err != nil {
-			return nil, fmt.Errorf("Access denied")
+			return nil, fmt.Errorf("access denied")
 		}
 
 		sub := c.Role   // the user that wants to access a resource.
@@ -165,6 +182,8 @@ func main() {
 
 	fs := http.FileServer(http.Dir("upload/"))
 	http.Handle("/", http.FileServer(http.Dir("download/wechat"))) //存放微信JS接口安全域名验证文件
+
+	//http.Handle("/admin", http.FileServer(http.Dir("download/wechat")))
 
 	fs2 := http.FileServer(http.Dir("assets/"))
 	fs3 := http.FileServer(http.Dir("download/"))

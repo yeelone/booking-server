@@ -5,6 +5,9 @@
   创建用户信息:
     resource: CREATE_USER_INFO
     object: createUser
+  批量创建用户:
+    resource: CREATE_USERS_INFO
+    object: createUsers
   更新用户信息:
     resource: UPDATE_USER_INFO
     object: updateUser
