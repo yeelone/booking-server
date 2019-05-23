@@ -4,6 +4,7 @@ import (
 	"booking/util"
 	"errors"
 	"fmt"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -13,8 +14,9 @@ type Booking struct {
 	UserID      uint64 `gorm:"column:user_id;not null"`
 	CanteenID   uint64 `gorm:"not null"`
 	BookingDate string `gorm:"not null"`
+	Number      int
 	BookingType string //预订的类型，早餐 ，午餐 ，晚餐 breakfast,lunch,dinner
-	Available     bool
+	Available   bool
 }
 
 // TableName :
@@ -102,7 +104,7 @@ func CancelBooking(userID, bookingID uint64) error {
 	}
 
 	//取消预订之后，要重新给用户发放一个票
-	_, err = BatchCreateTickets(booking.UserID, 1, TicketTypeMap[booking.BookingType], 0)
+	_, err = BatchCreateTickets(booking.UserID, booking.Number, TicketTypeMap[booking.BookingType], 0)
 
 	if err != nil {
 		return err
@@ -125,7 +127,6 @@ func (b *Booking) Update(data map[string]interface{}) error {
 	tx.Commit()
 	return nil
 }
-
 
 // GetBooking :
 func GetBooking(id uint64) (result *Booking, err error) {
@@ -162,6 +163,60 @@ func GetAllBooking(where string, value string, skip, take int) (bookings []Booki
 
 }
 
+
+func CountBookingByMonth(year,month int,canteenIds []uint64) (data []map[string]interface{}, err error) {
+
+	dates := []string{}
+
+	yearStr := strconv.Itoa(year)
+	monthStr := strconv.Itoa(month)
+
+	if len(yearStr) == 1 {
+		yearStr = "0" + yearStr
+	}
+
+	if len(monthStr) == 1 {
+		monthStr = "0" + monthStr
+	}
+
+	startDay :=  yearStr+"-"+monthStr+"-01"
+
+	startTime, _ := time.ParseInLocation("2006-01-02",startDay, time.Local)
+
+	h, _ := time.ParseDuration("1h")
+	dates = append(dates, `'`+startDay+`'`)
+	days := util.CountDays(year,month)
+
+	for i := 1;i < days; i++ {
+		dates = append(dates, `'`+startTime.Add(time.Duration(i*24)*h).Format("2006-01-02")+`'`)
+	}
+
+	countSql := `SELECT a.user_id,b.username,sum(case when booking_type='breakfast' then a.number else 0 end) as breakfast , sum(case when booking_type='lunch' then a.number else 0 end) as lunch,
+		sum(case when booking_type='dinner' then a.number else 0 end) as dinner  from booking as a right join tb_users as b on a.user_id=b.id  AND a.booking_date IN (` + strings.Join(dates, ",") + `) AND a.canteen_id IN (`+util.ArrayToString(canteenIds,",") +`) group by a.user_id,b.username;`
+	rows, _ := DB.Self.Debug().Raw(countSql).Rows()
+
+	data = make([]map[string]interface{},0)
+
+	for rows.Next() {
+		user_id := ""
+		username := ""
+		breakfast := 0
+		lunch := 0
+		dinner := 0
+
+		err = rows.Scan(&user_id,&username, &breakfast, &lunch, &dinner)
+		d := make(map[string]interface{})
+		d["username"] = username
+		d["breakfast"] = breakfast
+		d["lunch"] = lunch
+		d["dinner"] = dinner
+		data = append(data,d)
+	}
+	return data, nil
+}
+
+
+
 // CountBookingByCanteen
 // 只显示未来7天的预订情况
 
@@ -178,7 +233,7 @@ func CountBookingByCanteen(cid uint64) (data map[string]map[string]int, err erro
 	dates = append(dates, `'`+startTime.Add(time.Duration(48)*h).Format("2006-01-02")+`'`)
 	dates = append(dates, `'`+startTime.Add(time.Duration(72)*h).Format("2006-01-02")+`'`)
 	dates = append(dates, `'`+startTime.Add(time.Duration(96)*h).Format("2006-01-02")+`'`)
-	dates = append(dates, `'`+startTime.Add(time.Duration(120)*h).Format("2006-01-02")+`'`)
+	dates = append(dates, 	`'`+startTime.Add(time.Duration(120)*h).Format("2006-01-02")+`'`)
 	dates = append(dates, `'`+startTime.Add(time.Duration(144)*h).Format("2006-01-02")+`'`)
 
 	countSql := `SELECT booking_date,sum(case when booking_type='breakfast' then 1 else 0 end) as breakfast , sum(case when booking_type='lunch' then 1 else 0 end) as lunch  ,` +

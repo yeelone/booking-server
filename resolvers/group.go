@@ -82,8 +82,7 @@ func (r *groupResolver) Canteens(ctx context.Context, obj *models.Group, filter 
 }
 
 func (r *mutationResolver) CreateGroup(ctx context.Context, input booking.NewGroup) (models.Group, error) {
-	fmt.Println("input.Picture", input.Picture )
-
+	fmt.Println("input.Picture", input.Picture)
 
 	m := models.Group{
 		Name:    input.Name,
@@ -113,7 +112,7 @@ func (r *mutationResolver) UpdateGroup(ctx context.Context, input booking.Update
 		g.Picture = *input.Picture
 		if len(*input.Picture) == 0 {
 			data["picture"] = `/assets/canteen-min.jpg`
-		}else{
+		} else {
 			data["picture"] = *input.Picture
 		}
 	}

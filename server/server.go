@@ -36,8 +36,8 @@ const defaultPort = "8080"
 var (
 	cfg     = pflag.StringP("config", "c", "", "booking config file path.")
 	version = pflag.BoolP("version", "v", false, "show version info.")
-	DEBUG = true
-	)
+	DEBUG   = true
+)
 
 type HttpResponse struct {
 	Code    int               `json:"code"`
@@ -78,18 +78,17 @@ func main() {
 	pflag.Parse()
 	if *version {
 		v1 := v.Get()
-		marshalled, err := json.MarshalIndent(&v1, "", "  ")
+		_, err := json.MarshalIndent(&v1, "", "  ")
 		if err != nil {
 			fmt.Printf("%v\n", err)
 			os.Exit(1)
 		}
 
-		fmt.Println(string(marshalled))
 		return
 	}
 	viper.SetConfigFile("./conf/client_config.yaml") // 如果指定了配置文件，则解析指定的配置文件
-	viper.SetConfigType("yaml")     // 设置配置文件格式为YAML
-	if err := viper.ReadInConfig(); err != nil { // viper解析配置文件
+	viper.SetConfigType("yaml")                      // 设置配置文件格式为YAML
+	if err := viper.ReadInConfig(); err != nil {     // viper解析配置文件
 		return
 	}
 
@@ -99,6 +98,7 @@ func main() {
 	if err := config.Init(*cfg); err != nil {
 		panic(err)
 	}
+
 	// init db
 	models.DB.Init()
 	defer models.DB.Close()
@@ -107,17 +107,6 @@ func main() {
 	if port == "" {
 		port = defaultPort
 	}
-
-	//debug := os.Getenv("BOOKINGDEBUG")
-	//
-	//if debug == "" {
-	//	DEBUG  = false
-	//}else if debug == "true" {
-	//	DEBUG = true
-	//}else{
-	//	DEBUG = false
-	//}
-
 
 	go func() {
 		for {

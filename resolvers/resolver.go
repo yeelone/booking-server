@@ -7,13 +7,16 @@ import (
 	"booking/pkg/auth"
 	"booking/pkg/constvar"
 	"booking/pkg/permission"
+	"booking/pkg/sd"
 	"booking/pkg/token"
 	"booking/util"
 	"context"
 	"fmt"
+	"github.com/360EntSecGroup-Skylar/excelize"
 	"github.com/boltdb/bolt"
 	"github.com/pkg/errors"
 	"github.com/spf13/viper"
+	"os"
 	"strconv"
 	"strings"
 	"time"
@@ -24,8 +27,14 @@ type Tunnel struct {
 	Observers map[string]chan models.Message
 }
 
+type CommentTunnel struct {
+	Name      string
+	Observers map[string]chan models.Comment
+}
+
 type Resolver struct {
 	tunnels  map[string]*Tunnel
+	commentTunnels map[string]*CommentTunnel
 	groups   []models.Group
 	users    []models.User
 	roles    []models.Role
@@ -51,6 +60,9 @@ func (r *Resolver) User() g.UserResolver {
 	return &userResolver{r}
 }
 
+func (r *Resolver) Comment() g.CommentResolver {
+	return &commentResolver{r}
+}
 func (r *Resolver) Role() g.RoleResolver {
 	return &roleResolver{r}
 }
@@ -85,7 +97,6 @@ func (r *Resolver) Message() g.MessageResolver {
 }
 
 type mutationResolver struct{ *Resolver }
-
 
 func (r *mutationResolver) Login(ctx context.Context, input booking.LoginInput) (booking.LoginResponse, error) {
 	resp := booking.LoginResponse{}
@@ -276,6 +287,25 @@ func (r *queryResolver) Users(ctx context.Context, filter *booking.UserFilterInp
 	return resp, err
 }
 
+func (r *queryResolver) Comments(ctx context.Context, pagination *booking.Pagination) (booking.QueryCommentResponse, error) {
+
+	if pagination == nil {
+		pagination = &booking.Pagination{
+			Skip: 0,
+			Take: constvar.DefaultLimit,
+		}
+	}
+
+	comments, total, err := models.GetComments("", "", pagination.Skip, pagination.Take)
+	resp := booking.QueryCommentResponse{
+		Rows:       comments,
+		Skip:       &pagination.Skip,
+		Take:       &pagination.Take,
+		TotalCount: &total,
+	}
+	return resp, err
+}
+
 func (r *queryResolver) Roles(ctx context.Context, filter *booking.RoleFilterInput, pagination *booking.Pagination) (booking.QueryRoleResponse, error) {
 	if pagination == nil {
 		pagination = &booking.Pagination{
@@ -353,8 +383,6 @@ func (r *queryResolver) Tickets(ctx context.Context, filter *booking.TicketFilte
 			resp := booking.QueryTicketResponse{
 				Count: &count,
 			}
-
-			fmt.Println(util.PrettyJson(resp))
 
 			return resp, err
 		}
@@ -456,8 +484,18 @@ func (r *queryResolver) Canteens(ctx context.Context, filter *booking.CanteenFil
 
 func (r *queryResolver) Dashboard(ctx context.Context) (response booking.DashboardResponse, err error) {
 	// 查看当前登录人数
-	systemInfo := booking.SystemInfo{}
+	cpu := sd.CPUCheck()
+	ram := sd.RAMCheck()
+	disk := sd.DiskCheck()
+
+	systemInfo := booking.SystemInfo{
+		CPU: &cpu,
+		Disk: &disk,
+		RAM: &ram,
+	}
 	systemInfo.CurrentLoginCount = 0
+
+
 	//只读事务在db.View函数之中：在函数中可以读取，但是不能做修改。
 	err = models.DB.Cache.View(func(tx *bolt.Tx) error {
 		//要检索这个value，我们可以使用 Bucket.Get() 函数：
@@ -598,8 +636,6 @@ func (r *queryResolver) CheckUserNotInRole(ctx context.Context, filter *booking.
 		uids[i] = uint64(id)
 	}
 
-	fmt.Println("uids", uids, filter.UserIds)
-
 	ids, err := models.CheckUsersNotInRole(uint64(filter.RoleID), uids)
 
 	newids := make([]int, 0)
@@ -609,4 +645,86 @@ func (r *queryResolver) CheckUserNotInRole(ctx context.Context, filter *booking.
 	}
 
 	return newids, err
+}
+
+func (r *queryResolver) ExportBooking(ctx context.Context, year string, month string) (resps *booking.BookingExportResponses,err error){
+	y, _ := strconv.Atoi(year)
+	m, _ := strconv.Atoi(month)
+
+	//获取到用户ID，查找用户所管理的食堂，用户只能导出所管理食堂的数据
+	uid := ctx.Value("user_id").(uint64)
+
+	canteens,total,err := models.GetCanteens("admin_id",util.Uint2Str(uid),0,1000,"")
+
+	fmt.Println("total, err", uid, total, err )
+	if err != nil {
+		return resps, err
+	}
+
+	if total == 0 {
+		return resps, nil
+	}
+
+	canteenIds := make([]uint64,total)
+
+	for i,c := range canteens {
+		canteenIds[i] = c.ID
+	}
+
+	data, err := models.CountBookingByMonth(y,m,canteenIds)
+	if err != nil {
+		return resps,err
+	}
+
+	resps = &booking.BookingExportResponses{}
+	resps.Data = make([]booking.CanteenBookingExport,0)
+
+	templateFile := "conf/export/booking.xlsx"
+
+	if !util.Exists(templateFile){
+		return resps, errors.New("导出模板文件不存在，请联系管理员 ")
+	}
+
+	var xlsx *excelize.File
+	sheetName := "Sheet1"
+
+	xlsx, err = excelize.OpenFile(templateFile)
+
+
+	for i, d := range data {
+		resp := booking.CanteenBookingExport{
+			Username:d["username"].(string),
+			Breakfast:d["breakfast"].(int),
+			Lunch:d["lunch"].(int),
+			Dinner:d["dinner"].(int),
+		}
+
+		resps.Data = append(resps.Data,resp)
+		row := strconv.Itoa(i+2)
+		xlsx.SetCellValue(sheetName, "A"+row,d["username"].(string) )
+		xlsx.SetCellValue(sheetName, "B"+row,d["breakfast"].(int) )
+		xlsx.SetCellValue(sheetName, "C"+row,d["lunch"].(int) )
+		xlsx.SetCellValue(sheetName, "D"+row,d["dinner"].(int) )
+	}
+	xlsx.SetActiveSheet(xlsx.GetSheetIndex(sheetName))
+
+	dir := "download/table/"
+	filename := dir + "预订情况汇总表_" + year + "-" + month + ".xlsx"
+
+	if !util.Exists(dir) {
+		err := os.Mkdir(dir, os.ModePerm)
+		if err != nil {
+			return resps, err
+		}
+	}
+
+
+	err = xlsx.SaveAs(filename)
+
+	if err != nil {
+		return resps, err
+	}
+	resps.File = filename
+	return resps, nil
+
 }

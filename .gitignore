@@ -22,3 +22,5 @@ gen### Go template
 
 vendor/
 /upload/
+upload/
+download/

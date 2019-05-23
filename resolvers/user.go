@@ -188,34 +188,34 @@ func (r *mutationResolver) CreateUsers(ctx context.Context, input booking.NewUse
 
 		// Validate the data.
 		if err = u.Validate(); err != nil {
-			errmsg = "批量创建用户发生错误，用户名:" +  row[0] + ";error:" + err.Error()
+			errmsg = "批量创建用户发生错误，用户名:" + row[0] + ";error:" + err.Error()
 			resp.Errors = append(resp.Errors, errmsg)
 			continue
 		}
 
 		// Encrypt the user password.
 		if err := u.Encrypt(); err != nil {
-			errmsg = "批量创建用户发生错误，用户名:" +  row[0] + ";error:" + err.Error()
+			errmsg = "批量创建用户发生错误，用户名:" + row[0] + ";error:" + err.Error()
 			resp.Errors = append(resp.Errors, errmsg)
 			continue
 		}
 
 		// Insert the user to the database.
 		if err := u.Create(); err != nil {
-			errmsg = "批量创建用户发生错误，用户名:" +  row[0] + ";error:" + err.Error()
+			errmsg = "批量创建用户发生错误，用户名:" + row[0] + ";error:" + err.Error()
 			resp.Errors = append(resp.Errors, errmsg)
 			continue
 		}
 
 		if err := createUserQrCode(u); err != nil {
-			errmsg = "用户:" +  row[0] + "已创建成功，但为用户生成二维码时出现错误;error:" + err.Error()
+			errmsg = "用户:" + row[0] + "已创建成功，但为用户生成二维码时出现错误;error:" + err.Error()
 			resp.Errors = append(resp.Errors, errmsg)
 		}
 
 		uids = append(uids, u.ID)
 	}
 
-	fmt.Println("uids", uids )
+	fmt.Println("uids", uids)
 	//如果存在组ID，则将用户加入到该组里
 	if input.GroupID != 0 {
 		models.AddGroupUsers(uint64(input.GroupID), uids)

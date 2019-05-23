@@ -24,6 +24,7 @@ func (r *ticketsResolver) UpdatedAt(ctx context.Context, obj *models.Ticket) (st
 func (r *ticketsResolver) UUID(ctx context.Context, obj *models.Ticket) (string, error) {
 	return obj.UUID, nil
 }
+
 func (r *ticketsResolver) UserID(ctx context.Context, obj *models.Ticket) (int, error) {
 	return int(obj.UserID), nil
 }

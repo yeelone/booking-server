@@ -67,23 +67,21 @@ func (r *mutationResolver) Spend(ctx context.Context, input booking.SpendInput) 
 	//	}
 	//}()
 
-
 	canteen := models.Canteen{}
 
 	if input.UUID != "" {
-		fmt.Println("uuid", input.UUID)
 
-		tunnel := &Tunnel{Name: input.UUID, Observers: map[string]chan models.Message{}}
+		//tunnel := &Tunnel{Name: input.UUID, Observers: map[string]chan models.Message{}}
 
 		//for k := range r.tunnels {
 		//	fmt.Println("k",k )
 		//}
 
-		if _, ok := r.tunnels[input.UUID] ; !ok {
+		if _, ok := r.tunnels[input.UUID]; !ok {
 			return false, errors.New("食堂管理员未上线，请稍候再试")
 		}
 
-		tunnel = r.tunnels[input.UUID]
+		tunnel := r.tunnels[input.UUID]
 
 		//先根据uuid查找属于的食堂
 		canteens, _, err := models.GetCanteens("qrcode_uuid", input.UUID, 0, 1, "")
@@ -94,13 +92,13 @@ func (r *mutationResolver) Spend(ctx context.Context, input booking.SpendInput) 
 		}
 
 		canteen = canteens[0]
-		user,_ := models.GetUserByID(canteen.AdminID)
+		user, _ := models.GetUserByID(canteen.AdminID)
 		message := models.Message{
 			ID:        user.ID,
 			CreatedAt: time.Now(),
 			Text:      input.UUID,
 			CreatedBy: user,
-			Error:false,
+			Error:     false,
 		}
 
 		if uint64(input.CanteenID) != canteen.ID {
@@ -125,6 +123,7 @@ func (r *mutationResolver) Spend(ctx context.Context, input booking.SpendInput) 
 			booking.BookingType = "dinner"
 		}
 
+		booking.BookingType = "lunch"
 		if booking.BookingType == "" {
 			return false, errors.New("已过了用餐时间")
 		}
@@ -133,25 +132,27 @@ func (r *mutationResolver) Spend(ctx context.Context, input booking.SpendInput) 
 		booking.CanteenID = uint64(input.CanteenID)
 		booking.UserID = uint64(input.UserID)
 
-		if bookings, err := booking.Check(); err == nil   {
-
+		if bookings, err := booking.Check(); err == nil {
 
 			for k, observer := range tunnel.Observers {
 
-				for _, booking := range bookings {
-					data := make( map[string]interface{} )
+				for _, item := range bookings {
+					data := make(map[string]interface{})
 					data["available"] = false
-					if err := booking.Update(data); err != nil {
+					if err := item.Update(data); err != nil {
 						return false, err
+					}
+
+					if k == strconv.Itoa(int(canteen.AdminID)) {
+						message.Text = strconv.Itoa(item.Number)
+						fmt.Println(util.PrettyJson(message),item.Number)
+						observer <- message
+						break
 					}
 				}
 
-				if k == strconv.Itoa(int(canteen.AdminID)) {
-					observer <- message
-					break
-				}
 			}
-		}else{
+		} else {
 			return false, errors.New("您是否有预订？")
 		}
 
@@ -165,7 +166,7 @@ func (r *mutationResolver) Booking(ctx context.Context, input booking.BookingInp
 	date := strings.Split(input.Date, "-")
 	breakfast, lunch, dinner, err := models.CountTicketsDetailByUser(uint64(input.UserID))
 
-	if err!= nil{
+	if err != nil {
 		return false, err
 	}
 
@@ -212,9 +213,12 @@ func (r *mutationResolver) Booking(ctx context.Context, input booking.BookingInp
 			}
 
 			switch input.Type.String() {
-				case "breakfast": breakfast = breakfast -1
-				case "lunch": lunch = lunch -1
-				case "dinner": dinner = dinner -1
+			case "breakfast":
+				breakfast = breakfast - 1
+			case "lunch":
+				lunch = lunch - 1
+			case "dinner":
+				dinner = dinner - 1
 			}
 
 		}
@@ -226,15 +230,15 @@ func (r *mutationResolver) Booking(ctx context.Context, input booking.BookingInp
 
 	switch input.Type.String() {
 	case "breakfast":
-		if breakfast < 1 {
+		if breakfast < input.Number {
 			return false, errors.New("没有可用早餐卷")
 		}
 	case "lunch":
-		if lunch < 1 {
+		if lunch < input.Number {
 			return false, errors.New("没有可用午餐卷")
 		}
 	case "dinner":
-		if dinner < 1 {
+		if dinner < input.Number {
 			return false, errors.New("没有可用晚餐卷")
 		}
 	}
@@ -244,9 +248,10 @@ func (r *mutationResolver) Booking(ctx context.Context, input booking.BookingInp
 	booking.CanteenID = uint64(input.CanteenID)
 	booking.BookingType = input.Type.String()
 	booking.BookingDate = input.Date
+	booking.Number = input.Number
 	booking.Available = true
 
-	if bookings, _ := booking.Check(); len(bookings) > 0   {
+	if bookings, _ := booking.Check(); len(bookings) > 0 {
 		return false, errors.New("已有预订，您不需要再重复预订")
 	}
 
@@ -255,7 +260,7 @@ func (r *mutationResolver) Booking(ctx context.Context, input booking.BookingInp
 	}
 
 	//预订即回收餐票
-	if err := models.RecyclingTickets(booking.UserID, models.TicketTypeMap[booking.BookingType], 1); err != nil {
+	if err := models.RecyclingTickets(booking.UserID, models.TicketTypeMap[booking.BookingType], input.Number); err != nil {
 		models.DeleteBooking(booking.ID)
 		return false, err
 	}

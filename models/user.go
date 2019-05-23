@@ -17,20 +17,20 @@ const (
 // User : User represents a registered user.
 type User struct {
 	BaseModel
-	Email     string   `json:"email" gorm:"column:email;"`
-	Username  string   `json:"username" gorm:"column:username;not null;unique" binding:"required" validate:"min=1,max=32"`
-	Nickname  string   `json:"nickname" gorm:"column:nichname;not null" `
-	IDCard    string   `json:"id_card"`
-	Password  string   `json:"password" gorm:"column:password;not null" `
-	IsSuper   bool     `json:"is_super"`
-	Picture   string   `json:"picture"`
-	State     int      `json:"state"`
-	Groups    []Group  `json:"groups" gorm:"many2many:user_groups;"`
-	Roles     []Role   `json:"roles" gorm:"many2many:user_roles"`
-	Tickets   []Ticket `json:"tickets"`
-	Qrcode                   string //
-	QrcodeUUID               string // 用于辨别二维码的有效性
-	CanteenID uint64
+	Email      string   `json:"email" gorm:"column:email;"`
+	Username   string   `json:"username" gorm:"column:username;not null;unique" binding:"required" validate:"min=1,max=32"`
+	Nickname   string   `json:"nickname" gorm:"column:nichname;not null" `
+	IDCard     string   `json:"id_card"`
+	Password   string   `json:"password" gorm:"column:password;not null" `
+	IsSuper    bool     `json:"is_super"`
+	Picture    string   `json:"picture"`
+	State      int      `json:"state"`
+	Groups     []Group  `json:"groups" gorm:"many2many:user_groups;"`
+	Roles      []Role   `json:"roles" gorm:"many2many:user_roles"`
+	Tickets    []Ticket `json:"tickets"`
+	Qrcode     string   //
+	QrcodeUUID string   // 用于辨别二维码的有效性
+	CanteenID  uint64
 }
 
 // TableName :

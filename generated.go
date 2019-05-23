@@ -34,6 +34,7 @@ type Config struct {
 type ResolverRoot interface {
 	Booking() BookingResolver
 	Canteen() CanteenResolver
+	Comment() CommentResolver
 	Dishes() DishesResolver
 	Group() GroupResolver
 	Message() MessageResolver
@@ -59,9 +60,15 @@ type ComplexityRoot struct {
 		CanteenId func(childComplexity int) int
 		Type      func(childComplexity int) int
 		Date      func(childComplexity int) int
+		Number    func(childComplexity int) int
 		CreatedAt func(childComplexity int) int
 		UpdatedAt func(childComplexity int) int
 		DeletedAt func(childComplexity int) int
+	}
+
+	BookingExportResponses struct {
+		Data func(childComplexity int) int
+		File func(childComplexity int) int
 	}
 
 	Canteen struct {
@@ -87,6 +94,13 @@ type ComplexityRoot struct {
 		Admin                    func(childComplexity int) int
 	}
 
+	CanteenBookingExport struct {
+		Username  func(childComplexity int) int
+		Breakfast func(childComplexity int) int
+		Lunch     func(childComplexity int) int
+		Dinner    func(childComplexity int) int
+	}
+
 	CanteenCount struct {
 		Date      func(childComplexity int) int
 		Breakfast func(childComplexity int) int
@@ -98,6 +112,15 @@ type ComplexityRoot struct {
 		WxAppId  func(childComplexity int) int
 		Prompt   func(childComplexity int) int
 		WxSecret func(childComplexity int) int
+	}
+
+	Comment struct {
+		Id        func(childComplexity int) int
+		User      func(childComplexity int) int
+		Body      func(childComplexity int) int
+		CreatedAt func(childComplexity int) int
+		UpdatedAt func(childComplexity int) int
+		DeletedAt func(childComplexity int) int
 	}
 
 	Count struct {
@@ -114,6 +137,12 @@ type ComplexityRoot struct {
 		OrgInfo    func(childComplexity int) int
 		SystemInfo func(childComplexity int) int
 		TicketInfo func(childComplexity int) int
+	}
+
+	Data struct {
+		Used    func(childComplexity int) int
+		Total   func(childComplexity int) int
+		Percent func(childComplexity int) int
 	}
 
 	Dishes struct {
@@ -185,6 +214,7 @@ type ComplexityRoot struct {
 		CancelBooking                       func(childComplexity int, input CancelBookingInput) int
 		Booking                             func(childComplexity int, input BookingInput) int
 		Spend                               func(childComplexity int, input SpendInput) int
+		CreateComment                       func(childComplexity int, input NewComment) int
 		Config                              func(childComplexity int, input ConfigInput) int
 	}
 
@@ -206,6 +236,7 @@ type ComplexityRoot struct {
 	}
 
 	Query struct {
+		Comments           func(childComplexity int, pagination *Pagination) int
 		Groups             func(childComplexity int, filter *GroupFilterInput, pagination *Pagination, orderBy *GroupOrderByInput) int
 		Users              func(childComplexity int, filter *UserFilterInput, pagination *Pagination) int
 		Roles              func(childComplexity int, filter *RoleFilterInput, pagination *Pagination) int
@@ -216,6 +247,7 @@ type ComplexityRoot struct {
 		Dishes             func(childComplexity int, filter *DishesFilterInput, pagination *Pagination) int
 		Canteens           func(childComplexity int, filter *CanteenFilterInput, pagination *Pagination) int
 		Booking            func(childComplexity int, filter *BookingFilterInput) int
+		ExportBooking      func(childComplexity int, year string, month string) int
 		Dashboard          func(childComplexity int) int
 		Config             func(childComplexity int) int
 		Messages           func(childComplexity int) int
@@ -229,6 +261,13 @@ type ComplexityRoot struct {
 	}
 
 	QueryCanteenResponse struct {
+		TotalCount func(childComplexity int) int
+		Skip       func(childComplexity int) int
+		Take       func(childComplexity int) int
+		Rows       func(childComplexity int) int
+	}
+
+	QueryCommentResponse struct {
 		TotalCount func(childComplexity int) int
 		Skip       func(childComplexity int) int
 		Take       func(childComplexity int) int
@@ -296,10 +335,14 @@ type ComplexityRoot struct {
 
 	Subscription struct {
 		MessageAdded func(childComplexity int, roomName string, adminId int) int
+		SubComment   func(childComplexity int, roomName string, userId int) int
 	}
 
 	SystemInfo struct {
 		CurrentLoginCount func(childComplexity int) int
+		Cpu               func(childComplexity int) int
+		Disk              func(childComplexity int) int
+		Ram               func(childComplexity int) int
 	}
 
 	Ticket struct {
@@ -357,6 +400,7 @@ type BookingResolver interface {
 	CanteenID(ctx context.Context, obj *models.Booking) (int, error)
 	Type(ctx context.Context, obj *models.Booking) (string, error)
 	Date(ctx context.Context, obj *models.Booking) (string, error)
+
 	CreatedAt(ctx context.Context, obj *models.Booking) (string, error)
 	UpdatedAt(ctx context.Context, obj *models.Booking) (string, error)
 	DeletedAt(ctx context.Context, obj *models.Booking) (string, error)
@@ -372,6 +416,14 @@ type CanteenResolver interface {
 
 	Count(ctx context.Context, obj *models.Canteen) ([]CanteenCount, error)
 	Admin(ctx context.Context, obj *models.Canteen) (models.User, error)
+}
+type CommentResolver interface {
+	ID(ctx context.Context, obj *models.Comment) (string, error)
+	User(ctx context.Context, obj *models.Comment) (models.User, error)
+
+	CreatedAt(ctx context.Context, obj *models.Comment) (string, error)
+	UpdatedAt(ctx context.Context, obj *models.Comment) (string, error)
+	DeletedAt(ctx context.Context, obj *models.Comment) (string, error)
 }
 type DishesResolver interface {
 	ID(ctx context.Context, obj *models.Dishes) (string, error)
@@ -429,9 +481,11 @@ type MutationResolver interface {
 	CancelBooking(ctx context.Context, input CancelBookingInput) (bool, error)
 	Booking(ctx context.Context, input BookingInput) (bool, error)
 	Spend(ctx context.Context, input SpendInput) (bool, error)
+	CreateComment(ctx context.Context, input NewComment) (models.Comment, error)
 	Config(ctx context.Context, input ConfigInput) (ClientConfig, error)
 }
 type QueryResolver interface {
+	Comments(ctx context.Context, pagination *Pagination) (QueryCommentResponse, error)
 	Groups(ctx context.Context, filter *GroupFilterInput, pagination *Pagination, orderBy *GroupOrderByInput) (QueryGroupResponse, error)
 	Users(ctx context.Context, filter *UserFilterInput, pagination *Pagination) (QueryUserResponse, error)
 	Roles(ctx context.Context, filter *RoleFilterInput, pagination *Pagination) (QueryRoleResponse, error)
@@ -442,6 +496,7 @@ type QueryResolver interface {
 	Dishes(ctx context.Context, filter *DishesFilterInput, pagination *Pagination) (QueryDishesResponse, error)
 	Canteens(ctx context.Context, filter *CanteenFilterInput, pagination *Pagination) (QueryCanteenResponse, error)
 	Booking(ctx context.Context, filter *BookingFilterInput) (QueryBookingResponse, error)
+	ExportBooking(ctx context.Context, year string, month string) (*BookingExportResponses, error)
 	Dashboard(ctx context.Context) (DashboardResponse, error)
 	Config(ctx context.Context) (ClientConfig, error)
 	Messages(ctx context.Context) (string, error)
@@ -456,6 +511,7 @@ type RoleResolver interface {
 }
 type SubscriptionResolver interface {
 	MessageAdded(ctx context.Context, roomName string, adminId int) (<-chan models.Message, error)
+	SubComment(ctx context.Context, roomName string, userId int) (<-chan models.Comment, error)
 }
 type TicketResolver interface {
 	ID(ctx context.Context, obj *models.Ticket) (string, error)
@@ -1004,6 +1060,21 @@ func field_Mutation_spend_args(rawArgs map[string]interface{}) (map[string]inter
 
 }
 
+func field_Mutation_createComment_args(rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	args := map[string]interface{}{}
+	var arg0 NewComment
+	if tmp, ok := rawArgs["input"]; ok {
+		var err error
+		arg0, err = UnmarshalNewComment(tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+
+}
+
 func field_Mutation_config_args(rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	args := map[string]interface{}{}
 	var arg0 ConfigInput
@@ -1015,6 +1086,26 @@ func field_Mutation_config_args(rawArgs map[string]interface{}) (map[string]inte
 		}
 	}
 	args["input"] = arg0
+	return args, nil
+
+}
+
+func field_Query_comments_args(rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	args := map[string]interface{}{}
+	var arg0 *Pagination
+	if tmp, ok := rawArgs["pagination"]; ok {
+		var err error
+		var ptr1 Pagination
+		if tmp != nil {
+			ptr1, err = UnmarshalPagination(tmp)
+			arg0 = &ptr1
+		}
+
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["pagination"] = arg0
 	return args, nil
 
 }
@@ -1326,6 +1417,30 @@ func field_Query_booking_args(rawArgs map[string]interface{}) (map[string]interf
 
 }
 
+func field_Query_exportBooking_args(rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["year"]; ok {
+		var err error
+		arg0, err = graphql.UnmarshalString(tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["year"] = arg0
+	var arg1 string
+	if tmp, ok := rawArgs["month"]; ok {
+		var err error
+		arg1, err = graphql.UnmarshalString(tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["month"] = arg1
+	return args, nil
+
+}
+
 func field_Query___type_args(rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	args := map[string]interface{}{}
 	var arg0 string
@@ -1395,6 +1510,30 @@ func field_Subscription_messageAdded_args(rawArgs map[string]interface{}) (map[s
 		}
 	}
 	args["adminId"] = arg1
+	return args, nil
+
+}
+
+func field_Subscription_subComment_args(rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["roomName"]; ok {
+		var err error
+		arg0, err = graphql.UnmarshalString(tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["roomName"] = arg0
+	var arg1 int
+	if tmp, ok := rawArgs["userId"]; ok {
+		var err error
+		arg1, err = graphql.UnmarshalInt(tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["userId"] = arg1
 	return args, nil
 
 }
@@ -1581,6 +1720,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Booking.Date(childComplexity), true
 
+	case "Booking.number":
+		if e.complexity.Booking.Number == nil {
+			break
+		}
+
+		return e.complexity.Booking.Number(childComplexity), true
+
 	case "Booking.createdAt":
 		if e.complexity.Booking.CreatedAt == nil {
 			break
@@ -1601,6 +1747,20 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Booking.DeletedAt(childComplexity), true
+
+	case "BookingExportResponses.data":
+		if e.complexity.BookingExportResponses.Data == nil {
+			break
+		}
+
+		return e.complexity.BookingExportResponses.Data(childComplexity), true
+
+	case "BookingExportResponses.file":
+		if e.complexity.BookingExportResponses.File == nil {
+			break
+		}
+
+		return e.complexity.BookingExportResponses.File(childComplexity), true
 
 	case "Canteen.id":
 		if e.complexity.Canteen.Id == nil {
@@ -1742,6 +1902,34 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Canteen.Admin(childComplexity), true
 
+	case "CanteenBookingExport.username":
+		if e.complexity.CanteenBookingExport.Username == nil {
+			break
+		}
+
+		return e.complexity.CanteenBookingExport.Username(childComplexity), true
+
+	case "CanteenBookingExport.breakfast":
+		if e.complexity.CanteenBookingExport.Breakfast == nil {
+			break
+		}
+
+		return e.complexity.CanteenBookingExport.Breakfast(childComplexity), true
+
+	case "CanteenBookingExport.lunch":
+		if e.complexity.CanteenBookingExport.Lunch == nil {
+			break
+		}
+
+		return e.complexity.CanteenBookingExport.Lunch(childComplexity), true
+
+	case "CanteenBookingExport.dinner":
+		if e.complexity.CanteenBookingExport.Dinner == nil {
+			break
+		}
+
+		return e.complexity.CanteenBookingExport.Dinner(childComplexity), true
+
 	case "CanteenCount.date":
 		if e.complexity.CanteenCount.Date == nil {
 			break
@@ -1791,6 +1979,48 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.ClientConfig.WxSecret(childComplexity), true
 
+	case "Comment.id":
+		if e.complexity.Comment.Id == nil {
+			break
+		}
+
+		return e.complexity.Comment.Id(childComplexity), true
+
+	case "Comment.user":
+		if e.complexity.Comment.User == nil {
+			break
+		}
+
+		return e.complexity.Comment.User(childComplexity), true
+
+	case "Comment.body":
+		if e.complexity.Comment.Body == nil {
+			break
+		}
+
+		return e.complexity.Comment.Body(childComplexity), true
+
+	case "Comment.createdAt":
+		if e.complexity.Comment.CreatedAt == nil {
+			break
+		}
+
+		return e.complexity.Comment.CreatedAt(childComplexity), true
+
+	case "Comment.updatedAt":
+		if e.complexity.Comment.UpdatedAt == nil {
+			break
+		}
+
+		return e.complexity.Comment.UpdatedAt(childComplexity), true
+
+	case "Comment.deletedAt":
+		if e.complexity.Comment.DeletedAt == nil {
+			break
+		}
+
+		return e.complexity.Comment.DeletedAt(childComplexity), true
+
 	case "Count.breakfast":
 		if e.complexity.Count.Breakfast == nil {
 			break
@@ -1839,6 +2069,27 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.DashboardResponse.TicketInfo(childComplexity), true
+
+	case "Data.used":
+		if e.complexity.Data.Used == nil {
+			break
+		}
+
+		return e.complexity.Data.Used(childComplexity), true
+
+	case "Data.total":
+		if e.complexity.Data.Total == nil {
+			break
+		}
+
+		return e.complexity.Data.Total(childComplexity), true
+
+	case "Data.percent":
+		if e.complexity.Data.Percent == nil {
+			break
+		}
+
+		return e.complexity.Data.Percent(childComplexity), true
 
 	case "Dishes.id":
 		if e.complexity.Dishes.Id == nil {
@@ -2392,6 +2643,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Mutation.Spend(childComplexity, args["input"].(SpendInput)), true
 
+	case "Mutation.createComment":
+		if e.complexity.Mutation.CreateComment == nil {
+			break
+		}
+
+		args, err := field_Mutation_createComment_args(rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.CreateComment(childComplexity, args["input"].(NewComment)), true
+
 	case "Mutation.config":
 		if e.complexity.Mutation.Config == nil {
 			break
@@ -2480,6 +2743,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Permission.DeletedAt(childComplexity), true
+
+	case "Query.comments":
+		if e.complexity.Query.Comments == nil {
+			break
+		}
+
+		args, err := field_Query_comments_args(rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.Comments(childComplexity, args["pagination"].(*Pagination)), true
 
 	case "Query.groups":
 		if e.complexity.Query.Groups == nil {
@@ -2601,6 +2876,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Query.Booking(childComplexity, args["filter"].(*BookingFilterInput)), true
 
+	case "Query.exportBooking":
+		if e.complexity.Query.ExportBooking == nil {
+			break
+		}
+
+		args, err := field_Query_exportBooking_args(rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.ExportBooking(childComplexity, args["year"].(string), args["month"].(string)), true
+
 	case "Query.dashboard":
 		if e.complexity.Query.Dashboard == nil {
 			break
@@ -2677,6 +2964,34 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.QueryCanteenResponse.Rows(childComplexity), true
+
+	case "QueryCommentResponse.totalCount":
+		if e.complexity.QueryCommentResponse.TotalCount == nil {
+			break
+		}
+
+		return e.complexity.QueryCommentResponse.TotalCount(childComplexity), true
+
+	case "QueryCommentResponse.skip":
+		if e.complexity.QueryCommentResponse.Skip == nil {
+			break
+		}
+
+		return e.complexity.QueryCommentResponse.Skip(childComplexity), true
+
+	case "QueryCommentResponse.take":
+		if e.complexity.QueryCommentResponse.Take == nil {
+			break
+		}
+
+		return e.complexity.QueryCommentResponse.Take(childComplexity), true
+
+	case "QueryCommentResponse.rows":
+		if e.complexity.QueryCommentResponse.Rows == nil {
+			break
+		}
+
+		return e.complexity.QueryCommentResponse.Rows(childComplexity), true
 
 	case "QueryDishesResponse.totalCount":
 		if e.complexity.QueryDishesResponse.TotalCount == nil {
@@ -2940,12 +3255,45 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Subscription.MessageAdded(childComplexity, args["roomName"].(string), args["adminId"].(int)), true
 
+	case "Subscription.subComment":
+		if e.complexity.Subscription.SubComment == nil {
+			break
+		}
+
+		args, err := field_Subscription_subComment_args(rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Subscription.SubComment(childComplexity, args["roomName"].(string), args["userId"].(int)), true
+
 	case "SystemInfo.currentLoginCount":
 		if e.complexity.SystemInfo.CurrentLoginCount == nil {
 			break
 		}
 
 		return e.complexity.SystemInfo.CurrentLoginCount(childComplexity), true
+
+	case "SystemInfo.cpu":
+		if e.complexity.SystemInfo.Cpu == nil {
+			break
+		}
+
+		return e.complexity.SystemInfo.Cpu(childComplexity), true
+
+	case "SystemInfo.disk":
+		if e.complexity.SystemInfo.Disk == nil {
+			break
+		}
+
+		return e.complexity.SystemInfo.Disk(childComplexity), true
+
+	case "SystemInfo.ram":
+		if e.complexity.SystemInfo.Ram == nil {
+			break
+		}
+
+		return e.complexity.SystemInfo.Ram(childComplexity), true
 
 	case "Ticket.id":
 		if e.complexity.Ticket.Id == nil {
@@ -3349,6 +3697,11 @@ func (ec *executionContext) _Booking(ctx context.Context, sel ast.SelectionSet, 
 				}
 				wg.Done()
 			}(i, field)
+		case "number":
+			out.Values[i] = ec._Booking_number(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalid = true
+			}
 		case "createdAt":
 			wg.Add(1)
 			go func(i int, field graphql.CollectedField) {
@@ -3523,6 +3876,33 @@ func (ec *executionContext) _Booking_date(ctx context.Context, field graphql.Col
 }
 
 // nolint: vetshadow
+func (ec *executionContext) _Booking_number(ctx context.Context, field graphql.CollectedField, obj *models.Booking) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object: "Booking",
+		Args:   nil,
+		Field:  field,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Number, nil
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return graphql.MarshalInt(res)
+}
+
+// nolint: vetshadow
 func (ec *executionContext) _Booking_createdAt(ctx context.Context, field graphql.CollectedField, obj *models.Booking) graphql.Marshaler {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
@@ -3590,6 +3970,128 @@ func (ec *executionContext) _Booking_deletedAt(ctx context.Context, field graphq
 	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
 		return ec.resolvers.Booking().DeletedAt(rctx, obj)
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return graphql.MarshalString(res)
+}
+
+var bookingExportResponsesImplementors = []string{"BookingExportResponses"}
+
+// nolint: gocyclo, errcheck, gas, goconst
+func (ec *executionContext) _BookingExportResponses(ctx context.Context, sel ast.SelectionSet, obj *BookingExportResponses) graphql.Marshaler {
+	fields := graphql.CollectFields(ctx, sel, bookingExportResponsesImplementors)
+
+	out := graphql.NewOrderedMap(len(fields))
+	invalid := false
+	for i, field := range fields {
+		out.Keys[i] = field.Alias
+
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("BookingExportResponses")
+		case "data":
+			out.Values[i] = ec._BookingExportResponses_data(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalid = true
+			}
+		case "file":
+			out.Values[i] = ec._BookingExportResponses_file(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalid = true
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+
+	if invalid {
+		return graphql.Null
+	}
+	return out
+}
+
+// nolint: vetshadow
+func (ec *executionContext) _BookingExportResponses_data(ctx context.Context, field graphql.CollectedField, obj *BookingExportResponses) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object: "BookingExportResponses",
+		Args:   nil,
+		Field:  field,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Data, nil
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]CanteenBookingExport)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+
+	arr1 := make(graphql.Array, len(res))
+	var wg sync.WaitGroup
+
+	isLen1 := len(res) == 1
+	if !isLen1 {
+		wg.Add(len(res))
+	}
+
+	for idx1 := range res {
+		idx1 := idx1
+		rctx := &graphql.ResolverContext{
+			Index:  &idx1,
+			Result: &res[idx1],
+		}
+		ctx := graphql.WithResolverContext(ctx, rctx)
+		f := func(idx1 int) {
+			if !isLen1 {
+				defer wg.Done()
+			}
+			arr1[idx1] = func() graphql.Marshaler {
+
+				return ec._CanteenBookingExport(ctx, field.Selections, &res[idx1])
+			}()
+		}
+		if isLen1 {
+			f(idx1)
+		} else {
+			go f(idx1)
+		}
+
+	}
+	wg.Wait()
+	return arr1
+}
+
+// nolint: vetshadow
+func (ec *executionContext) _BookingExportResponses_file(ctx context.Context, field graphql.CollectedField, obj *BookingExportResponses) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object: "BookingExportResponses",
+		Args:   nil,
+		Field:  field,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.File, nil
 	})
 	if resTmp == nil {
 		if !ec.HasError(rctx) {
@@ -4307,6 +4809,159 @@ func (ec *executionContext) _Canteen_admin(ctx context.Context, field graphql.Co
 	return ec._User(ctx, field.Selections, &res)
 }
 
+var canteenBookingExportImplementors = []string{"CanteenBookingExport"}
+
+// nolint: gocyclo, errcheck, gas, goconst
+func (ec *executionContext) _CanteenBookingExport(ctx context.Context, sel ast.SelectionSet, obj *CanteenBookingExport) graphql.Marshaler {
+	fields := graphql.CollectFields(ctx, sel, canteenBookingExportImplementors)
+
+	out := graphql.NewOrderedMap(len(fields))
+	invalid := false
+	for i, field := range fields {
+		out.Keys[i] = field.Alias
+
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("CanteenBookingExport")
+		case "username":
+			out.Values[i] = ec._CanteenBookingExport_username(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalid = true
+			}
+		case "breakfast":
+			out.Values[i] = ec._CanteenBookingExport_breakfast(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalid = true
+			}
+		case "lunch":
+			out.Values[i] = ec._CanteenBookingExport_lunch(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalid = true
+			}
+		case "dinner":
+			out.Values[i] = ec._CanteenBookingExport_dinner(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalid = true
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+
+	if invalid {
+		return graphql.Null
+	}
+	return out
+}
+
+// nolint: vetshadow
+func (ec *executionContext) _CanteenBookingExport_username(ctx context.Context, field graphql.CollectedField, obj *CanteenBookingExport) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object: "CanteenBookingExport",
+		Args:   nil,
+		Field:  field,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Username, nil
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return graphql.MarshalString(res)
+}
+
+// nolint: vetshadow
+func (ec *executionContext) _CanteenBookingExport_breakfast(ctx context.Context, field graphql.CollectedField, obj *CanteenBookingExport) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object: "CanteenBookingExport",
+		Args:   nil,
+		Field:  field,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Breakfast, nil
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return graphql.MarshalInt(res)
+}
+
+// nolint: vetshadow
+func (ec *executionContext) _CanteenBookingExport_lunch(ctx context.Context, field graphql.CollectedField, obj *CanteenBookingExport) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object: "CanteenBookingExport",
+		Args:   nil,
+		Field:  field,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Lunch, nil
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return graphql.MarshalInt(res)
+}
+
+// nolint: vetshadow
+func (ec *executionContext) _CanteenBookingExport_dinner(ctx context.Context, field graphql.CollectedField, obj *CanteenBookingExport) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object: "CanteenBookingExport",
+		Args:   nil,
+		Field:  field,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Dinner, nil
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return graphql.MarshalInt(res)
+}
+
 var canteenCountImplementors = []string{"CanteenCount"}
 
 // nolint: gocyclo, errcheck, gas, goconst
@@ -4573,6 +5228,245 @@ func (ec *executionContext) _ClientConfig_wxSecret(ctx context.Context, field gr
 		return graphql.Null
 	}
 	return graphql.MarshalString(*res)
+}
+
+var commentImplementors = []string{"Comment"}
+
+// nolint: gocyclo, errcheck, gas, goconst
+func (ec *executionContext) _Comment(ctx context.Context, sel ast.SelectionSet, obj *models.Comment) graphql.Marshaler {
+	fields := graphql.CollectFields(ctx, sel, commentImplementors)
+
+	var wg sync.WaitGroup
+	out := graphql.NewOrderedMap(len(fields))
+	invalid := false
+	for i, field := range fields {
+		out.Keys[i] = field.Alias
+
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("Comment")
+		case "id":
+			wg.Add(1)
+			go func(i int, field graphql.CollectedField) {
+				out.Values[i] = ec._Comment_id(ctx, field, obj)
+				if out.Values[i] == graphql.Null {
+					invalid = true
+				}
+				wg.Done()
+			}(i, field)
+		case "user":
+			wg.Add(1)
+			go func(i int, field graphql.CollectedField) {
+				out.Values[i] = ec._Comment_user(ctx, field, obj)
+				if out.Values[i] == graphql.Null {
+					invalid = true
+				}
+				wg.Done()
+			}(i, field)
+		case "body":
+			out.Values[i] = ec._Comment_body(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalid = true
+			}
+		case "createdAt":
+			wg.Add(1)
+			go func(i int, field graphql.CollectedField) {
+				out.Values[i] = ec._Comment_createdAt(ctx, field, obj)
+				if out.Values[i] == graphql.Null {
+					invalid = true
+				}
+				wg.Done()
+			}(i, field)
+		case "updatedAt":
+			wg.Add(1)
+			go func(i int, field graphql.CollectedField) {
+				out.Values[i] = ec._Comment_updatedAt(ctx, field, obj)
+				if out.Values[i] == graphql.Null {
+					invalid = true
+				}
+				wg.Done()
+			}(i, field)
+		case "deletedAt":
+			wg.Add(1)
+			go func(i int, field graphql.CollectedField) {
+				out.Values[i] = ec._Comment_deletedAt(ctx, field, obj)
+				if out.Values[i] == graphql.Null {
+					invalid = true
+				}
+				wg.Done()
+			}(i, field)
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	wg.Wait()
+	if invalid {
+		return graphql.Null
+	}
+	return out
+}
+
+// nolint: vetshadow
+func (ec *executionContext) _Comment_id(ctx context.Context, field graphql.CollectedField, obj *models.Comment) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object: "Comment",
+		Args:   nil,
+		Field:  field,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Comment().ID(rctx, obj)
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return graphql.MarshalID(res)
+}
+
+// nolint: vetshadow
+func (ec *executionContext) _Comment_user(ctx context.Context, field graphql.CollectedField, obj *models.Comment) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object: "Comment",
+		Args:   nil,
+		Field:  field,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Comment().User(rctx, obj)
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(models.User)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+
+	return ec._User(ctx, field.Selections, &res)
+}
+
+// nolint: vetshadow
+func (ec *executionContext) _Comment_body(ctx context.Context, field graphql.CollectedField, obj *models.Comment) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object: "Comment",
+		Args:   nil,
+		Field:  field,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Body, nil
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return graphql.MarshalString(res)
+}
+
+// nolint: vetshadow
+func (ec *executionContext) _Comment_createdAt(ctx context.Context, field graphql.CollectedField, obj *models.Comment) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object: "Comment",
+		Args:   nil,
+		Field:  field,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Comment().CreatedAt(rctx, obj)
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return graphql.MarshalString(res)
+}
+
+// nolint: vetshadow
+func (ec *executionContext) _Comment_updatedAt(ctx context.Context, field graphql.CollectedField, obj *models.Comment) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object: "Comment",
+		Args:   nil,
+		Field:  field,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Comment().UpdatedAt(rctx, obj)
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return graphql.MarshalString(res)
+}
+
+// nolint: vetshadow
+func (ec *executionContext) _Comment_deletedAt(ctx context.Context, field graphql.CollectedField, obj *models.Comment) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object: "Comment",
+		Args:   nil,
+		Field:  field,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Comment().DeletedAt(rctx, obj)
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return graphql.MarshalString(res)
 }
 
 var countImplementors = []string{"Count"}
@@ -4912,6 +5806,125 @@ func (ec *executionContext) _DashboardResponse_ticketInfo(ctx context.Context, f
 	}
 
 	return arr1
+}
+
+var dataImplementors = []string{"Data"}
+
+// nolint: gocyclo, errcheck, gas, goconst
+func (ec *executionContext) _Data(ctx context.Context, sel ast.SelectionSet, obj *Data) graphql.Marshaler {
+	fields := graphql.CollectFields(ctx, sel, dataImplementors)
+
+	out := graphql.NewOrderedMap(len(fields))
+	invalid := false
+	for i, field := range fields {
+		out.Keys[i] = field.Alias
+
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("Data")
+		case "used":
+			out.Values[i] = ec._Data_used(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalid = true
+			}
+		case "total":
+			out.Values[i] = ec._Data_total(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalid = true
+			}
+		case "percent":
+			out.Values[i] = ec._Data_percent(ctx, field, obj)
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+
+	if invalid {
+		return graphql.Null
+	}
+	return out
+}
+
+// nolint: vetshadow
+func (ec *executionContext) _Data_used(ctx context.Context, field graphql.CollectedField, obj *Data) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object: "Data",
+		Args:   nil,
+		Field:  field,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Used, nil
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return graphql.MarshalInt(res)
+}
+
+// nolint: vetshadow
+func (ec *executionContext) _Data_total(ctx context.Context, field graphql.CollectedField, obj *Data) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object: "Data",
+		Args:   nil,
+		Field:  field,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Total, nil
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+	return graphql.MarshalInt(res)
+}
+
+// nolint: vetshadow
+func (ec *executionContext) _Data_percent(ctx context.Context, field graphql.CollectedField, obj *Data) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object: "Data",
+		Args:   nil,
+		Field:  field,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Percent, nil
+	})
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*int)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+
+	if res == nil {
+		return graphql.Null
+	}
+	return graphql.MarshalInt(*res)
 }
 
 var dishesImplementors = []string{"Dishes"}
@@ -6103,6 +7116,11 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			if out.Values[i] == graphql.Null {
 				invalid = true
 			}
+		case "createComment":
+			out.Values[i] = ec._Mutation_createComment(ctx, field)
+			if out.Values[i] == graphql.Null {
+				invalid = true
+			}
 		case "config":
 			out.Values[i] = ec._Mutation_config(ctx, field)
 			if out.Values[i] == graphql.Null {
@@ -7124,6 +8142,40 @@ func (ec *executionContext) _Mutation_spend(ctx context.Context, field graphql.C
 }
 
 // nolint: vetshadow
+func (ec *executionContext) _Mutation_createComment(ctx context.Context, field graphql.CollectedField) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := field_Mutation_createComment_args(rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	rctx := &graphql.ResolverContext{
+		Object: "Mutation",
+		Args:   args,
+		Field:  field,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, nil, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().CreateComment(rctx, args["input"].(NewComment))
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(models.Comment)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+
+	return ec._Comment(ctx, field.Selections, &res)
+}
+
+// nolint: vetshadow
 func (ec *executionContext) _Mutation_config(ctx context.Context, field graphql.CollectedField) graphql.Marshaler {
 	ctx = ec.Tracer.StartFieldExecution(ctx, field)
 	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
@@ -7578,6 +8630,15 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Query")
+		case "comments":
+			wg.Add(1)
+			go func(i int, field graphql.CollectedField) {
+				out.Values[i] = ec._Query_comments(ctx, field)
+				if out.Values[i] == graphql.Null {
+					invalid = true
+				}
+				wg.Done()
+			}(i, field)
 		case "groups":
 			wg.Add(1)
 			go func(i int, field graphql.CollectedField) {
@@ -7668,6 +8729,12 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 				}
 				wg.Done()
 			}(i, field)
+		case "exportBooking":
+			wg.Add(1)
+			go func(i int, field graphql.CollectedField) {
+				out.Values[i] = ec._Query_exportBooking(ctx, field)
+				wg.Done()
+			}(i, field)
 		case "dashboard":
 			wg.Add(1)
 			go func(i int, field graphql.CollectedField) {
@@ -7708,6 +8775,40 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 		return graphql.Null
 	}
 	return out
+}
+
+// nolint: vetshadow
+func (ec *executionContext) _Query_comments(ctx context.Context, field graphql.CollectedField) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := field_Query_comments_args(rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	rctx := &graphql.ResolverContext{
+		Object: "Query",
+		Args:   args,
+		Field:  field,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, nil, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().Comments(rctx, args["pagination"].(*Pagination))
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(QueryCommentResponse)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+
+	return ec._QueryCommentResponse(ctx, field.Selections, &res)
 }
 
 // nolint: vetshadow
@@ -8056,6 +9157,41 @@ func (ec *executionContext) _Query_booking(ctx context.Context, field graphql.Co
 	ctx = ec.Tracer.StartFieldChildExecution(ctx)
 
 	return ec._QueryBookingResponse(ctx, field.Selections, &res)
+}
+
+// nolint: vetshadow
+func (ec *executionContext) _Query_exportBooking(ctx context.Context, field graphql.CollectedField) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := field_Query_exportBooking_args(rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	rctx := &graphql.ResolverContext{
+		Object: "Query",
+		Args:   args,
+		Field:  field,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, nil, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().ExportBooking(rctx, args["year"].(string), args["month"].(string))
+	})
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*BookingExportResponses)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+
+	if res == nil {
+		return graphql.Null
+	}
+
+	return ec._BookingExportResponses(ctx, field.Selections, res)
 }
 
 // nolint: vetshadow
@@ -8552,6 +9688,186 @@ func (ec *executionContext) _QueryCanteenResponse_rows(ctx context.Context, fiel
 			arr1[idx1] = func() graphql.Marshaler {
 
 				return ec._Canteen(ctx, field.Selections, &res[idx1])
+			}()
+		}
+		if isLen1 {
+			f(idx1)
+		} else {
+			go f(idx1)
+		}
+
+	}
+	wg.Wait()
+	return arr1
+}
+
+var queryCommentResponseImplementors = []string{"QueryCommentResponse"}
+
+// nolint: gocyclo, errcheck, gas, goconst
+func (ec *executionContext) _QueryCommentResponse(ctx context.Context, sel ast.SelectionSet, obj *QueryCommentResponse) graphql.Marshaler {
+	fields := graphql.CollectFields(ctx, sel, queryCommentResponseImplementors)
+
+	out := graphql.NewOrderedMap(len(fields))
+	invalid := false
+	for i, field := range fields {
+		out.Keys[i] = field.Alias
+
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("QueryCommentResponse")
+		case "totalCount":
+			out.Values[i] = ec._QueryCommentResponse_totalCount(ctx, field, obj)
+		case "skip":
+			out.Values[i] = ec._QueryCommentResponse_skip(ctx, field, obj)
+		case "take":
+			out.Values[i] = ec._QueryCommentResponse_take(ctx, field, obj)
+		case "rows":
+			out.Values[i] = ec._QueryCommentResponse_rows(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalid = true
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+
+	if invalid {
+		return graphql.Null
+	}
+	return out
+}
+
+// nolint: vetshadow
+func (ec *executionContext) _QueryCommentResponse_totalCount(ctx context.Context, field graphql.CollectedField, obj *QueryCommentResponse) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object: "QueryCommentResponse",
+		Args:   nil,
+		Field:  field,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.TotalCount, nil
+	})
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*int)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+
+	if res == nil {
+		return graphql.Null
+	}
+	return graphql.MarshalInt(*res)
+}
+
+// nolint: vetshadow
+func (ec *executionContext) _QueryCommentResponse_skip(ctx context.Context, field graphql.CollectedField, obj *QueryCommentResponse) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object: "QueryCommentResponse",
+		Args:   nil,
+		Field:  field,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Skip, nil
+	})
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*int)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+
+	if res == nil {
+		return graphql.Null
+	}
+	return graphql.MarshalInt(*res)
+}
+
+// nolint: vetshadow
+func (ec *executionContext) _QueryCommentResponse_take(ctx context.Context, field graphql.CollectedField, obj *QueryCommentResponse) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object: "QueryCommentResponse",
+		Args:   nil,
+		Field:  field,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Take, nil
+	})
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*int)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+
+	if res == nil {
+		return graphql.Null
+	}
+	return graphql.MarshalInt(*res)
+}
+
+// nolint: vetshadow
+func (ec *executionContext) _QueryCommentResponse_rows(ctx context.Context, field graphql.CollectedField, obj *QueryCommentResponse) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object: "QueryCommentResponse",
+		Args:   nil,
+		Field:  field,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Rows, nil
+	})
+	if resTmp == nil {
+		if !ec.HasError(rctx) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]models.Comment)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+
+	arr1 := make(graphql.Array, len(res))
+	var wg sync.WaitGroup
+
+	isLen1 := len(res) == 1
+	if !isLen1 {
+		wg.Add(len(res))
+	}
+
+	for idx1 := range res {
+		idx1 := idx1
+		rctx := &graphql.ResolverContext{
+			Index:  &idx1,
+			Result: &res[idx1],
+		}
+		ctx := graphql.WithResolverContext(ctx, rctx)
+		f := func(idx1 int) {
+			if !isLen1 {
+				defer wg.Done()
+			}
+			arr1[idx1] = func() graphql.Marshaler {
+
+				return ec._Comment(ctx, field.Selections, &res[idx1])
 			}()
 		}
 		if isLen1 {
@@ -10117,6 +11433,8 @@ func (ec *executionContext) _Subscription(ctx context.Context, sel ast.Selection
 	switch fields[0].Name {
 	case "messageAdded":
 		return ec._Subscription_messageAdded(ctx, fields[0])
+	case "subComment":
+		return ec._Subscription_subComment(ctx, fields[0])
 	default:
 		panic("unknown field " + strconv.Quote(fields[0].Name))
 	}
@@ -10153,6 +11471,37 @@ func (ec *executionContext) _Subscription_messageAdded(ctx context.Context, fiel
 	}
 }
 
+func (ec *executionContext) _Subscription_subComment(ctx context.Context, field graphql.CollectedField) func() graphql.Marshaler {
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := field_Subscription_subComment_args(rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return nil
+	}
+	ctx = graphql.WithResolverContext(ctx, &graphql.ResolverContext{
+		Field: field,
+	})
+	// FIXME: subscriptions are missing request middleware stack https://github.com/99designs/gqlgen/issues/259
+	//          and Tracer stack
+	rctx := ctx
+	results, err := ec.resolvers.Subscription().SubComment(rctx, args["roomName"].(string), args["userId"].(int))
+	if err != nil {
+		ec.Error(ctx, err)
+		return nil
+	}
+	return func() graphql.Marshaler {
+		res, ok := <-results
+		if !ok {
+			return nil
+		}
+		var out graphql.OrderedMap
+		out.Add(field.Alias, func() graphql.Marshaler {
+			return ec._Comment(ctx, field.Selections, &res)
+		}())
+		return &out
+	}
+}
+
 var systemInfoImplementors = []string{"SystemInfo"}
 
 // nolint: gocyclo, errcheck, gas, goconst
@@ -10172,6 +11521,12 @@ func (ec *executionContext) _SystemInfo(ctx context.Context, sel ast.SelectionSe
 			if out.Values[i] == graphql.Null {
 				invalid = true
 			}
+		case "cpu":
+			out.Values[i] = ec._SystemInfo_cpu(ctx, field, obj)
+		case "disk":
+			out.Values[i] = ec._SystemInfo_disk(ctx, field, obj)
+		case "ram":
+			out.Values[i] = ec._SystemInfo_ram(ctx, field, obj)
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -10208,6 +11563,90 @@ func (ec *executionContext) _SystemInfo_currentLoginCount(ctx context.Context, f
 	rctx.Result = res
 	ctx = ec.Tracer.StartFieldChildExecution(ctx)
 	return graphql.MarshalInt(res)
+}
+
+// nolint: vetshadow
+func (ec *executionContext) _SystemInfo_cpu(ctx context.Context, field graphql.CollectedField, obj *SystemInfo) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object: "SystemInfo",
+		Args:   nil,
+		Field:  field,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.CPU, nil
+	})
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+
+	if res == nil {
+		return graphql.Null
+	}
+	return graphql.MarshalString(*res)
+}
+
+// nolint: vetshadow
+func (ec *executionContext) _SystemInfo_disk(ctx context.Context, field graphql.CollectedField, obj *SystemInfo) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object: "SystemInfo",
+		Args:   nil,
+		Field:  field,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Disk, nil
+	})
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+
+	if res == nil {
+		return graphql.Null
+	}
+	return graphql.MarshalString(*res)
+}
+
+// nolint: vetshadow
+func (ec *executionContext) _SystemInfo_ram(ctx context.Context, field graphql.CollectedField, obj *SystemInfo) graphql.Marshaler {
+	ctx = ec.Tracer.StartFieldExecution(ctx, field)
+	defer func() { ec.Tracer.EndFieldExecution(ctx) }()
+	rctx := &graphql.ResolverContext{
+		Object: "SystemInfo",
+		Args:   nil,
+		Field:  field,
+	}
+	ctx = graphql.WithResolverContext(ctx, rctx)
+	ctx = ec.Tracer.StartFieldResolverExecution(ctx, rctx)
+	resTmp := ec.FieldMiddleware(ctx, obj, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.RAM, nil
+	})
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	rctx.Result = res
+	ctx = ec.Tracer.StartFieldChildExecution(ctx)
+
+	if res == nil {
+		return graphql.Null
+	}
+	return graphql.MarshalString(*res)
 }
 
 var ticketImplementors = []string{"Ticket"}
@@ -13055,6 +14494,12 @@ func UnmarshalBookingInput(v interface{}) (BookingInput, error) {
 			if err != nil {
 				return it, err
 			}
+		case "number":
+			var err error
+			it.Number, err = graphql.UnmarshalInt(v)
+			if err != nil {
+				return it, err
+			}
 		case "date":
 			var err error
 			it.Date, err = graphql.UnmarshalString(v)
@@ -13479,6 +14924,36 @@ func UnmarshalNewCanteen(v interface{}) (NewCanteen, error) {
 		case "adminId":
 			var err error
 			it.AdminID, err = graphql.UnmarshalInt(v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
+func UnmarshalNewComment(v interface{}) (NewComment, error) {
+	var it NewComment
+	var asMap = v.(map[string]interface{})
+
+	for k, v := range asMap {
+		switch k {
+		case "userId":
+			var err error
+			it.UserID, err = graphql.UnmarshalInt(v)
+			if err != nil {
+				return it, err
+			}
+		case "body":
+			var err error
+			it.Body, err = graphql.UnmarshalString(v)
+			if err != nil {
+				return it, err
+			}
+		case "tunnel":
+			var err error
+			it.Tunnel, err = graphql.UnmarshalString(v)
 			if err != nil {
 				return it, err
 			}
@@ -14794,6 +16269,22 @@ var parsedSchema = gqlparser.MustLoadSchema(
 	&ast.Source{Name: "schema.graphql", Input: `directive @hasRole(resolver: String!) on FIELD_DEFINITION
 directive @needLogin(resolver: String!) on FIELD_DEFINITION
 
+type QueryCommentResponse{
+    totalCount:Int,
+    skip:Int,
+    take:Int,
+    rows: [Comment!]!
+}
+
+type Comment {
+    id: ID!
+    user:User!
+    body: String!
+    createdAt: String!
+    updatedAt: String!
+    deletedAt: String!
+}
+
 type QueryUserResponse{
     totalCount:Int,
     skip:Int,
@@ -14850,7 +16341,7 @@ type Booking {
     canteenId:Int!
     type:String!
     date:String!
-
+    number:Int!
     createdAt: String!
     updatedAt: String!
     deletedAt: String!
@@ -14885,6 +16376,18 @@ type Ticket {
     price:Int!
     createdAt: String!
     updatedAt: String!
+}
+
+type CanteenBookingExport{
+    username: String!
+    breakfast: Int!
+    lunch: Int!
+    dinner: Int!
+}
+
+type BookingExportResponses {
+    data: [CanteenBookingExport!]!
+    file: String!
 }
 
 input TicketFilterInput {
@@ -15065,8 +16568,17 @@ type OrgDashboard{
     canteenCount: Int!
 }
 
+type Data {
+    used: Int!
+    total: Int!
+    percent: Int
+}
+
 type SystemInfo {
     currentLoginCount: Int!
+    cpu: String
+    disk: String
+    ram: String
 }
 
 type DashboardResponse {
@@ -15075,7 +16587,6 @@ type DashboardResponse {
     ticketInfo: [String!]
 }
 
-
 type ClientConfig {
     wxAppID: String,
     prompt: String,
@@ -15083,6 +16594,7 @@ type ClientConfig {
 }
 
 type Query {
+    comments(pagination: Pagination): QueryCommentResponse!  @hasRole(resolver: "comments") @needLogin(resolver: "comments")
     groups(filter:GroupFilterInput, pagination: Pagination,orderBy:GroupOrderByInput): QueryGroupResponse!  @hasRole(resolver: "groups") @needLogin(resolver: "groups")
     users(filter:UserFilterInput, pagination: Pagination):QueryUserResponse!  @hasRole(resolver: "users") @needLogin(resolver: "users")
     roles(filter:RoleFilterInput, pagination: Pagination):QueryRoleResponse!  @hasRole(resolver: "roles") @needLogin(resolver: "roles")
@@ -15093,6 +16605,7 @@ type Query {
     dishes(filter:DishesFilterInput, pagination: Pagination):QueryDishesResponse!  @hasRole(resolver: "dishes") @needLogin(resolver: "dishes")
     canteens(filter:CanteenFilterInput, pagination: Pagination):QueryCanteenResponse!  @hasRole(resolver: "canteens") @needLogin(resolver: "canteens")
     booking(filter:BookingFilterInput):QueryBookingResponse!  @hasRole(resolver: "booking") @needLogin(resolver: "booking")
+    exportBooking(year:String!,month:String!):BookingExportResponses @hasRole(resolver: "exportBooking") @needLogin(resolver: "exportBooking")
     dashboard:DashboardResponse!  @needLogin(resolver: "dashboard")
     config: ClientConfig!  @needLogin(resolver: "config")
     messages:String!
@@ -15105,6 +16618,12 @@ input ResetPasword {
 input NewTodo {
     text: String!
     userId: String!
+}
+
+input NewComment {
+    userId: Int!
+    body: String!
+    tunnel: String!
 }
 
 input NewUser {
@@ -15282,6 +16801,7 @@ input BookingInput {
     userId:Int!
     canteenId:Int!
     type:BookingTypeInput!
+    number: Int!
     date:String!
     autoCurrentMonth:Boolean
 }
@@ -15353,6 +16873,8 @@ type Mutation {
     booking(input:BookingInput!): Boolean! @hasRole(resolver: "createBooking") @needLogin(resolver: "createBooking")
     spend(input:SpendInput!): Boolean! @hasRole(resolver: "spend") @needLogin(resolver: "spend")
 
+    createComment(input: NewComment!): Comment! @hasRole(resolver: "createComment") @needLogin(resolver: "createComment")
+
     config(input:ConfigInput!):ClientConfig! @needLogin(resolver: "config")
 }
 
@@ -15366,6 +16888,7 @@ type Message {
 
 type Subscription {
     messageAdded(roomName: String!,adminId: Int!):  Message!
+    subComment(roomName: String!,userId: Int!): Comment!
 }
 `},
 )

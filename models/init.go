@@ -31,7 +31,6 @@ func openDB(username, password, addr, name string) *gorm.DB {
 		username,
 		password,
 	)
-	fmt.Println("db config", config)
 	db, err := gorm.Open("postgres", config)
 	if err != nil {
 		log.Errorf(err, "Database connection failed. Database name: %s", name)
@@ -74,9 +73,7 @@ func (db *Database) Init() {
 		Self:  GetSelfDB(),
 		Cache: GetCacheDB(),
 	}
-
 	initTable()
-
 }
 
 //Close :
@@ -95,7 +92,9 @@ func initTable() {
 	var canteen Canteen
 	var booking Booking
 	var record TicketRecord
-	DB.Self.AutoMigrate(&user,&record, &ticket, &dishes,  &group, &role, &canteen, &booking)
+	var comment Comment
+
+	DB.Self.AutoMigrate(&comment,&user, &record, &ticket, &dishes, &group, &role, &canteen, &booking)
 
 	initAdmin()
 }

@@ -88,7 +88,7 @@ func GetCanteens(where string, value string, skip, take int, orderBy string) (cs
 				return cs, 0, errors.New("cannot get Canteen list by where " + where + " and keyword " + value)
 			}
 		} else {
-			if err := DB.Self.Where(where+" = ?", value).Offset(skip).Limit(take).Find(&cs).Error; err != nil {
+			if err := DB.Self.Debug().Where(where+" = ?", value).Offset(skip).Limit(take).Find(&cs).Error; err != nil {
 				return cs, 0, errors.New("cannot get Canteen list by where " + where + " and keyword " + value)
 			}
 		}

@@ -9,6 +9,11 @@ import (
 	"strconv"
 )
 
+type BookingExportResponses struct {
+	Data []CanteenBookingExport `json:"data"`
+	File string                 `json:"file"`
+}
+
 type BookingFilterInput struct {
 	UserID    *int `json:"userId"`
 	CanteenID *int `json:"canteenId"`
@@ -18,8 +23,16 @@ type BookingInput struct {
 	UserID           int              `json:"userId"`
 	CanteenID        int              `json:"canteenId"`
 	Type             BookingTypeInput `json:"type"`
+	Number           int              `json:"number"`
 	Date             string           `json:"date"`
 	AutoCurrentMonth *bool            `json:"autoCurrentMonth"`
+}
+
+type CanteenBookingExport struct {
+	Username  string `json:"username"`
+	Breakfast int    `json:"breakfast"`
+	Lunch     int    `json:"lunch"`
+	Dinner    int    `json:"dinner"`
 }
 
 type CanteenCount struct {
@@ -66,6 +79,12 @@ type DashboardResponse struct {
 	OrgInfo    []OrgDashboard `json:"orgInfo"`
 	SystemInfo SystemInfo     `json:"systemInfo"`
 	TicketInfo []string       `json:"ticketInfo"`
+}
+
+type Data struct {
+	Used    int  `json:"used"`
+	Total   int  `json:"total"`
+	Percent *int `json:"percent"`
 }
 
 type DeleteIDInput struct {
@@ -119,6 +138,12 @@ type NewCanteen struct {
 	BookingDinnerDeadline    string  `json:"bookingDinnerDeadline"`
 	CancelTime               int     `json:"cancelTime"`
 	AdminID                  int     `json:"adminId"`
+}
+
+type NewComment struct {
+	UserID int    `json:"userId"`
+	Body   string `json:"body"`
+	Tunnel string `json:"tunnel"`
 }
 
 type NewDishes struct {
@@ -198,6 +223,13 @@ type QueryCanteenResponse struct {
 	Skip       *int             `json:"skip"`
 	Take       *int             `json:"take"`
 	Rows       []models.Canteen `json:"rows"`
+}
+
+type QueryCommentResponse struct {
+	TotalCount *int             `json:"totalCount"`
+	Skip       *int             `json:"skip"`
+	Take       *int             `json:"take"`
+	Rows       []models.Comment `json:"rows"`
 }
 
 type QueryDishesResponse struct {
@@ -282,7 +314,10 @@ type SpendInput struct {
 }
 
 type SystemInfo struct {
-	CurrentLoginCount int `json:"currentLoginCount"`
+	CurrentLoginCount int     `json:"currentLoginCount"`
+	CPU               *string `json:"cpu"`
+	Disk              *string `json:"disk"`
+	RAM               *string `json:"ram"`
 }
 
 type TicketFilterInput struct {

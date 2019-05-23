@@ -31,3 +31,5 @@ models:
     model: booking/models.TicketRecord
   Message:
     model: booking/models.Message
+  Comment:
+    model: booking/models.Comment

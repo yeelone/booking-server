@@ -94,9 +94,9 @@ func GetTicket(id uint64) (result *Ticket, err error) {
 	return d, err
 }
 
-func GetTicketByType(user_id uint64, ticketType string,limit int ) (tickets []Ticket, total int, err error){
+func GetTicketByType(user_id uint64, ticketType string, limit int) (tickets []Ticket, total int, err error) {
 
-	w := "user_id="+ util.Uint2Str(user_id) + " AND type="+ strconv.Itoa(TicketTypeMap[ticketType])+" "
+	w := "user_id=" + util.Uint2Str(user_id) + " AND type=" + strconv.Itoa(TicketTypeMap[ticketType]) + " "
 	d := DB.Self.Debug().Where(w).Limit(limit).Find(&tickets)
 
 	if err := DB.Self.Model(&Ticket{}).Where(w).Count(&total).Error; err != nil {
@@ -137,7 +137,7 @@ func GetTickets(where string, value string, skip, take int) (tickets []Ticket, t
 }
 
 // TransferTicket 将电子票转让给其它用户
-func TransferTicket(fromUserId uint64, ticketType string , toUserId uint64, number int) (success, error int, err error) {
+func TransferTicket(fromUserId uint64, ticketType string, toUserId uint64, number int) (success, error int, err error) {
 
 	fromUser, err := GetUserByID(fromUserId)
 
@@ -155,7 +155,7 @@ func TransferTicket(fromUserId uint64, ticketType string , toUserId uint64, numb
 	tickets, total, err := GetTicketByType(fromUserId, ticketType, number)
 
 	if total < number {
-		return 0 , total , errors.New("余票不够")
+		return 0, total, errors.New("余票不够")
 	}
 
 	record := "由[" + util.Uint2Str(fromUserId) + "_" + fromUser.Username + "] 转让给 [" + util.Uint2Str(toUserId) + "_" + toUser.Username + "] | "
