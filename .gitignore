@@ -24,3 +24,5 @@ vendor/
 /upload/
 upload/
 download/
+
+.bookingserver

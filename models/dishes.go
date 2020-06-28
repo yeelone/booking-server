@@ -1,8 +1,8 @@
 package models
 
 import (
+	"booking/util"
 	"errors"
-	"hrgdrc/util"
 )
 
 type Dishes struct {

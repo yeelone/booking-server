@@ -1,9 +1,9 @@
 package models
 
 import (
+	"booking/pkg/constvar"
+	"booking/util"
 	"errors"
-	"hrgdrc/pkg/constvar"
-	"hrgdrc/util"
 	"strconv"
 	"strings"
 )

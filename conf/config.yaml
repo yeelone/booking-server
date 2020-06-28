@@ -24,7 +24,7 @@ db:
   name: db_booking
   addr: 127.0.0.1
   port: 5432
-  username: postgres
+  username: dbuser
   password: 123456
 admin:
   email: 'admin@admin.com'

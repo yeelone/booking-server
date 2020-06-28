@@ -4,32 +4,17 @@
 # for detailed .gqlgen.yml documentation.
 
 schema:
-- schema.graphql
+  - graph/schema/*.graphqls
 exec:
-  filename: generated.go
+  filename: graph/generated/generated.go
+  package: generated
 model:
-  filename: models_gen.go
+  filename: graph/model/models_gen.go
+  package: model
 resolver:
-  filename: resolvers/resolver.go
-  type: Resolver
-models:
-  User:
-    model: booking/models.User
-  Group:
-    model: booking/models.Group
-  Role:
-    model: booking/models.Role
-  Dishes:
-    model: booking/models.Dishes
-  Ticket:
-    model: booking/models.Ticket
-  Canteen:
-    model: booking/models.Canteen
-  Booking:
-    model: booking/models.Booking
-  TicketRecord:
-    model: booking/models.TicketRecord
-  Message:
-    model: booking/models.Message
-  Comment:
-    model: booking/models.Comment
+  layout: follow-schema
+  dir: graph
+  package: graph
+autobind:
+  - "booking/models"
+omit_slice_element_pointers: true

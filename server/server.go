@@ -1,14 +1,14 @@
 package main
 
 import (
-	"booking"
 	"booking/config"
+	"booking/graph"
+	"booking/graph/generated"
 	"booking/models"
 	"booking/pkg/auth"
 	"booking/pkg/formdata"
 	"booking/pkg/token"
 	v "booking/pkg/version"
-	"booking/resolvers"
 	"booking/util"
 	"bytes"
 	"context"
@@ -16,7 +16,10 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/99designs/gqlgen/graphql"
-	"github.com/99designs/gqlgen/handler"
+	"github.com/99designs/gqlgen/graphql/handler"
+	"github.com/99designs/gqlgen/graphql/handler/extension"
+	"github.com/99designs/gqlgen/graphql/handler/transport"
+	"github.com/99designs/gqlgen/graphql/playground"
 	"github.com/asdine/storm"
 	"github.com/gorilla/websocket"
 	"github.com/lexkong/log"
@@ -117,7 +120,7 @@ func main() {
 
 	e := auth.GetEnforcer("./conf/permissions/rbac_model.conf", "./conf/permissions/rbac_policy.csv")
 
-	c := booking.Config{Resolvers: &resolvers.Resolver{}}
+	c := generated.Config{Resolvers: &graph.Resolver{}}
 
 	c.Directives.HasRole = func(ctx context.Context, _ interface{}, next graphql.Resolver, resolver string) (interface{}, error) {
 
@@ -178,7 +181,7 @@ func main() {
 	fs3 := http.FileServer(http.Dir("download/"))
 
 	if DEBUG {
-		http.Handle("/playground", handler.Playground("GraphQL playground", "/query"))
+		http.Handle("/playground", playground.Handler("GraphQL playground", "/query"))
 	}
 
 	http.Handle("/upload/", enableCORS(http.StripPrefix("/upload/", fs)))
@@ -186,11 +189,21 @@ func main() {
 	http.Handle("/download/", enableCORS(http.StripPrefix("/download/", fs3)))
 
 	//	//http.Handle("/login", Login())
-	http.Handle("/query", enableCORS(jwtMiddleware(handler.GraphQL(booking.NewExecutableSchema(c), handler.WebsocketUpgrader(websocket.Upgrader{
-		CheckOrigin: func(r *http.Request) bool {
-			return true
+
+	srv := handler.New(generated.NewExecutableSchema(c))
+
+	srv.AddTransport(transport.POST{})
+	srv.AddTransport(transport.Websocket{
+		KeepAlivePingInterval: 10 * time.Second,
+		Upgrader: websocket.Upgrader{
+			CheckOrigin: func(r *http.Request) bool {
+				return true
+			},
 		},
-	})))))
+	})
+	srv.Use(extension.Introspection{})
+
+	http.Handle("/query", enableCORS(jwtMiddleware(srv)))
 
 	http.Handle("/query/wechatToken", enableCORS(signHandler()))
 
