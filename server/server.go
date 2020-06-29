@@ -192,7 +192,10 @@ func main() {
 
 	srv := handler.New(generated.NewExecutableSchema(c))
 
+	srv.AddTransport(transport.Options{})
+	srv.AddTransport(transport.GET{})
 	srv.AddTransport(transport.POST{})
+	srv.AddTransport(transport.MultipartForm{})
 	srv.AddTransport(transport.Websocket{
 		KeepAlivePingInterval: 10 * time.Second,
 		Upgrader: websocket.Upgrader{
@@ -204,9 +207,7 @@ func main() {
 	srv.Use(extension.Introspection{})
 
 	http.Handle("/query", enableCORS(jwtMiddleware(srv)))
-
 	http.Handle("/query/wechatToken", enableCORS(signHandler()))
-
 	http.Handle("/upload", enableCORS(Upload()))
 	log.Infof("connect to http://localhost:%s/ for GraphQL playground", port)
 	log.Infof("", http.ListenAndServe(":"+port, nil))
@@ -216,7 +217,7 @@ func enableCORS(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Access-Control-Allow-Origin", "*")
 		w.Header().Set("Access-Control-Allow-Headers", "*")
-
+		w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
 		next.ServeHTTP(w, r)
 	})
 }

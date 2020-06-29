@@ -1258,3 +1258,179 @@
 2020-06-29 00:11:12.413 INFO server/server.go:245 3.592254ms    | [::1]:59278  
 2020-06-29 00:11:14.434 INFO server/server.go:245 4.068852ms    | [::1]:59278  
 2020-06-29 00:11:16.455 INFO server/server.go:245 6.071554ms    | [::1]:59278  
+2020-06-29 00:11:18.473 INFO server/server.go:245 4.386048ms    | [::1]:59278  
+2020-06-29 00:11:20.489 INFO server/server.go:245 4.166549ms    | [::1]:59278  
+2020-06-29 00:11:22.506 INFO server/server.go:245 3.487654ms    | [::1]:59278  
+2020-06-29 00:11:24.525 INFO server/server.go:245 3.806759ms    | [::1]:59278  
+2020-06-29 00:11:26.541 INFO server/server.go:245 3.487077ms    | [::1]:59278  
+2020-06-29 00:11:28.557 INFO server/server.go:245 3.673295ms    | [::1]:59278  
+2020-06-29 00:11:30.572 INFO server/server.go:245 3.415038ms    | [::1]:59278  
+2020-06-29 00:11:32.588 INFO server/server.go:245 3.741995ms    | [::1]:59278  
+2020-06-29 00:11:34.604 INFO server/server.go:245 3.831296ms    | [::1]:59278  
+2020-06-29 00:11:36.620 INFO server/server.go:245 3.518522ms    | [::1]:59278  
+2020-06-29 00:11:38.636 INFO server/server.go:245 3.375875ms    | [::1]:59278  
+2020-06-29 00:11:40.650 INFO server/server.go:245 3.791125ms    | [::1]:59278  
+2020-06-29 00:11:42.667 INFO server/server.go:245 3.801789ms    | [::1]:59278  
+2020-06-29 00:11:44.684 INFO server/server.go:245 4.340238ms    | [::1]:59278  
+2020-06-29 00:11:46.700 INFO server/server.go:245 4.322047ms    | [::1]:59278  
+2020-06-29 00:11:48.716 INFO server/server.go:245 3.696103ms    | [::1]:59278  
+2020-06-29 00:11:50.731 INFO server/server.go:245 3.613246ms    | [::1]:59278  
+2020-06-29 00:11:52.748 INFO server/server.go:245 3.786688ms    | [::1]:59278  
+2020-06-29 00:11:54.766 INFO server/server.go:245 3.579165ms    | [::1]:59278  
+2020-06-29 00:11:56.783 INFO server/server.go:245 3.951586ms    | [::1]:59278  
+2020-06-29 00:11:58.798 INFO server/server.go:245 3.766935ms    | [::1]:59278  
+2020-06-29 00:12:00.814 INFO server/server.go:245 3.741509ms    | [::1]:59278  
+2020-06-29 00:12:02.833 INFO server/server.go:245 4.161754ms    | [::1]:59278  
+2020-06-29 00:12:04.849 INFO server/server.go:245 4.379047ms    | [::1]:59278  
+2020-06-29 00:12:06.865 INFO server/server.go:245 4.082942ms    | [::1]:59278  
+2020-06-29 00:12:08.880 INFO server/server.go:245 4.296953ms    | [::1]:59278  
+2020-06-29 00:12:12.869 INFO server/server.go:245 4.370826ms    | [::1]:59646  
+2020-06-29 12:49:51.429 INFO server/server.go:245 24.370644ms   | [::1]:59646  
+2020-06-29 12:49:53.455 INFO server/server.go:245 3.297778ms    | [::1]:59646  
+2020-06-29 12:49:55.475 INFO server/server.go:245 5.498499ms    | [::1]:59646  
+2020-06-29 12:49:58.844 INFO server/server.go:245 5.297616ms    | [::1]:59704  
+2020-06-29 12:50:00.862 INFO server/server.go:245 4.778603ms    | [::1]:59704  
+2020-06-29 12:50:02.880 INFO server/server.go:245 3.652774ms    | [::1]:59704  
+2020-06-29 12:50:04.897 INFO server/server.go:245 3.424946ms    | [::1]:59704  
+2020-06-29 12:50:06.917 INFO server/server.go:245 5.628456ms    | [::1]:59704  
+2020-06-29 12:50:08.935 INFO server/server.go:245 3.923759ms    | [::1]:59704  
+2020-06-29 12:50:10.952 INFO server/server.go:245 3.805857ms    | [::1]:59704  
+2020-06-29 12:50:12.967 INFO server/server.go:245 4.749462ms    | [::1]:59704  
+2020-06-29 12:50:14.981 INFO server/server.go:245 3.674372ms    | [::1]:59704  
+2020-06-29 12:50:16.997 INFO server/server.go:245 4.24943ms     | [::1]:59704  
+2020-06-29 12:50:19.013 INFO server/server.go:245 3.960735ms    | [::1]:59704  
+2020-06-29 12:50:21.029 INFO server/server.go:245 3.931596ms    | [::1]:59704  
+2020-06-29 12:50:23.045 INFO server/server.go:245 3.517953ms    | [::1]:59704  
+2020-06-29 12:50:25.066 INFO server/server.go:245 4.430535ms    | [::1]:59704  
+2020-06-29 12:50:27.081 INFO server/server.go:245 4.507425ms    | [::1]:59704  
+2020-06-29 12:50:29.096 INFO server/server.go:245 4.343171ms    | [::1]:59704  
+2020-06-29 12:50:31.116 INFO server/server.go:245 4.381753ms    | [::1]:59704  
+2020-06-29 12:50:33.132 INFO server/server.go:245 4.117401ms    | [::1]:59704  
+2020-06-29 12:50:35.147 INFO server/server.go:245 3.743285ms    | [::1]:59704  
+2020-06-29 12:50:37.163 INFO server/server.go:245 4.005589ms    | [::1]:59704  
+2020-06-29 12:50:39.181 INFO server/server.go:245 4.055582ms    | [::1]:59704  
+2020-06-29 12:50:41.197 INFO server/server.go:245 3.682581ms    | [::1]:59704  
+2020-06-29 12:50:43.214 INFO server/server.go:245 4.176155ms    | [::1]:59704  
+2020-06-29 12:50:45.231 INFO server/server.go:245 3.653444ms    | [::1]:59704  
+2020-06-29 12:50:47.248 INFO server/server.go:245 3.527791ms    | [::1]:59704  
+2020-06-29 12:50:49.263 INFO server/server.go:245 3.692815ms    | [::1]:59704  
+2020-06-29 12:50:51.279 INFO server/server.go:245 3.922753ms    | [::1]:59704  
+2020-06-29 12:50:53.293 INFO server/server.go:245 3.416718ms    | [::1]:59704  
+2020-06-29 12:50:55.314 INFO server/server.go:245 4.920093ms    | [::1]:59704  
+2020-06-29 12:50:57.336 INFO server/server.go:245 4.387288ms    | [::1]:59704  
+2020-06-29 13:42:03.250 INFO server/server.go:245 39.969µs      | 127.0.0.1:56878 
+2020-06-29 13:42:40.153 INFO server/server.go:245 39.539µs      | 127.0.0.1:56878 
+2020-06-29 13:42:47.367 INFO server/server.go:245 21.465µs      | 127.0.0.1:56878 
+2020-06-29 13:42:50.633 INFO server/server.go:245 49.568µs      | 127.0.0.1:56878 
+2020-06-29 13:43:13.532 INFO server/server.go:211 connect to http://localhost:8080/ for GraphQL playground
+2020-06-29 13:43:21.559 INFO server/server.go:245 119.667µs     | 127.0.0.1:57236 
+2020-06-29 13:53:09.822 INFO server/server.go:245 56.622µs      | 127.0.0.1:33960 
+2020-06-29 13:56:51.225 INFO server/server.go:245 44.549µs      | 127.0.0.1:33960 
+2020-06-29 13:57:10.876 INFO server/server.go:211 connect to http://localhost:8080/ for GraphQL playground
+2020-06-29 13:57:17.296 INFO server/server.go:245 163.269µs     | 127.0.0.1:36438 
+2020-06-29 14:30:59.543 INFO server/server.go:245 52.892µs      | 127.0.0.1:52904 
+2020-06-29 14:35:27.182 INFO server/server.go:211 connect to http://localhost:8080/ for GraphQL playground
+2020-06-29 14:35:35.936 INFO server/server.go:244 174.371µs     | 127.0.0.1:55540 
+2020-06-29 14:35:47.089 INFO server/server.go:211 connect to http://localhost:8080/ for GraphQL playground
+2020-06-29 14:36:14.696 INFO server/server.go:210 connect to http://localhost:8080/ for GraphQL playground
+2020-06-29 14:36:19.863 INFO server/server.go:243 177.713µs     | 127.0.0.1:56496 
+2020-06-29 14:36:25.685 INFO server/server.go:211 connect to http://localhost:8080/ for GraphQL playground
+2020-06-29 14:36:40.123 INFO server/server.go:208 connect to http://localhost:8080/ for GraphQL playground
+2020-06-29 14:36:43.842 INFO server/server.go:241 137.135µs     | 127.0.0.1:57284 
+2020-06-29 14:36:47.660 INFO server/server.go:241 28.837µs      | 127.0.0.1:57284 
+2020-06-29 14:36:53.917 INFO server/server.go:211 connect to http://localhost:8080/ for GraphQL playground
+2020-06-29 14:38:13.739 INFO server/server.go:211 connect to http://localhost:8080/ for GraphQL playground
+2020-06-29 14:38:19.628 INFO server/server.go:245 125.563µs     | 127.0.0.1:58714 
+2020-06-29 14:38:58.699 INFO server/server.go:245 40.256µs      | 127.0.0.1:58714 
+2020-06-29 14:39:01.046 INFO server/server.go:245 29.466µs      | 127.0.0.1:58714 
+2020-06-29 14:39:30.006 INFO server/server.go:245 45.061µs      | 127.0.0.1:58714 
+2020-06-29 14:40:47.375 INFO server/server.go:211 connect to http://localhost:8080/ for GraphQL playground
+2020-06-29 14:40:59.716 INFO server/server.go:246 158.098µs     | 127.0.0.1:60410 
+2020-06-29 14:41:24.089 INFO server/server.go:211 connect to http://localhost:8080/ for GraphQL playground
+2020-06-29 14:41:48.947 INFO server/server.go:244 204.04µs      | 127.0.0.1:32898 
+2020-06-29 14:42:24.336 INFO server/server.go:244 29.073µs      | 127.0.0.1:32898 
+2020-06-29 14:42:37.433 INFO server/server.go:244 21.958µs      | 127.0.0.1:32898 
+2020-06-29 14:43:55.933 INFO server/server.go:244 30.499µs      | 127.0.0.1:32898 
+2020-06-29 14:44:02.236 INFO server/server.go:244 35.705µs      | 127.0.0.1:32898 
+2020-06-29 14:47:39.230 INFO server/server.go:209 connect to http://localhost:8080/ for GraphQL playground
+2020-06-29 14:47:44.340 INFO server/server.go:243 189.56µs      | 127.0.0.1:34750 
+2020-06-29 14:47:45.248 INFO server/server.go:243 23.933µs      | 127.0.0.1:34750 
+2020-06-29 14:48:11.781 INFO server/server.go:243 30.454µs      | 127.0.0.1:34750 
+2020-06-29 14:48:12.633 INFO server/server.go:243 24.788µs      | 127.0.0.1:34750 
+2020-06-29 14:48:13.146 INFO server/server.go:243 39.127µs      | 127.0.0.1:34750 
+2020-06-29 14:48:13.594 INFO server/server.go:243 41.721µs      | 127.0.0.1:34750 
+2020-06-29 14:48:14.026 INFO server/server.go:243 29.48µs       | 127.0.0.1:34750 
+2020-06-29 14:48:14.505 INFO server/server.go:243 22.084µs      | 127.0.0.1:34750 
+2020-06-29 14:49:11.698 INFO server/server.go:209 connect to http://localhost:8080/ for GraphQL playground
+2020-06-29 14:49:21.111 INFO server/server.go:243 116.748µs     | 127.0.0.1:35162 
+2020-06-29 14:49:22.274 INFO server/server.go:243 21.461µs      | 127.0.0.1:35162 
+2020-06-29 14:49:22.714 INFO server/server.go:243 45.29µs       | 127.0.0.1:35162 
+2020-06-29 14:49:22.922 INFO server/server.go:243 27.163µs      | 127.0.0.1:35162 
+2020-06-29 14:49:23.212 INFO server/server.go:243 25.052µs      | 127.0.0.1:35162 
+2020-06-29 14:49:23.458 INFO server/server.go:243 31.389µs      | 127.0.0.1:35162 
+2020-06-29 14:49:23.652 INFO server/server.go:243 24.993µs      | 127.0.0.1:35162 
+2020-06-29 14:49:23.826 INFO server/server.go:243 19.943µs      | 127.0.0.1:35162 
+2020-06-29 14:49:24.002 INFO server/server.go:243 23.246µs      | 127.0.0.1:35162 
+2020-06-29 14:49:24.162 INFO server/server.go:243 47.727µs      | 127.0.0.1:35162 
+2020-06-29 14:49:24.315 INFO server/server.go:243 63.35µs       | 127.0.0.1:35162 
+2020-06-29 14:49:24.441 INFO server/server.go:243 25.061µs      | 127.0.0.1:35162 
+2020-06-29 14:49:41.248 INFO server/server.go:243 21.754µs      | 127.0.0.1:35162 
+2020-06-29 14:49:41.824 INFO server/server.go:243 25.356µs      | 127.0.0.1:35162 
+2020-06-29 14:49:42.352 INFO server/server.go:243 66.853µs      | 127.0.0.1:35162 
+2020-06-29 14:49:42.920 INFO server/server.go:243 25.732µs      | 127.0.0.1:35162 
+2020-06-29 14:49:43.392 INFO server/server.go:243 26.872µs      | 127.0.0.1:35162 
+2020-06-29 14:49:43.880 INFO server/server.go:243 23.314µs      | 127.0.0.1:35162 
+2020-06-29 14:49:44.305 INFO server/server.go:243 26.957µs      | 127.0.0.1:35162 
+2020-06-29 14:49:44.754 INFO server/server.go:243 24.058µs      | 127.0.0.1:35162 
+2020-06-29 14:49:45.183 INFO server/server.go:243 19.879µs      | 127.0.0.1:35162 
+2020-06-29 14:49:45.656 INFO server/server.go:243 30.95µs       | 127.0.0.1:35162 
+2020-06-29 14:49:46.072 INFO server/server.go:243 28.99µs       | 127.0.0.1:35162 
+2020-06-29 14:49:46.506 INFO server/server.go:243 25.797µs      | 127.0.0.1:35162 
+2020-06-29 14:49:46.943 INFO server/server.go:243 22.314µs      | 127.0.0.1:35162 
+2020-06-29 14:49:47.391 INFO server/server.go:243 23.11µs       | 127.0.0.1:35162 
+2020-06-29 14:49:47.991 INFO server/server.go:243 21.19µs       | 127.0.0.1:35162 
+2020-06-29 14:51:31.695 INFO server/server.go:243 677.305µs     | 127.0.0.1:35162 
+2020-06-29 14:52:30.385 INFO server/server.go:243 80.367µs      | 127.0.0.1:35344 
+2020-06-29 14:55:36.068 INFO server/server.go:206 connect to http://localhost:8080/ for GraphQL playground
+2020-06-29 14:55:39.641 INFO server/server.go:240 281.66µs      | 127.0.0.1:37244 
+2020-06-29 14:55:40.759 INFO server/server.go:240 22.489µs      | 127.0.0.1:37244 
+2020-06-29 14:55:49.654 INFO server/server.go:206 connect to http://localhost:8080/ for GraphQL playground
+2020-06-29 14:55:51.904 INFO server/server.go:240 100.61µs      | 127.0.0.1:37628 
+2020-06-29 14:55:52.984 INFO server/server.go:240 31.279µs      | 127.0.0.1:37628 
+2020-06-29 14:58:25.805 INFO server/server.go:206 connect to http://localhost:8080/ for GraphQL playground
+2020-06-29 14:58:29.474 INFO server/server.go:240 162.282µs     | 127.0.0.1:39508 
+2020-06-29 14:58:30.560 INFO server/server.go:240 47.243µs      | 127.0.0.1:39508 
+2020-06-29 14:58:31.248 INFO server/server.go:240 20.445µs      | 127.0.0.1:39508 
+2020-06-29 14:58:31.832 INFO server/server.go:240 27.691µs      | 127.0.0.1:39508 
+2020-06-29 14:58:41.056 INFO server/server.go:240 31.487µs      | 127.0.0.1:39508 
+2020-06-29 14:58:41.680 INFO server/server.go:240 21.482µs      | 127.0.0.1:39508 
+2020-06-29 14:59:23.281 INFO server/server.go:212 connect to http://localhost:8080/ for GraphQL playground
+2020-06-29 14:59:26.343 INFO server/server.go:246 168.689µs     | 127.0.0.1:40308 
+2020-06-29 14:59:28.095 INFO server/server.go:246 51.26µs       | 127.0.0.1:40308 
+2020-06-29 14:59:28.840 INFO server/server.go:246 41.234µs      | 127.0.0.1:40308 
+2020-06-29 14:59:29.455 INFO server/server.go:246 40.971µs      | 127.0.0.1:40308 
+2020-06-29 14:59:30.080 INFO server/server.go:246 65.637µs      | 127.0.0.1:40308 
+2020-06-29 14:59:30.656 INFO server/server.go:246 39.842µs      | 127.0.0.1:40308 
+2020-06-29 14:59:31.144 INFO server/server.go:246 47.867µs      | 127.0.0.1:40308 
+2020-06-29 15:00:12.452 INFO server/server.go:212 connect to http://localhost:8080/ for GraphQL playground
+2020-06-29 15:00:14.449 INFO server/server.go:246 251.502µs     | 127.0.0.1:41032 
+2020-06-29 15:00:15.591 INFO server/server.go:246 65.057µs      | 127.0.0.1:41032 
+2020-06-29 15:00:16.885 INFO server/server.go:246 44.216µs      | 127.0.0.1:41032 
+2020-06-29 15:00:20.421 INFO server/server.go:246 11.061µs      | 127.0.0.1:41092 
+2020-06-29 15:00:20.512 INFO server/server.go:246 90.097373ms   | 127.0.0.1:41092 
+2020-06-29 15:00:22.327 INFO server/server.go:161 resolver dashboard     | role 系统管理员        | user id %!s(uint64=1) 
+2020-06-29 15:00:22.356 INFO server/server.go:246 29.35358ms    | 127.0.0.1:41092 
+2020-06-29 23:44:57.461 INFO server/server.go:246 73.927µs      | 127.0.0.1:41602 
+2020-06-29 23:47:30.325 INFO server/server.go:246 17.711µs      | 127.0.0.1:41818 
+2020-06-29 23:47:30.326 INFO server/server.go:161 resolver users         | role 系统管理员        | user id %!s(uint64=1) 
+2020-06-29 23:47:30.332 INFO server/server.go:246 5.892385ms    | 127.0.0.1:41818 
+2020-06-29 23:47:39.797 INFO server/server.go:246 15.208µs      | 127.0.0.1:41818 
+2020-06-29 23:47:39.799 INFO server/server.go:161 resolver roles         | role 系统管理员        | user id %!s(uint64=1) 
+2020-06-29 23:47:39.809 INFO server/server.go:246 9.524004ms    | 127.0.0.1:41818 
+2020-06-29 23:47:41.855 INFO server/server.go:161 resolver config        | role 系统管理员        | user id %!s(uint64=1) 
+2020-06-29 23:47:41.855 INFO server/server.go:246 720.237µs     | 127.0.0.1:41818 
+2020-06-29 23:47:55.937 INFO server/server.go:246 16.49µs       | 127.0.0.1:41818 
+2020-06-29 23:47:55.939 INFO server/server.go:161 resolver groups        | role              | user id %!s(uint64=0) 
+2020-06-29 23:47:55.944 INFO server/server.go:246 5.666717ms    | 127.0.0.1:41818 
+2020-06-29 23:47:58.895 INFO server/server.go:161 resolver groups        | role              | user id %!s(uint64=0) 
+2020-06-29 23:47:58.902 INFO server/server.go:246 7.244533ms    | 127.0.0.1:41818 
